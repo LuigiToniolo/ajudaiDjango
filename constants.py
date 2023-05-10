@@ -1,0 +1,3 @@
+#MAIN APP AND COMPANY DEFFINITIONS
+
+MAIN_APP_NAME = 'ajudai_django_app'
