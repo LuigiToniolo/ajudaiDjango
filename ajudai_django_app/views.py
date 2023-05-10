@@ -65,7 +65,7 @@ def login_view(request):
         if user is not None:
             # autentique o usuário e redirecione para a página inicial
             login(request, user)
-            return redirect('home')
+            return redirect('user_accounts')
         else:
             # exiba o formulário de login novamente com uma mensagem de erro
             error_message = 'Nome de usuário ou senha inválidos'
@@ -77,7 +77,7 @@ def login_view(request):
     
 def logout_view(request):
     logout(request)
-    return redirect('home')
+    return redirect('user_accounts')
 
 def register_view(request):
     
@@ -121,7 +121,7 @@ def send_confirmation_email(request):
         return redirect('database_error')
 
     subject = FANTASY_NAME + ' - Confirme seu email'
-    message = f'Welcome to {FANTASY_NAME}! Clique no link a seguir para confirmar o seu email: {request.build_absolute_uri(reverse("email_confirmed", args=[token]))}'
+    message = f'Bem-vindo ao {FANTASY_NAME}! Clique no link a seguir para confirmar o seu email: {request.build_absolute_uri(reverse("email_confirmed", args=[token]))}'
     send_mail(subject, message, from_email=settings.DEFAULT_FROM_EMAIL, recipient_list=[user.email])
 
     context = {
@@ -149,7 +149,7 @@ def email_confirmed(request, token):
         return render(request, 'email_confirmed.html', context)
     
     except:
-        return redirect('email_confirm_error')
+        return redirect('email_confirm_link_error')
     
 def email_confirm_link_error(request):
     try:
@@ -179,7 +179,7 @@ def delete_account_view(request):
         return redirect('login')
 
     user.delete()
-    return redirect('home')
+    return redirect('user_accounts')
 
 def change_password_view(request):
     if not request.user.is_authenticated:
