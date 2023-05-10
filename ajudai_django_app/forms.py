@@ -56,7 +56,7 @@ class CustomUserCreationForm(UserCreationForm):
 
 class LoginForm(forms.Form):
     username = forms.CharField(
-        label="User Name",
+        label="Nome de Usuário",
         widget=forms.TextInput(
             attrs={
                 'name': USER_NAME_FIELD_ID, 
@@ -67,7 +67,7 @@ class LoginForm(forms.Form):
             )
         )
     password = forms.CharField(
-        label="Password",
+        label="Senha",
         widget=forms.PasswordInput(
             attrs={
                 'name': PASSWORD_FIELD_ID, 
