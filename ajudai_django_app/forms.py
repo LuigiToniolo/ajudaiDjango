@@ -46,7 +46,7 @@ class CustomUserCreationForm(UserCreationForm):
 
     class Meta:
         model = CustomUser
-        fields = ('username', 'full_name', 'email', 'cell_phone', 'company_name', 'segmento', 'password1', 'password2')
+        fields = ('username', 'full_name', 'email', 'cell_phone', 'company_name', 'segmento', 'cargo_atual', 'password1', 'password2')
 
     def clean_email(self, repeatedEmailErrorMessage = 'This email is already registered!'):
         email = self.cleaned_data['email']
