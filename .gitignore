@@ -1,0 +1,13 @@
+# Ignore the virtual environment directory
+.venv/
+
+# Ignore the Visual Studio Code settings and extensions
+.vscode/
+
+# Ignore the database file
+db.sqlite3
+
+.env
+
+
+**/__pycache__/
