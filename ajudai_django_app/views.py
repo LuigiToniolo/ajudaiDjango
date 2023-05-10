@@ -106,7 +106,7 @@ def register_view(request):
         form = CustomUserCreationForm()
         context = {
             'form': form,
-            'registeButtonText' : 'Register',
+            'registeButtonText' : 'Criar minha conta',
             'isHome' : False,
         }
         return render(request, 'register.html', context)
