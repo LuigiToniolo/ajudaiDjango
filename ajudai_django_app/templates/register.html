@@ -1,0 +1,15 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<form method="post" action="{% url 'register' %}">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <p>Ao criar a sua conta, você aceita nossos <a href="{% url 'termos_e_condicoes' %}">Termos de Uso</a> e <a href="{% url 'privacidade' %}">Política de Privacidade</a>.</p>
+    <input type="submit" value="{{ registeButtonText }}">
+</form>
+
+{% if error_message %}
+    <p>{{ error_message }}</p>
+{% endif %}
+
+{% endblock %}
