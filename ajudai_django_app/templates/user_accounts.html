@@ -1,28 +1,47 @@
-{% extends "layout.html" %}
-{% block content %}
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <title>{{ tab_title }}</title>
+        {% load static %}
+        <link rel="stylesheet" type="text/css" href="{% static 'ajudai_django_app/css/user_accounts.css' %}" />
+    </head>
+    <body>
+        <div id="menu">
+            <nav>
+              <ul>
+                {% if user and user.username %}
+                  <a href="{% url 'user_accounts' %}">{{ user.username }} (my account)</a><br>
+                {% else %}
+                  <a href="{% url 'login' %}">Log In</a><br>
+                {% endif %}
+              </ul>
+            </nav>
+          </div>
+          
+        <h1>{{ title_user_page }} {{ user.username }}</h1>
+        <p>{{ user_page_data_title }}</p>
+        <p><b>{{ userNameLabel }}</b>: {{ user.username }}</p>
+        <p><b>{{ nomeCompletoLabel }}</b>: {{ user.full_name }}</p>
+        <p><b>{{ emailLabel }}</b>: {{ user.email }}</p>
+        <p><b>{{ celularLabel }}</b>: {{ user.cell_phone }}</p>
+        <p><b>{{ empresaLabel }}</b>: {{ user.company_name }}</p>
+        <p><b>{{ segmentoLabel }}</b>: {{ user.segmento }}</p>
+        <p><b>{{ cargoLabel }}</b>: {{ user.cargo_atual}}</p>
 
-<h1>{{ title_user_page }} {{ user.username }}</h1>
-<p>{{ user_page_data_title }}</p>
-<p><b>{{ userNameLabel }}</b>: {{ user.username }}</p>
-<p><b>{{ nomeCompletoLabel }}</b>: {{ user.full_name }}</p>
-<p><b>{{ emailLabel }}</b>: {{ user.email }}</p>
-<p><b>{{ celularLabel }}</b>: {{ user.cell_phone }}</p>
-<p><b>{{ empresaLabel }}</b>: {{ user.company_name }}</p>
-<p><b>{{ segmentoLabel }}</b>: {{ user.segmento }}</p>
-<p><b>{{ cargoLabel }}</b>: {{ user.cargo_atual}}</p>
+
+        <p><a href="{% url 'change_password' %}">{{ change_password_text }}</a></p>
 
 
-<p><a href="{% url 'change_password' %}">{{ change_password_text }}</a></p>
+        <form method="post" action="{% url 'logout' %}">
+            {% csrf_token %}
+            <input type="submit" value="{{ LOGOUT_BUTTON_VALUE }}">
+        </form>
 
+        <form method="post" action="{% url 'delete_account' %}">
+            {% csrf_token %}
+            <input type="submit" class="red-button" value="{{ DELETE_ACCOUNT_BUTTON_VALUE }}" onclick="return confirm('{{ delte_account_confirm_message }}');">
+        </form>
 
-<form method="post" action="{% url 'logout' %}">
-    {% csrf_token %}
-    <input type="submit" value="{{ LOGOUT_BUTTON_VALUE }}">
-</form>
-
-<form method="post" action="{% url 'delete_account' %}">
-    {% csrf_token %}
-    <input type="submit" class="red-button" value="{{ DELETE_ACCOUNT_BUTTON_VALUE }}" onclick="return confirm('{{ delte_account_confirm_message }}');">
-</form>
-
-{% endblock %}
+    </body>
+</html>

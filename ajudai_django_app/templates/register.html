@@ -1,15 +1,34 @@
-{% extends "layout.html" %}
-{% block content %}
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <title>{{ tab_title }}</title>
+        {% load static %}
+        <link rel="stylesheet" type="text/css" href="{% static 'ajudai_django_app/css/register.css' %}" />
+    </head>
+    <body>
+        <div id="menu">
+            <nav>
+              <ul>
+                {% if user and user.username %}
+                  <a href="{% url 'user_accounts' %}">{{ user.username }} (my account)</a><br>
+                {% else %}
+                  <a href="{% url 'login' %}">Log In</a><br>
+                {% endif %}
+              </ul>
+            </nav>
+          </div>
 
-<form method="post" action="{% url 'register' %}">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <p>Ao criar a sua conta, você aceita nossos <a href="{% url 'termos_e_condicoes' %}">Termos de Uso</a> e <a href="{% url 'privacidade' %}">Política de Privacidade</a>.</p>
-    <input type="submit" value="{{ registeButtonText }}">
-</form>
+        <form method="post" action="{% url 'register' %}">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <p>Ao criar a sua conta, você aceita nossos <a href="{% url 'termos_e_condicoes' %}">Termos de Uso</a> e <a href="{% url 'privacidade' %}">Política de Privacidade</a>.</p>
+            <input type="submit" value="{{ registeButtonText }}">
+        </form>
 
-{% if error_message %}
-    <p>{{ error_message }}</p>
-{% endif %}
+        {% if error_message %}
+            <p>{{ error_message }}</p>
+        {% endif %}
 
-{% endblock %}
+    </body>
+</html>
