@@ -134,6 +134,10 @@ class Product(models.Model):
 class ChatBot(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, default=1)
     aditional_intructions = models.CharField(max_length=MAX_CHAR_INSTRUCTIONS_CHATBOT_FORM, default='')
+    whatsapp_number=models.CharField(
+        validators=[phone_regex],
+        default='99999999999',
+    )
     product = models.ForeignKey(Product, on_delete=models.CASCADE,)
 
     def __str__(self):
