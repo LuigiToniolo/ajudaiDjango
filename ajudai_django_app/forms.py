@@ -9,7 +9,9 @@ from constants import CELLPHONE_FIELD_SIZE_IN_PX, COMPANY_NAME_FIELD_SIZE_IN_PX,
 class CustomUserCreationForm(UserCreationForm):
     email = forms.EmailField(
         label='Email corporativo',
-        widget=forms.TextInput(attrs={'style': 'width: {}px;'.format(REGISTER_EMAIL_FIELD_SIZE_IN_PX)})
+        widget=forms.TextInput(attrs={
+            # 'style': 'width: {}px;'.format(REGISTER_EMAIL_FIELD_SIZE_IN_PX)
+            })
         )
     username = forms.CharField(
         label='Nome de usuário',
@@ -61,8 +63,8 @@ class LoginForm(forms.Form):
             attrs={
                 'name': USER_NAME_FIELD_ID, 
                 'id': USER_NAME_FIELD_ID, 
-                'style': 
-                'width: {}px;'.format(REGISTER_FIELD_STANDART_SIZE_IN_PX)
+                # 'style': 
+                # 'width: {}px;'.format(REGISTER_FIELD_STANDART_SIZE_IN_PX)
                 }
             )
         )
@@ -72,7 +74,7 @@ class LoginForm(forms.Form):
             attrs={
                 'name': PASSWORD_FIELD_ID, 
                 'id': PASSWORD_FIELD_ID, 
-                'style': 'width: {}px;'.format(REGISTER_FIELD_STANDART_SIZE_IN_PX)
+                # 'style': 'width: {}px;'.format(REGISTER_FIELD_STANDART_SIZE_IN_PX)
                 }
             )
         )

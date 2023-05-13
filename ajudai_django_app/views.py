@@ -49,7 +49,8 @@ def login_view(request):
     login_form = LoginForm()
     context = {
         'title' : 'Login',
-        'LINK_TO_REGISTER_TEXT' : 'Ainda não possui uma conta? Registre aqui',
+        'LINK_TO_REGISTER_TEXT' : 'Ainda não possui uma conta?',
+        'BUTTON_REGISTER' : 'Registrar',
         'login_form' : login_form,
         'forgot_password_text': 'Esqueci minha senha',
         'submit_login_text' : 'Acessar',

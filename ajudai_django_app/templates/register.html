@@ -7,9 +7,11 @@
         <link rel="stylesheet" type="text/css" href="{% static 'ajudai_django_app/css/register.css' %}" />
     </head>
     <body>
+      <form class="conteudo-menu">
         <div id="menu">
             <nav>
               <ul>
+                <h3>Registre-se</h3>
                 {% if user and user.username %}
                   <a href="{% url 'user_accounts' %}">{{ user.username }} (my account)</a><br>
                 {% else %}
@@ -19,7 +21,7 @@
             </nav>
           </div>
 
-        <form method="post" action="{% url 'register' %}">
+        <form method="post" class="conteudo-menu" action="{% url 'register' %}">
             {% csrf_token %}
             {{ form.as_p }}
             <p>Ao criar a sua conta, você aceita nossos <a href="{% url 'termos_e_condicoes' %}">Termos de Uso</a> e <a href="{% url 'privacidade' %}">Política de Privacidade</a>.</p>
@@ -29,6 +31,7 @@
         {% if error_message %}
             <p>{{ error_message }}</p>
         {% endif %}
+      </form>
 
     </body>
 </html>
