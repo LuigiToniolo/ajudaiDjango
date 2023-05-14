@@ -15,35 +15,55 @@ class CustomUserCreationForm(UserCreationForm):
         )
     username = forms.CharField(
         label='Nome de usuário',
-        widget=forms.TextInput(attrs={'style': 'width: {}px;'.format(REGISTER_FIELD_STANDART_SIZE_IN_PX)})
+        widget=forms.TextInput(attrs={
+            # 'style': 'width: {}px;'.format(REGISTER_FIELD_STANDART_SIZE_IN_PX)
+            })
         )
     password1 = forms.CharField(
         label='Senha',
-        widget=forms.PasswordInput(attrs={'style': 'width: {}px;'.format(REGISTER_FIELD_STANDART_SIZE_IN_PX)})
+        widget=forms.PasswordInput(attrs={
+            # 'style': 'width: {}px;'.format(REGISTER_FIELD_STANDART_SIZE_IN_PX)
+            })
         )
     password2 = forms.CharField(
         label='Confirmar senha',
-        widget=forms.PasswordInput(attrs={'style': 'width: {}px;'.format(REGISTER_FIELD_STANDART_SIZE_IN_PX)})
+        widget=forms.PasswordInput(attrs={
+            # 'style': 'width: {}px;'.format(REGISTER_FIELD_STANDART_SIZE_IN_PX)
+            })
         )
     full_name = forms.CharField(
         label='Nome completo',
-        widget=forms.TextInput(attrs={'style': 'width: {}px;'.format(FULL_NAME_FIELD_SIZE_IN_PX)})
+        widget=forms.TextInput(attrs={
+            # 'style': 'width: {}px;'.format(FULL_NAME_FIELD_SIZE_IN_PX)
+            })
     )
     cell_phone = forms.CharField(
         label='Celular',
-        widget=forms.TextInput(attrs={'style': 'width: {}px;'.format(CELLPHONE_FIELD_SIZE_IN_PX)})
+        widget=forms.TextInput(attrs={
+            # 'style': 
+            # 'width: {}px;'.format(CELLPHONE_FIELD_SIZE_IN_PX)
+            })
     )
     company_name = forms.CharField(
         label='Nome da empresa',
-        widget=forms.TextInput(attrs={'style': 'width: {}px;'.format(COMPANY_NAME_FIELD_SIZE_IN_PX)})
+        widget=forms.TextInput(attrs={
+            # 'style': 
+            # 'width: {}px;'.format(COMPANY_NAME_FIELD_SIZE_IN_PX)
+            })
     )
     segmento = forms.CharField(
         label='Segmento',
-        widget=forms.TextInput(attrs={'style': 'width: {}px;'.format(REGISTER_FIELD_STANDART_SIZE_IN_PX)})
+        widget=forms.TextInput(attrs={
+            # 'style': 
+            # 'width: {}px;'.format(REGISTER_FIELD_STANDART_SIZE_IN_PX)
+            })
     )
     cargo_atual = forms.CharField(
         label='Cargo atual',
-        widget=forms.TextInput(attrs={'style': 'width: {}px;'.format(REGISTER_FIELD_STANDART_SIZE_IN_PX)})
+        widget=forms.TextInput(attrs={
+            # 'style': 
+            # 'width: {}px;'.format(REGISTER_FIELD_STANDART_SIZE_IN_PX)
+            })
     )
 
     class Meta:

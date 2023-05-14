@@ -13,42 +13,48 @@
         <!--Stylesheet-->
     </head>
     <body>
-      <div class="background">
-        <div class="shape"></div>
-        <div class="shape"></div>
-      </div>
-        <form class="conteudo-menu">
-          <div id="menu">
-              <nav>
-                <div class="div-logo">
-                  <img class="logo" src="{% static 'images/logo-ajudai.png' %}" alt="Logotipo Ajudai">
+        <div class="container" id="container">
+          <div class="form-container sign-in-container">
+            <form action="#">
+
+              <div id="menu">
+                <nav>
+                  <ul>
+                    {% if user and user.username %}
+                      <a href="{% url 'user_accounts' %}">{{ user.username }} (my account)</a><br>
+                    {% else %}
+                      <h1 class="titulo-login" href="{% url 'login' %}">Log In</h1><br>
+                    {% endif %}
+                  </ul>
+                </nav>
+              </div>
+
+              <form method="post" action="{% url 'login' %}">
+                {% csrf_token %}
+                <div class="inputs">
+                  {{ login_form.as_p }}
                 </div>
-                <ul class="ul-texto">
-                  {% if user and user.username %}
-                    <a href="{% url 'user_accounts' %}">{{ user.username }} (my account)</a><br>
-                  {% else %}
-                    <a class="titulo-login" href="{% url 'login' %}">Log In</a><br>
-                  {% endif %}
-                </ul>
-              </nav>
-            </div>
-            
-          <form method="post" action="{% url 'login' %}" class="text-form">
-              {% csrf_token %}
-              <div class="inputs">
-                {{ login_form.as_p }}
-              </div>
-              <input type="submit" class="botao" value="{{ submit_login_text }}">
-              {% if error_message %}
+                <p class="forget"><a href="{% url 'password_reset' %}">{{ forgot_password_text }}</a></p>
+                <input class="botao" type="submit" value="{{ submit_login_text }}">
+                
+                {% if error_message %}
                   <p>{{ error_message }}</p>
-              {% endif %}
-              <div class="adicional">
-                <p class="esqueci-senha"><a href="{% url 'password_reset' %}">{{ forgot_password_text }}</a></p>
-                <!-- <a class="register">{{ LINK_TO_REGISTER_TEXT }}</a> -->
-                <p class="register">{{ LINK_TO_REGISTER_TEXT }}</p>
-                <a class="botao-registrar" href="{% url 'register' %}" >{{ BUTTON_REGISTER }}</a>
-              </div>
+                {% endif %}
+              </form>
             </form>
-        </form>
+          </div>
+        
+          <div class="overlay-container">
+            <div class="overlay">
+              <div class="overlay-panel overlay-right">
+                <img class="logo" src="{% static 'image/logo-ajudai.svg' %}" alt="Logotigo ajudai">
+                <p class="conteudo-texto">Ainda nao possui uma conta? Deixe a gente <strong>Ajudar</strong> você!</p>
+                <a class="botao-registrar" href="{% url 'register' %}">{{ LINK_TO_REGISTER_TEXT }}</a>
+              </div>
+            </div>
+          </div>
+        
+        </div>
+
     </body>
 </html>
