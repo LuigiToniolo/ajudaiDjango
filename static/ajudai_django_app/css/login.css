@@ -12,7 +12,7 @@ body {
 	align-items: center;
 	flex-direction: column;
 	font-family: 'Montserrat', sans-serif;
-	height: 100vh;
+	height: 96vh;
 	margin: -20px 0 50px;
 }
 
@@ -96,6 +96,7 @@ a {
 
 .botao:active {
 	transform: scale(0.95);
+    
 }
 
 .botao:focus {
@@ -126,6 +127,7 @@ input {
 	width: 200px;
     display: block;
 }
+
 
 label{
     display: block;
