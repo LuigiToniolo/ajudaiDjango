@@ -70,7 +70,7 @@ class CustomUserCreationForm(UserCreationForm):
         model = CustomUser
         fields = ('username', 'full_name', 'email', 'cell_phone', 'company_name', 'segmento', 'cargo_atual', 'password1', 'password2')
 
-    def clean_email(self, repeatedEmailErrorMessage = 'This email is already registered!'):
+    def clean_email(self, repeatedEmailErrorMessage = 'Esse e-mail já está cadastrado!'):
         email = self.cleaned_data['email']
         if CustomUser.objects.filter(email=email).exists():
             raise forms.ValidationError(repeatedEmailErrorMessage)

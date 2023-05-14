@@ -7,99 +7,41 @@
         <link rel="stylesheet" type="text/css" href="{% static 'ajudai_django_app/css/register.css' %}" />
     </head>
     <body>
-      <!-- <div class="container">
-        <div id="menu">
-            <nav>
-              <ul>
-
-                <h1>Seja um membro do Ajudai! Registre-se</h1>
-                {% if user and user.username %}
-                  <a href="{% url 'user_accounts' %}">{{ user.username }} (my account)</a><br>
-                {% else %}
-                
-                  <h2>Já é membro?
-                    <a class="login-redirect" href="{% url 'login' %}">Log In</a><br>
-                  </h2>
-                {% endif %}
-              </ul>
-            </nav>
-          </div>
-        
+      <h1>Registre-se!</h1>
+      <h3 class="subtitulo">Seja membro do Ajudai e alavanque seu negócio com a nossa poderosa ferramenta</h3>
+      <div class="container">
         <form method="post" action="{% url 'register' %}" class="inputs">
           {% csrf_token %}
           {{ form.as_p }}
           <p class="termos-de-uso">Ao criar a sua conta, você aceita nossos <a href="{% url 'termos_e_condicoes' %}">Termos de Uso</a> e <a href="{% url 'privacidade' %}">Política de Privacidade</a>.</p>
           <div class="botao-div">
-            
+
+            <div id="menu">
+              <nav>
+                <ul>
+                  <!-- <h1>Seja um membro do Ajudai! Registre-se</h1> -->
+                  {% if user and user.username %}
+                    <a href="{% url 'user_accounts' %}">{{ user.username }} (my account)</a><br>
+                  {% else %}
+                      <a class="login-redirect" href="{% url 'login' %}">Já é membro? Faça Login</a><br>
+                  {% endif %}
+                </ul>
+              </nav>
+            </div>
+
             <input class="botao" type="submit" value="{{ registeButtonText }}">
+
           </div>
         </form>
         {% if error_message %}
-            <p>{{ error_message }}</p>
+            <p class="erro-msg">{{ error_message }}</p>
         {% endif %}
-      </div> -->
 
-
-
-      <div class="container" id="container">
-        
-        <div class="form-container sign-in-container">
-          <form action="#">
-            <h1>Registre-se!</h1>
-            <form method="post" action="{% url 'login' %}">
-              {% csrf_token %}
-              <div class="inputs">
-                {{ form.as_p }}
-              </div>
-              <p class="termos-de-uso">Ao criar a sua conta, você aceita nossos <a href="{% url 'termos_e_condicoes' %}">Termos de Uso</a> e <a href="{% url 'privacidade' %}">Política de Privacidade</a>.</p>
-              <div class="botao-div">
-                <input class="botao" type="submit" value="{{ registeButtonText }}">
-              </div>
-              {% if error_message %}
-                <p>{{ error_message }}</p>
-              {% endif %}
-            </form>
-          </form>
+        <div class="logotipo">
+          <img class="logo" src="{% static 'image/logo-preto.svg' %}" alt="Logotigo ajudai">
+          <p>Copyright © 2023 Ajudai. Todos os direitos reservados.</p>
         </div>
-      
-        <div class="overlay-container">
-          <div class="overlay">
-            <div class="overlay-panel overlay-right">
-              <img class="logo" src="{% static 'image/logo-ajudai.svg' %}" alt="Logotigo ajudai">
-              <p class="conteudo-texto">Faça o cadastro na plataforma do Ajudai e escale seu negócio</p>
-              <h3>Já é membro?</h3>
-              <!-- <a class="botao-registrar" href="{% url 'register' %}">{{ LINK_TO_REGISTER_TEXT }}</a> -->
-              <div id="menu">
-                <nav>
-                  <ul>
-    
-                    {% if user and user.username %}
-                      <a href="{% url 'user_accounts' %}">{{ user.username }} (my account)</a><br>
-                    {% else %}
-                      <a class="login-redirect" href="{% url 'login' %}">Log In</a><br>
-                    {% endif %}
-                  </ul>
-                </nav>
-              </div>
 
-
-              <!-- <div id="menu">
-                <nav>
-                  <ul>
-                    {% if user and user.username %}
-                      <a href="{% url 'user_accounts' %}">{{ user.username }} (my account)</a><br>
-                    {% else %}
-                      <h1 class="titulo-login" href="{% url 'login' %}">Log In</h1><br>
-                    {% endif %}
-                  </ul>
-                </nav>
-              </div> -->
-
-            </div>
-          </div>
-        </div>
-      
       </div>
-
     </body>
 </html>
