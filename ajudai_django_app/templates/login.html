@@ -15,33 +15,33 @@
     <body>
         <div class="container" id="container">
           <div class="form-container sign-in-container">
-            <form action="#">
+            <!-- <form action="#"> -->
 
-              <div id="menu">
-                <nav>
-                  <ul>
-                    {% if user and user.username %}
-                      <a href="{% url 'user_accounts' %}">{{ user.username }} (my account)</a><br>
-                    {% else %}
-                      <h1 class="titulo-login" href="{% url 'login' %}">Log In</h1><br>
-                    {% endif %}
-                  </ul>
-                </nav>
-              </div>
-
+              
               <form method="post" action="{% url 'login' %}">
+                <div id="menu">
+                  <nav>
+                    <ul>
+                      {% if user and user.username %}
+                        <a href="{% url 'user_accounts' %}">{{ user.username }} (my account)</a><br>
+                      {% else %}
+                        <h1 class="titulo-login" href="{% url 'login' %}">Log In</h1><br>
+                      {% endif %}
+                    </ul>
+                  </nav>
+                </div>
                 {% csrf_token %}
                 <div class="inputs">
                   {{ login_form.as_p }}
                 </div>
                 <p class="forget"><a href="{% url 'password_reset' %}">{{ forgot_password_text }}</a></p>
                 <input class="botao" type="submit" value="{{ submit_login_text }}">
-                
                 {% if error_message %}
-                  <p>{{ error_message }}</p>
+                  <p class="erro-msg">{{ error_message }}</p>
                 {% endif %}
+                
               </form>
-            </form>
+            <!-- </form> -->
           </div>
         
           <div class="overlay-container">
