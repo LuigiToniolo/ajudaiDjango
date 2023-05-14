@@ -21,6 +21,7 @@ h1 {
 	margin: 0;
 }
 
+
 .titulo-login {
     margin-left: -16px;
 }
@@ -64,6 +65,10 @@ a {
     margin: 10px 0;
 }
 
+.forget a:hover {
+    color: #7a7a7af1;
+}
+
 .inputs {
     margin: 0;
 }
@@ -79,6 +84,7 @@ a {
 	letter-spacing: 1px;
 	text-transform: uppercase;
 	transition: transform 80ms ease-in;
+    cursor: pointer;
 }
 
 .botao-registrar {
@@ -92,6 +98,11 @@ a {
 	text-transform: uppercase;
 	transition: transform 80ms ease-in;
     background-color: transparent;
+    cursor: pointer;
+
+}
+.botao:hover {
+    transform: scale(1.04);
 }
 
 .botao:active {
@@ -103,10 +114,7 @@ a {
 	outline: none;
 }
 
-/* button.ghost {
-	background-color: transparent;
-	border-color: #FFFFFF;
-} */
+
 
 form {
 	background-color: #FFFFFF;

@@ -27,7 +27,6 @@
                 {% csrf_token %}
                 <div class="inputs">
                   {{ login_form.as_p }}
-
                 </div>
                 <p class="forget"><a href="{% url 'password_reset' %}">{{ forgot_password_text }}</a></p>
                 <input class="botao" type="submit" value="{{ submit_login_text }}">
