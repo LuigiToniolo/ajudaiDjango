@@ -7,7 +7,7 @@
         <link rel="stylesheet" type="text/css" href="{% static 'ajudai_django_app/css/email_confirm_link_error.css' %}" />
     </head>
     <body>
-        <div id="menu">
+        <!-- <div id="menu">
             <nav>
               <ul>
                 {% if user and user.username %}
@@ -17,10 +17,36 @@
                 {% endif %}
               </ul>
             </nav>
-          </div>
+          </div> -->
 
-        <p>{{ error_message }}</p>
-        {{ SUPPORT_EMAIL }}<br><br><br>
+        <!-- <p>{{ error_message }}</p>
+        {{ SUPPORT_EMAIL }}<br><br><br> -->
+
+
+
+        <div class="container">
+          <div class="card-email">
+        
+            <img class="lock-icon" src="{% static 'image/error.png' %}" alt="Cadeado">
+            <p>{{ error_message }}</p>
+            {{ SUPPORT_EMAIL }}<br>
+
+            <div id="menu">
+              <nav>
+                <ul>
+                  {% if user and user.username %}
+                    <a class="botao-registrar" href="{% url 'user_accounts' %}">{{ user.username }} (my account)</a><br>
+                  {% else %}
+                    <a class="botao-registrar" href="{% url 'login' %}">Log In</a><br>
+                  {% endif %}
+                </ul>
+              </nav>
+            </div>
+
+            <meta http-equiv="refresh" content="5;url={% url 'user_accounts' %}" />
+
+          </div>
+      </div>
 
     </body>
 </html>

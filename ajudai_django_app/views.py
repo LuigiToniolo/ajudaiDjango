@@ -128,6 +128,7 @@ def send_confirmation_email(request):
         'title' : "Confirmação de email enviada",
         'user': user,
         'message': 'Um e-mail de confirmação foi enviado. Verifique sua caixa de entrada (INCLUINDO A CAIXA DE SPAM) e clique no link de confirmação. É comum que os provedores de e-mail direcionem o e-mail para a caixa de spam, então lembre-se de verificar isso também... Lembre-se, para usar nossos serviços, sua conta deve ter um endereço de e-mail confirmado.',
+        'message': 'Um e-mail de confirmação foi enviado. Verifique a caixa de entrada e o SPAM. Para usar os serviços do Ajudai é necessário essa confirmação',
         'observation' : 'Se você não receber dentro de alguns minutos, atualize esta página.',
     }
     return render(request, 'email_sent.html', context)

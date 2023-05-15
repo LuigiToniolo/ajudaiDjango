@@ -1,7 +1,7 @@
 #MAIN APP AND COMPANY DEFFINITIONS
 
 MAIN_APP_NAME = 'ajudai_django_app'
-SUPPORT_EMAIL = ''
+SUPPORT_EMAIL = 'ajudaibot@gmail.com'
 FANTASY_NAME = 'Ajudaí'
 
 #---------------------------------------------------------------------
