@@ -4,7 +4,9 @@ from django.contrib.auth import views as auth_views
 from ajudai_django_app import views
 
 urlpatterns = [
-    path('', views.user_accounts_view, name="user_accounts"),
+    path('meu-perfil/', views.user_accounts_view, name="user_accounts"),
+    path('', views.welcome_view, name="welcome"),
+    path('dashboard/', views.dashboard_view, name="dashboard"),    
     path('login/', views.login_view, name='login'),
     path('logout/', views.logout_view, name='logout'),
     path('registrar/', views.register_view, name='register'),

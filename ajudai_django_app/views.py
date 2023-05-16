@@ -79,6 +79,20 @@ def logout_view(request):
     logout(request)
     return redirect('user_accounts')
 
+#--------------Área do usuário-----------------------
+
+
+def welcome_view(request):
+    return render(request, 'welcome.html')
+
+
+def dashboard_view(request):
+    return render(request, 'dashboard.html')
+
+
+
+#-------------------------------------------------------
+
 def register_view(request):
     
     if request.method == 'POST':
