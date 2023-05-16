@@ -81,10 +81,11 @@
                                 <div class="sb-nav-link-icon"><i class="fas fa-gear"></i></div>
                                 Mudar senha
                             </a>
-                            <a class="nav-link" href="tables.html">
-                              <div class="sb-nav-link-icon"><i class="fas fa-sign-out"></i></div>
-                              Sign out
-                          </a>
+                            <form class="nav-link" method="post" action="{% url 'logout' %}">
+                                <div class="sb-nav-link-icon"><i class="fas fa-sign-out"></i></div>
+                                {% csrf_token %}
+                                <input class="teste-input" type="submit" value="{{ LOGOUT_BUTTON_VALUE }}">
+                            </form>
                             <!-- <div class="sb-sidenav-menu-heading">Interface</div> -->
                             <!-- <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseLayouts" aria-expanded="false" aria-controls="collapseLayouts">
                                 <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
@@ -149,8 +150,11 @@
                 <main>
                     <div class="container-fluid px-4">
                         <div class="container-welcome">
-                            <h1>Seja bem vindo!</h1>
+                            <!-- <h1>Seja bem vindo!</h1> -->
+                            <h1>Seja bem vindo {{ user.username }}!</h1>
                             <img class="welcome-img" src="{% static 'image/doogle-welcome.svg' %}" alt="Doodle ajudai welcome">
+                            <h4>Assine um de nossos planos e impulsione seu negócio!</h4>
+                            <button class="botao-planos" href="">Ver planos</button>
                         </div>
                     </div>
                 </main>

@@ -11254,9 +11254,49 @@ body {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+  text-align: center;
 }
 
 .welcome-img {
   width: 300px;
   height: auto;
+}
+
+.botao-planos {
+  border-radius: 20px;
+	border: 1px solid #5C7AD3;
+	background-color: #5C7AD3;
+	color: #FFFFFF;
+	font-size: 14px;
+	font-weight: bold;
+	padding: 12px 45px;
+	letter-spacing: 1px;
+	text-transform: uppercase;
+	transition: transform 80ms ease-in;
+  cursor: pointer;
+  margin-top: 20px;
+}
+
+.botao-planos:hover {
+  transform: scale(1.04);
+}
+
+.botao-planos:active {
+transform: scale(0.95);
+  
+}
+
+.botao-planos:focus {
+outline: none;
+}
+
+.container-meu-perfil {
+
+}
+
+.teste-input {
+  background-color: transparent;
+  border: none;
+  color: #FFFFFF80;
+  padding: 0;
 }

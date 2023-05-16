@@ -65,7 +65,7 @@ def login_view(request):
         if user is not None:
             # autentique o usuário e redirecione para a página inicial
             login(request, user)
-            return redirect('user_accounts')
+            return redirect('/')
         else:
             # exiba o formulário de login novamente com uma mensagem de erro
             error_message = 'Nome de usuário ou senha inválidos'
