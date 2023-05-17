@@ -138,6 +138,8 @@ class ChatBot(models.Model):
         validators=[phone_regex],
         default='99999999999',
     )
+    whats_app_api_auth_token = models.CharField(max_length=120)
+    facebook_page_id = models.CharField(max_length=120)
     product = models.ForeignKey(Product, on_delete=models.CASCADE,)
 
     def __str__(self):
@@ -147,10 +149,11 @@ class ChatBot(models.Model):
 #o uso é considerado como uma conversa inteira finalizada
 class Conversa(models.Model):
     id = models.AutoField(primary_key=True)
-    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, default=1)
     date = models.DateField()
     time = models.TimeField(default=timezone.now)
     chatbot = models.ForeignKey(ChatBot, on_delete=models.CASCADE)
+    context = models.JSONField(default=list)
+    company_client_number  = models.CharField(max_length=20, unique=True) #numero de quem está mandando a mensagem para o bot (NÃO O NÚMERO DO DONO DO BOT)
     total_tokens_used = models.PositiveIntegerField(
         default=0,
         )
