@@ -89,6 +89,9 @@ def welcome_view(request):
 def dashboard_view(request):
     return render(request, 'dashboard.html')
 
+def planos_disponiveis_view(request):
+    return render(request, 'planos_disponiveis.html')
+
 
 
 #-------------------------------------------------------

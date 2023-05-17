@@ -6706,6 +6706,10 @@ textarea.form-control-lg {
   background-color: RGBA(248, 249, 250, var(--bs-bg-opacity, 1)) !important;
 }
 
+#footer {
+  box-shadow: 20px 20px 20px black;
+}
+
 .text-bg-dark {
   color: #fff !important;
   background-color: RGBA(33, 37, 41, var(--bs-bg-opacity, 1)) !important;
@@ -11274,7 +11278,12 @@ body {
 	text-transform: uppercase;
 	transition: transform 80ms ease-in;
   cursor: pointer;
-  margin-top: 20px;
+  /* margin-top: 40px; */
+  text-decoration: none;
+}
+
+.subtitulo-welcome {
+  margin-bottom: 40px;
 }
 
 .botao-planos:hover {

@@ -62,13 +62,19 @@
                     <div class="sb-sidenav-menu">
                         <div class="nav">
                             <div class="sb-sidenav-menu-heading">Painel de controle</div>
-                           <a class="nav-link" href="{% url 'welcome' %}">
+                            <a class="nav-link" href="{% url 'welcome' %}">
                                 <div class="sb-nav-link-icon"><i class="fa fa-home"></i></div>
                                 Home
                             </a>
+
                             <a class="nav-link" href="{% url 'dashboard' %}">
                                 <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
                                 Dashboard
+                            </a>
+
+                            <a class="nav-link" href="{% url 'planos_disponiveis' %}">
+                                <div class="sb-nav-link-icon"><i class="fa-solid fa-file-signature"></i></div>
+                                Planos disponíveis
                             </a>
 
                             <div class="sb-sidenav-menu-heading">Minha conta</div>
@@ -81,11 +87,11 @@
                                 <div class="sb-nav-link-icon"><i class="fas fa-gear"></i></div>
                                 Mudar senha
                             </a>
-                            <form class="nav-link" method="post" action="{% url 'logout' %}">
+                            <!-- <form class="nav-link" method="post" action="{% url 'logout' %}">
                                 <div class="sb-nav-link-icon"><i class="fas fa-sign-out"></i></div>
                                 {% csrf_token %}
                                 <input class="teste-input" type="submit" value="{{ LOGOUT_BUTTON_VALUE }}">
-                            </form>
+                            </form> -->
                             <!-- <div class="sb-sidenav-menu-heading">Interface</div> -->
                             <!-- <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseLayouts" aria-expanded="false" aria-controls="collapseLayouts">
                                 <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
@@ -142,7 +148,7 @@
                     </div>
                     <div class="sb-sidenav-footer">
                         <div class="small">Logged in as:</div>
-                        Start Bootstrap
+                        {{ user.username }}
                     </div>
                 </nav>
             </div>
@@ -153,12 +159,12 @@
                             <!-- <h1>Seja bem vindo!</h1> -->
                             <h1>Seja bem vindo {{ user.username }}!</h1>
                             <img class="welcome-img" src="{% static 'image/doogle-welcome.svg' %}" alt="Doodle ajudai welcome">
-                            <h4>Assine um de nossos planos e impulsione seu negócio!</h4>
-                            <button class="botao-planos" href="">Ver planos</button>
+                            <h4 class="subtitulo-welcome">Assine um de nossos planos e impulsione seu negócio!</h4>
+                            <a class="botao-planos" href="{% url 'planos_disponiveis' %}">Ver planos</a>
                         </div>
                     </div>
                 </main>
-                <footer class="py-4 bg-light mt-auto">
+                <footer class="py-4 bg-light mt-auto" id="footer">
                     <div class="container-fluid px-4">
                         <div class="d-flex align-items-center justify-content-between small">
                             <div class="text-muted">Copyright © 2023 Ajudai. Todos os direitos reservados.</div>

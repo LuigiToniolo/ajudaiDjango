@@ -1,5 +1,6 @@
+
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
     <head>
         <meta charset="utf-8" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
@@ -69,15 +70,6 @@
                                 <div class="sb-nav-link-icon"><i class="fas fa-gear"></i></div>
                                 Mudar senha
                             </a>
-                              <form class="nav-link" method="post" action="{% url 'logout' %}">
-                                <div class="sb-nav-link-icon"><i class="fas fa-sign-out"></i></div>
-                                {% csrf_token %}
-                                <input class="teste-input" type="submit" value="{{ LOGOUT_BUTTON_VALUE }}">
-                            </form>
-
-                            <div class="collapse" id="collapsePages" aria-labelledby="headingTwo" data-bs-parent="#sidenavAccordion">
-
-                            </div>
 
                         </div>
                     </div>
@@ -90,43 +82,7 @@
             <div id="layoutSidenav_content">
                 <main>
                     <div class="container-fluid px-4">
-                        <div class="container-meu-perfil">
-                            <div id="menu">
-                                <nav>
-                                  <ul>
-                                    {% if user and user.username %}
-                                      <a href="{% url 'user_accounts' %}">{{ user.username }} (my account)</a><br>
-                                    {% else %}
-                                      <a href="{% url 'login' %}">Log In</a><br>
-                                    {% endif %}
-                                  </ul>
-                                </nav>
-                              </div>
-                              
-                            <h1>{{ title_user_page }} {{ user.username }}</h1>
-                            <p>{{ user_page_data_title }}</p>
-                            <p><b>{{ userNameLabel }}</b>: {{ user.username }}</p>
-                            <p><b>{{ nomeCompletoLabel }}</b>: {{ user.full_name }}</p>
-                            <p><b>{{ emailLabel }}</b>: {{ user.email }}</p>
-                            <p><b>{{ celularLabel }}</b>: {{ user.cell_phone }}</p>
-                            <p><b>{{ empresaLabel }}</b>: {{ user.company_name }}</p>
-                            <p><b>{{ segmentoLabel }}</b>: {{ user.segmento }}</p>
-                            <p><b>{{ cargoLabel }}</b>: {{ user.cargo_atual}}</p>
-                    
-                    
-                            <p><a href="{% url 'change_password' %}">{{ change_password_text }}</a></p>
-                    
-                    
-                            <!-- <form method="post" action="{% url 'logout' %}">
-                                {% csrf_token %}
-                                <input type="submit" value="{{ LOGOUT_BUTTON_VALUE }}">
-                            </form>
-                     -->
-                            <form method="post" action="{% url 'delete_account' %}">
-                                {% csrf_token %}
-                                <input type="submit" class="red-button" value="{{ DELETE_ACCOUNT_BUTTON_VALUE }}" onclick="return confirm('{{ delte_account_confirm_message }}');">
-                            </form>
-                        </div>
+                        
                     </div>
                 </main>
                 <footer class="py-4 bg-light mt-auto" id="footer">
