@@ -11287,7 +11287,8 @@ body {
 }
 
 .botao-planos:hover {
-  transform: scale(1.04);
+  transform: scale(1.5);
+  color: #FFFFFF;
 }
 
 .botao-planos:active {
@@ -11318,6 +11319,7 @@ outline: none;
 /* Estilos gerais */
 
 .cabecalho-planos {
+  margin-top: 3vh;
   display: flex;
   justify-content: space-between;
 }
@@ -11331,7 +11333,7 @@ outline: none;
   width: 100%;
   height: 1px;
   background-color: #ccc;
-  margin: 10px 0;
+  margin: 10px 0 30px 0;
 }
 
 .pricing_best {
@@ -11353,11 +11355,11 @@ outline: none;
 .plan-popular {
   position: relative;
   cursor: pointer;
-  width: 250px;
+  width: 22%;
   padding: 20px;
   background-color: #f2f2f2;
   border-radius: 5px;
-  border: 4px solid #5C7AD3;
+  /* border: 4px solid #5C7AD3; */
   text-align: center;
   margin: 10px;
   transition: transform 90ms ease-in;
@@ -11365,19 +11367,20 @@ outline: none;
 }
 
 .plan-popular:hover {
-  border: 5px solid #5C7AD3;
   transform: scale(1.05);
+  box-shadow: 0 1px 30px 0 rgba(0,0,0,.2), 0 1px 1px 0 rgba(0,0,0,.14), 0 2px 1px -1px rgba(0,0,0,.12)
 }
 
 .plan-container {
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start;
+  margin-bottom: 3vh;
 }
 
 .plan {
   cursor: pointer;
-  width: 250px;
+  width: 22%;
   padding: 20px;
   background-color: #f2f2f2;
   border-radius: 5px;
@@ -11387,8 +11390,42 @@ outline: none;
   box-shadow: 0 1px 3px 0 rgba(0,0,0,.2), 0 1px 1px 0 rgba(0,0,0,.14), 0 2px 1px -1px rgba(0,0,0,.12)
 }
 
+
+@media screen and (max-width: 768px) {
+  .plan-container {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  
+  .plan {
+    width: 45%;
+    margin-bottom: 1.5rem;
+  }
+  .plan-popular {
+    width: 45%;
+    margin-bottom: 1.5rem;
+  }
+}
+
+/* Estilos para telas menores (celular) */
+@media screen and (max-width: 480px) {
+  .plan {
+    width: 100%;
+  }
+  .plan-popular {
+    width: 100%;
+  }
+}
+
+
 .plan:hover {
   transform: scale(1.05);
+  box-shadow: 0 1px 30px 0 rgba(0,0,0,.2), 0 1px 1px 0 rgba(0,0,0,.14), 0 2px 1px -1px rgba(0,0,0,.12)
+}
+
+.standard-img {
+  width: 150px;
+  height: auto;
 }
 
 .title {
@@ -11404,18 +11441,37 @@ outline: none;
   margin-top: 12px;
 }
 
+.condicao {
+  font-size: 12px;
+}
+
+.resumo {
+  text-align: center;
+  font-size: 16px;
+}
+
 .price {
-  font-size: 36px;
+  font-size: 40px;
   margin-bottom: 10px;
+  font-weight: 700;
+}
+
+.price-pop {
+  font-size: 40px;
+  margin-bottom: 10px;
+  color: #5C7AD3;
+  font-weight: 700;
 }
 
 .features {
-  list-style-type: none;
+  margin-left: 1vw;
+  /* list-style-type: none; */
   padding: 0;
 }
 
 .features li {
   margin-bottom: 5px;
+  text-align: start;
 }
 
 .select-plan {
@@ -11426,10 +11482,13 @@ outline: none;
   color: #fff;
   text-decoration: none;
   border-radius: 5px;
-  /* transition: background-color 0.3s ease; */
+  transition: transform 90ms ease-in;
+  
 }
 
 .select-plan:hover {
-  background-color: #0d8ceb;
+  /* background-color: #0d8ceb; */
+  transform: scale(1.05);
+  color: #FFFFFF;
 }
 
