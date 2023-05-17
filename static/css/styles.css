@@ -11309,3 +11309,127 @@ outline: none;
   color: #FFFFFF80;
   padding: 0;
 }
+
+
+/* planos disponíveis ------------- */
+
+/* box-shadow: 0 1px 3px 0 rgba(0,0,0,.2), 0 1px 1px 0 rgba(0,0,0,.14), 0 2px 1px -1px rgba(0,0,0,.12) */
+
+/* Estilos gerais */
+
+.cabecalho-planos {
+  display: flex;
+  justify-content: space-between;
+}
+
+.doodle-plans {
+  width: 300px;
+  height: auto;
+}
+
+.divider {
+  width: 100%;
+  height: 1px;
+  background-color: #ccc;
+  margin: 10px 0;
+}
+
+.pricing_best {
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-color: #5C7AD3;
+  color: #fff;
+  padding: 5px 10px;
+  border-bottom-right-radius: 5px;
+  font-weight: bold;
+}
+
+.pricing_best-text {
+  margin: 0;
+}
+
+
+.plan-popular {
+  position: relative;
+  cursor: pointer;
+  width: 250px;
+  padding: 20px;
+  background-color: #f2f2f2;
+  border-radius: 5px;
+  border: 4px solid #5C7AD3;
+  text-align: center;
+  margin: 10px;
+  transition: transform 90ms ease-in;
+  box-shadow: 0 1px 3px 0 rgba(0,0,0,.2), 0 1px 1px 0 rgba(0,0,0,.14), 0 2px 1px -1px rgba(0,0,0,.12)
+}
+
+.plan-popular:hover {
+  border: 5px solid #5C7AD3;
+  transform: scale(1.05);
+}
+
+.plan-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.plan {
+  cursor: pointer;
+  width: 250px;
+  padding: 20px;
+  background-color: #f2f2f2;
+  border-radius: 5px;
+  text-align: center;
+  margin: 10px;
+  transition: transform 90ms ease-in;
+  box-shadow: 0 1px 3px 0 rgba(0,0,0,.2), 0 1px 1px 0 rgba(0,0,0,.14), 0 2px 1px -1px rgba(0,0,0,.12)
+}
+
+.plan:hover {
+  transform: scale(1.05);
+}
+
+.title {
+  font-size: 20px;
+  font-weight: bold;
+  margin-top: 2vh;
+}
+
+.moeda {
+  font-size: 22px;
+  vertical-align: top;
+  display: inline-block;
+  margin-top: 12px;
+}
+
+.price {
+  font-size: 36px;
+  margin-bottom: 10px;
+}
+
+.features {
+  list-style-type: none;
+  padding: 0;
+}
+
+.features li {
+  margin-bottom: 5px;
+}
+
+.select-plan {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  background-color: #F58A07;
+  color: #fff;
+  text-decoration: none;
+  border-radius: 5px;
+  /* transition: background-color 0.3s ease; */
+}
+
+.select-plan:hover {
+  background-color: #0d8ceb;
+}
+
