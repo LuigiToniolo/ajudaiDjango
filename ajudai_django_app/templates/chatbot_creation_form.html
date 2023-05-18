@@ -27,9 +27,13 @@
                 <p>{{ form.non_field_errors }}</p>
             </div>
             {% endif %}
+            <p>{{ form.whatsapp_number.label_tag }}</p>
             <p>{{ form.whatsapp_number }}</p>
+            <p>{{ form.whats_app_api_auth_token.label_tag }}</p>
             <p>{{ form.whats_app_api_auth_token }}</p>
+            <p>{{ form.facebook_page_id.label_tag }}</p>
             <p>{{ form.facebook_page_id }}</p>
+            <p>{{ form.aditional_intructions.label_tag }}</p>
             <p>{{ form.aditional_intructions }}</p>
             {% if form.aditional_intructions.errors %}
                 <div class="alert alert-danger">
