@@ -26,6 +26,8 @@ def user_accounts_view(request):
     
     if not request.user.is_authenticated:
         return redirect('login')
+    
+    chatbots = ChatBot.objects.filter(user=user)
 
     context = {
         "tab_title" : 'Ajudaí',
@@ -45,6 +47,9 @@ def user_accounts_view(request):
         'change_password_text' : 'Alterar minha senha',
         'LOGOUT_BUTTON_VALUE' : 'Logout',
         'DELETE_ACCOUNT_BUTTON_VALUE' : 'Deletar Conta',
+        'chatbots_list_title' : 'Meus chatbots ativos',
+        'no_chatbots_text' : 'Você ainda não possui nenhum chatbot ativo. Para começar, clique no botão de criação abaixo!',
+        'chatbots' : chatbots,
     }
 
     return render(
@@ -52,7 +57,6 @@ def user_accounts_view(request):
         "user_accounts.html",  # Path from the 'templates' folder inside the app folder
         context,
     )
-
 
 def login_view(request):
     login_form = LoginForm()
