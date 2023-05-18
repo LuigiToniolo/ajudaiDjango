@@ -32,7 +32,7 @@ SECRET_KEY = env("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
@@ -131,6 +131,9 @@ STATIC_URL = 'static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
 ]
+#PARA PRODUÇÃO:
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+#FIM PARA PRODUÇÃO
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
@@ -140,3 +143,20 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 #PARA DESENVOLVIMENTO:
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+
+
+#HTTPS config PARA AMBIENTE DE PRODUÇÃO. DESATIVAR TUDO COM COMENTÁRIOS PARA RODAR EM SERVER INTERNO E ATIVAR O ÚLTIMO (false)
+
+# *****************************ATIVAR TODOS ABAIXO PARA DEPLOY **************************************************************************************
+#PARA RODAR NO SERVER DE PRODUÇÃO
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True
+SECURE_SSL_REDIRECT = True
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+#PARA RODAR DO SERVIDOR INTERNO:
+# *****************************DESATIVAR PARA DEPLOY **************************************************************************************
+#SECURE_SSL_REDIRECT = False
+
+#END HTTPS CONFIG

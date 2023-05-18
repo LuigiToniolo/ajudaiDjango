@@ -5,6 +5,7 @@ from ajudai_django_app import views
 
 urlpatterns = [
     path('', views.user_accounts_view, name="user_accounts"),
+    path('criacao-chatbot/', views.chatbot_creation_form, name='chatbot_creation_form'),
     path('login/', views.login_view, name='login'),
     path('logout/', views.logout_view, name='logout'),
     path('registrar/', views.register_view, name='register'),
@@ -19,4 +20,5 @@ urlpatterns = [
     path('reset_password_complete/', auth_views.PasswordResetCompleteView.as_view(template_name='reset_password_complete.html'), name='password_reset_complete'),
     path('privacidade/', views.privacy_policy, name='privacidade'),
     path('termos_e_condicoes/', views.terms_and_conditions, name='termos_e_condicoes'),
+    path('whatsapp/webhook/<str:token>/', views.whatsapp_message_webhook, name='whatsapp_webhook'),
 ]
