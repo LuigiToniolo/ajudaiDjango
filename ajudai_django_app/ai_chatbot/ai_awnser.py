@@ -7,7 +7,6 @@ from get_secret_variables import get_secret_var
 openai.api_key = get_secret_var("OPENAI_API_KEY")
 
 def generate_gpt_response(prompt, context, role, aditional_instructions, model_name, model_token_limit):
-    #TODO
     instructions = instruction_builder(aditional_instructions, role)
     token_limit = model_token_limit
 
