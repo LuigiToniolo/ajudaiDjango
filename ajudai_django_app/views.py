@@ -5,7 +5,7 @@ from ajudai_django_app.forms import CustomUserCreationForm, LoginForm
 from ajudai_django_app.models import ChatBot, Conversa, CustomUser
 from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
 from ajudai_django_app.phone_integration.messages import send_response
-from constants import FANTASY_NAME, PASSWORD_FIELD_ID, SUPPORT_EMAIL, USER_NAME_FIELD_ID
+from constants import FANTASY_NAME, GPT3_MODEL_NAME, GPT3_TOKEK_LIMIT, PASSWORD_FIELD_ID, SUPPORT_EMAIL, USER_NAME_FIELD_ID
 from get_secret_variables import get_secret_var
 from .forms import CustomPasswordChangeForm
 from django.contrib import messages
@@ -271,31 +271,18 @@ def whatsapp_message_webhook(request, token):
         company_client_number = incoming_message.get('from', {}).get('number') #telefone da pessoa mandando mensagem para o chatbot
         company_number = incoming_message.get('to', {}).get('number') #telefone do dono do chatbot recebendo a mensagem em seu whatsapp bot
         chatbot= get_object_or_404(ChatBot, whatsapp_number=company_number)
+        aditional_instructions = chatbot.aditional_intructions
         
         # Get or create a conversation for the phone number
         conversation, _ = Conversa.objects.get_or_create(
             company_client_number =company_client_number,
             chatbot=chatbot,
             )
+        role = 'Você é um atendente virtual que auxilia o cliente a fazer o pedido através das informações a seguir.'
+        
+        gpt_response, new_context = generate_gpt_response(incoming_message, conversation, role,  aditional_instructions, GPT3_MODEL_NAME, GPT3_TOKEK_LIMIT)
 
-        # Add the received message to the conversation
-        #TODO TRANSFORM IT IN A METHOD OF THE Conversa MODEL
-        #TODO AQUI, NA VERDADE, SE FOR A PRIMEIRA MENSAGEM, DEVE SER CHAMADA UMA FUNÇÃO QUE CRIA NO CONTEXTO UM PRIMEIRO DICT COM O ROLE SYSTEM E AS INSTRUÇÕS CONTINAS NO OBJETO CHATBOT JÁ IDENTIFICAODO
-        conversation_context = conversation.context
-        conversation_context.append({"role": "user", "content": incoming_message})
-        conversation.context = conversation_context
-        #TODO AQUI DEVE HAVER A ATUALIZAÇÃO TAMBÉM DO NÚMERO DE TOKENS USADOS. USAR FUNÇÃO EM UM ARQUIVO DE ai_chatbot folder que use o tiktokker na contagem dos tokens
-        conversation.save()
-
-        # Generate the GPT response
-        #TODO IMPLEMENT THIS FUNCTION ON ai_awnser.py
-        gpt_response = generate_gpt_response(conversation)
-
-        #TODO TRANSFORM IT IN A METHOD OF THE Conversa MODEL
-        # Add the GPT response to the conversation
-        conversation_context.append({"role": "assistant", "content": gpt_response})
-        conversation.context = conversation_context
-        #TODO AQUI DEVE HAVER A ATUALIZAÇÃO TAMBÉM DO NÚMERO DE TOKENS USADOS. USAR FUNÇÃO EM UM ARQUIVO DE ai_chatbot folder que use o tiktokker na contagem dos tokens
+        conversation.context = new_context
         conversation.save()
 
         #TODO DEVE HAVER A VERIFICAÇÃO SE O PEDIDO FOI ENCERRADO PARA A GERAÇÃO DO RESUMO

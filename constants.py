@@ -20,6 +20,13 @@ MAX_INSTRUCTIONS_RATE_SIZE = 0.95
 MAX_PROMPT_IN_CHARS = int(GPT3_TOKEK_LIMIT * 4)
 MAX_CHAR_INSTRUCTIONS_CHATBOT_FORM = int(GPT3_TOKEK_LIMIT *MAX_INSTRUCTIONS_RATE_SIZE * 4)
 
+AWNSER_WHEN_MESSAGE_IS_OVER_THE_LIMIT = "A sua mensagem está muito grande para ser processada. Por favor, tente falar em menos palavras ou dividir a sua pergunta em mensagens diferentes."
+
+#the gpt chat model does not need to leave space for the awnser
+MIN_TOKEN_LIMIT_RATE_LEFT_TO_AWNSER = 0.0
+
+CHAT_API_GENERAL_ERROR_MESSAGE = 'Me descuple, tive problemas para conseguir obter uma resposta para você. Por favor, tente novamente mais tarde...'
+
 #---------------------------------------------------------------------
 #FORM FIELD LIMITS AND SIZES
 REGISTER_FIELD_STANDART_SIZE_IN_PX=300

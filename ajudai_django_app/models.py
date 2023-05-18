@@ -152,7 +152,7 @@ class Conversa(models.Model):
     date = models.DateField()
     time = models.TimeField(default=timezone.now)
     chatbot = models.ForeignKey(ChatBot, on_delete=models.CASCADE)
-    context = models.JSONField(default=list)
+    context = models.JSONField(default=list) #o default numa conversa recem criado é uma lista vazia
     company_client_number  = models.CharField(max_length=20, unique=True) #numero de quem está mandando a mensagem para o bot (NÃO O NÚMERO DO DONO DO BOT)
     total_tokens_used = models.PositiveIntegerField(
         default=0,
