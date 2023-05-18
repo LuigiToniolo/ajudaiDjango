@@ -283,6 +283,7 @@ def whatsapp_message_webhook(request, token):
         gpt_response, new_context = generate_gpt_response(incoming_message, conversation, role,  aditional_instructions, GPT3_MODEL_NAME, GPT3_TOKEK_LIMIT)
 
         conversation.context = new_context
+        #TODO DEVE HAVER A ATUALIZAÇÃO/CONTAGEM DE TOKENS TOTAIS USANDOS NA CONVERSA
         conversation.save()
 
         #TODO DEVE HAVER A VERIFICAÇÃO SE O PEDIDO FOI ENCERRADO PARA A GERAÇÃO DO RESUMO
