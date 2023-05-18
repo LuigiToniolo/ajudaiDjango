@@ -111,3 +111,7 @@ class ChatBotForm(forms.ModelForm):
     class Meta:
         model = ChatBot
         fields = [ADITIONAL_INTRUCTIONS_FIELD_NAME, 'whatsapp_number', 'whats_app_api_auth_token', 'facebook_page_id' ]
+
+    def clean(self):
+        cleaned_data = super().clean()
+        return cleaned_data

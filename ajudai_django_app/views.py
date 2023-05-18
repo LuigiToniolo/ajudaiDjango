@@ -273,18 +273,18 @@ def chatbot_creation_form(request):
     
     if request.method == 'POST':
         form = ChatBotForm(request.POST)
-
-        instructions = form.cleaned_data[ADITIONAL_INTRUCTIONS_FIELD_NAME]
-        if not instructions_under_the_limits(instructions, GPT3_MODEL_NAME, GPT3_TOKEK_LIMIT):
-            form.add_error(ADITIONAL_INTRUCTIONS_FIELD_NAME, instructions_over_limit_error_messages(GPT3_MODEL_NAME, instructions, GPT3_TOKEK_LIMIT))
-        else:
-            try:
-                chatbot = form.save(commit=False)
-                chatbot.user = request.user
-                chatbot.save()
-                return redirect('user_accounts')
-            except Exception as e:
-                form.add_error(None, f"Ocorreu um erro ao tentar criar o chatbot: {str(e)}")
+        if form.is_valid():
+            instructions = form.cleaned_data[ADITIONAL_INTRUCTIONS_FIELD_NAME]
+            if not instructions_under_the_limits(instructions, GPT3_MODEL_NAME, GPT3_TOKEK_LIMIT):
+                form.add_error(ADITIONAL_INTRUCTIONS_FIELD_NAME, instructions_over_limit_error_messages(GPT3_MODEL_NAME, instructions, GPT3_TOKEK_LIMIT))
+            else:
+                try:
+                    chatbot = form.save(commit=False)
+                    chatbot.user = request.user
+                    chatbot.save()
+                    return redirect('user_accounts')
+                except Exception as e:
+                    form.add_error(None, f"Ocorreu um erro ao tentar criar o chatbot: {str(e)}")
 
     else:
         form = ChatBotForm()
