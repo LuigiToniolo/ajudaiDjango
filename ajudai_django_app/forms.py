@@ -4,7 +4,7 @@ from django.core.exceptions import ValidationError
 from django.contrib.auth.forms import PasswordChangeForm
 
 from ajudai_django_app.models import ChatBot, CustomUser
-from constants import ADITIONAL_INTRUCTIONS_FIELD_ID, ADITIONAL_INTRUCTIONS_FIELD_NAME, ADITIONAL_INTRUCTIONS_FIELD_ROWS, ADITIONAL_INTRUCTIONS_FIELD_SIZE_IN_PX, CELLPHONE_FIELD_SIZE_IN_PX, COMPANY_NAME_FIELD_SIZE_IN_PX, FACEBOOK_PAG_ID_FIELD_SIZE_IN_PX, FULL_NAME_FIELD_SIZE_IN_PX, MAX_CHAR_INSTRUCTIONS_CHATBOT_FORM, PASSWORD_FIELD_ID, REGISTER_EMAIL_FIELD_SIZE_IN_PX, REGISTER_FIELD_STANDART_SIZE_IN_PX, USER_NAME_FIELD_ID, WHATS_APP_TOKEN_FILD_SIZE_IN_PX
+from constants import ADITIONAL_INTRUCTIONS_FIELD_ID, ADITIONAL_INTRUCTIONS_FIELD_NAME, ADITIONAL_INTRUCTIONS_FIELD_ROWS, ADITIONAL_INTRUCTIONS_FIELD_SIZE_IN_PX, CELLPHONE_FIELD_SIZE_IN_PX, CHATBOT_NAME_FIELD_SIZE_IN_PX, COMPANY_NAME_FIELD_SIZE_IN_PX, FACEBOOK_PAG_ID_FIELD_SIZE_IN_PX, FULL_NAME_FIELD_SIZE_IN_PX, MAX_CHAR_INSTRUCTIONS_CHATBOT_FORM, PASSWORD_FIELD_ID, REGISTER_EMAIL_FIELD_SIZE_IN_PX, REGISTER_FIELD_STANDART_SIZE_IN_PX, USER_NAME_FIELD_ID, WHATS_APP_TOKEN_FILD_SIZE_IN_PX
 
 class CustomUserCreationForm(UserCreationForm):
     email = forms.EmailField(
@@ -83,6 +83,10 @@ class CustomPasswordChangeForm(PasswordChangeForm):
     new_password2 = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control'}), label="Confirme a nova senha")
 
 class ChatBotForm(forms.ModelForm):
+    nome_do_chatbot = forms.CharField(
+        label='De um nome de identificação para o chatbot',
+        widget=forms.TextInput(attrs={'style': 'width: {}px;'.format(CHATBOT_NAME_FIELD_SIZE_IN_PX)})
+    )
     aditional_intructions = forms.CharField(
         max_length=MAX_CHAR_INSTRUCTIONS_CHATBOT_FORM, 
         label='Instruçãoes para o Chatbot',
@@ -110,7 +114,7 @@ class ChatBotForm(forms.ModelForm):
     
     class Meta:
         model = ChatBot
-        fields = [ADITIONAL_INTRUCTIONS_FIELD_NAME, 'whatsapp_number', 'whats_app_api_auth_token', 'facebook_page_id' ]
+        fields = [ADITIONAL_INTRUCTIONS_FIELD_NAME, 'nome_do_chatbot', 'whatsapp_number', 'whats_app_api_auth_token', 'facebook_page_id' ]
 
     def clean(self):
         cleaned_data = super().clean()

@@ -129,6 +129,7 @@ class Product(models.Model):
 
 class ChatBot(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, default=1)
+    nome_do_chatbot = models.CharField(max_length=40, default='sem nome')
     aditional_intructions = models.CharField(max_length=MAX_CHAR_INSTRUCTIONS_CHATBOT_FORM, default='')
     whatsapp_number=models.CharField(
         validators=[phone_regex],
@@ -138,8 +139,8 @@ class ChatBot(models.Model):
     facebook_page_id = models.CharField(max_length=120)
 
     def __str__(self):
-        chatot_id = self.id
-        return f"ChatBot {chatot_id}"
+        name = self.nome_do_chatbot
+        return f"ChatBot {name}"
 
 #o uso é considerado como uma conversa inteira finalizada
 class Conversa(models.Model):
