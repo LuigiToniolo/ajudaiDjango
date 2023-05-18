@@ -6,7 +6,7 @@ from django.contrib.auth.models import Group, Permission
 from django.core.validators import RegexValidator
 from django.utils import timezone
 
-from constants import AI_PROVIDER_OPEN_AI, BRL_CURRENCY_SIMBOL, GPT3_MODEL_NAME, MAX_CHAR_INSTRUCTIONS_CHATBOT_FORM
+from constants import AI_PROVIDER_OPEN_AI, BRL_CURRENCY_SIMBOL, GPT3_MODEL_NAME, MAX_CHAR_INSTRUCTIONS_CHATBOT_FORM, STATUS_CONVERSA_EM_ANDAMENTO, STATUS_CONVERSA_FALHA, STATUS_CONVERSA_PEDIDO_REALIZADO
 
 phone_regex = RegexValidator(
     regex=r'^\d{10,11}$',
@@ -148,6 +148,13 @@ class ChatBot(models.Model):
 
 #o uso é considerado como uma conversa inteira finalizada
 class Conversa(models.Model):
+
+    STATUS_CHOICES = (
+        (STATUS_CONVERSA_EM_ANDAMENTO , 'Conversa em andamento'),
+        (STATUS_CONVERSA_PEDIDO_REALIZADO , 'Conversa encerrada com pedido realizado'), # CONVERSA DEVE SER COBRADA
+        (STATUS_CONVERSA_FALHA , 'Conversa encerrada por falha'), # CONVERSA NÃO COBRADA
+        )
+    
     id = models.AutoField(primary_key=True)
     date = models.DateField()
     time = models.TimeField(default=timezone.now)
@@ -165,6 +172,11 @@ class Conversa(models.Model):
         )
     resumo_do_pedido_gerado_com_a_conversa = models.CharField(
         default='',
+        )
+    status_da_conversa = models.CharField(
+        max_length=120,
+        default=STATUS_CONVERSA_EM_ANDAMENTO,
+        choices=STATUS_CHOICES,
         )
     
     def __str__(self):

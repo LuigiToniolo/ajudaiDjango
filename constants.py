@@ -43,4 +43,10 @@ PASSWORD_FIELD_ID = 'password'
 BRL_CURRENCY_SIMBOL = 'BRL'
 
 #---------------------------------------------------------------------
+# MODELS
+STATUS_CONVERSA_EM_ANDAMENTO = 'conversa_em_andamento'
+STATUS_CONVERSA_PEDIDO_REALIZADO = 'conversa_pedido_realizado'
+STATUS_CONVERSA_FALHA = 'conversa_falhou'
+
+#---------------------------------------------------------------------
 #TEXTS
