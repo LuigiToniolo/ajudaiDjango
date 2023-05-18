@@ -17,7 +17,8 @@ def generate_gpt_response(prompt, context, role, aditional_instructions, model_n
     if tokens_prompt_and_instructions > token_limit * (1-MIN_TOKEN_LIMIT_RATE_LEFT_TO_AWNSER):
         awnser = AWNSER_WHEN_MESSAGE_IS_OVER_THE_LIMIT
         context.append({"role": "assistant", "content": awnser})
-        return awnser, context
+        tokens_used  = 0
+        return awnser, context, tokens_used
     
     else:
         #se for a primeira mensagem, nenhma verificação adicional de respeito de limite precisa ser feita
@@ -41,8 +42,11 @@ def generate_gpt_response(prompt, context, role, aditional_instructions, model_n
             )
 
             awnser = completions['choices'][0]['message']['content']
+            context.append({"role": "assistant", "content": awnser})
+            tokens_used = count_tokens(model_name, messages_to_string(context))
         
         except Exception as e:
             awnser = CHAT_API_GENERAL_ERROR_MESSAGE
+            tokens_used = 0
 
-    return awnser, context
+    return awnser, context, tokens_used

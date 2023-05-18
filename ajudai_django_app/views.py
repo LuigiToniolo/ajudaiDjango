@@ -280,10 +280,11 @@ def whatsapp_message_webhook(request, token):
             )
         role = 'Você é um atendente virtual que auxilia o cliente a fazer o pedido através das informações a seguir.'
         
-        gpt_response, new_context = generate_gpt_response(incoming_message, conversation, role,  aditional_instructions, GPT3_MODEL_NAME, GPT3_TOKEK_LIMIT)
+        gpt_response, new_context, tokens_used_on_this_request = generate_gpt_response(incoming_message, conversation, role,  aditional_instructions, GPT3_MODEL_NAME, GPT3_TOKEK_LIMIT)
 
         conversation.context = new_context
-        #TODO DEVE HAVER A ATUALIZAÇÃO/CONTAGEM DE TOKENS TOTAIS USANDOS NA CONVERSA
+        tokens_used_before = conversation.total_tokens_used
+        conversation.total_tokens_used = tokens_used_before + tokens_used_on_this_request
         conversation.save()
 
         #TODO DEVE HAVER A VERIFICAÇÃO SE O PEDIDO FOI ENCERRADO PARA A GERAÇÃO DO RESUMO
