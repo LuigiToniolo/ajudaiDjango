@@ -41,6 +41,7 @@ def generate_gpt_response(prompt, context, role, aditional_instructions, model_n
                 messages=context
             )
 
+            #TODO CONFERIR CONTAGEM DE TOKENS COM REGISTRO OPEN AI
             awnser = completions['choices'][0]['message']['content']
             context.append({"role": "assistant", "content": awnser})
             tokens_used = count_tokens(model_name, messages_to_string(context))

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <title>{{ tab_title }}</title>
+        {% load static %}
+        <link rel="stylesheet" type="text/css" href="{% static 'ajudai_django_app/css/chatbot_creation_form.css' %}" />
+    </head>
+    <body>
+        <div id="menu">
+            <nav>
+              <ul>
+                {% if user and user.username %}
+                  <a href="{% url 'user_accounts' %}">{{ user.username }} (my account)</a><br>
+                {% else %}
+                  <a href="{% url 'login' %}">Log In</a><br>
+                {% endif %}
+              </ul>
+            </nav>
+          </div>
+
+        <h2>{{ page_title }}</h2>
+        <form method="post">
+            {% csrf_token %}
+            {% if form.non_field_errors %}
+            <div class="alert alert-danger">
+                <p>{{ form.non_field_errors }}</p>
+            </div>
+            {% endif %}
+            <p>{{ form.whatsapp_number }}</p>
+            <p>{{ form.whats_app_api_auth_token }}</p>
+            <p>{{ form.facebook_page_id }}</p>
+            <p>{{ form.aditional_intructions }}</p>
+            {% if form.aditional_intructions.errors %}
+                <div class="alert alert-danger">
+                {% for error in form.aditional_intructions.errors %}
+                    <p>{{ error }}</p>
+                {% endfor %}
+                </div>
+            {% endif %}
+            <button type="submit">{{ submit_button_text }}</button>
+        </form>    
+
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+              const textarea = document.getElementById('{{ ADITIONAL_INTRUCTIONS_FIELD_ID }}');
+              textarea.addEventListener('input', autoResize);
+            });
+          
+            function autoResize() {
+              const element = this;
+              const maxHeight = parseInt(element.dataset.maxHeight);
+          
+              element.style.height = 'auto';
+              element.style.height = Math.min(element.scrollHeight, maxHeight) + 'px';
+            }
+        </script>
+    </body>
+
+    

@@ -3,8 +3,8 @@ from django.contrib.auth.forms import UserCreationForm
 from django.core.exceptions import ValidationError
 from django.contrib.auth.forms import PasswordChangeForm
 
-from ajudai_django_app.models import CustomUser
-from constants import CELLPHONE_FIELD_SIZE_IN_PX, COMPANY_NAME_FIELD_SIZE_IN_PX, FULL_NAME_FIELD_SIZE_IN_PX, PASSWORD_FIELD_ID, REGISTER_EMAIL_FIELD_SIZE_IN_PX, REGISTER_FIELD_STANDART_SIZE_IN_PX, USER_NAME_FIELD_ID
+from ajudai_django_app.models import ChatBot, CustomUser
+from constants import ADITIONAL_INTRUCTIONS_FIELD_ID, ADITIONAL_INTRUCTIONS_FIELD_NAME, ADITIONAL_INTRUCTIONS_FIELD_ROWS, ADITIONAL_INTRUCTIONS_FIELD_SIZE_IN_PX, CELLPHONE_FIELD_SIZE_IN_PX, COMPANY_NAME_FIELD_SIZE_IN_PX, FACEBOOK_PAG_ID_FIELD_SIZE_IN_PX, FULL_NAME_FIELD_SIZE_IN_PX, MAX_CHAR_INSTRUCTIONS_CHATBOT_FORM, PASSWORD_FIELD_ID, REGISTER_EMAIL_FIELD_SIZE_IN_PX, REGISTER_FIELD_STANDART_SIZE_IN_PX, USER_NAME_FIELD_ID, WHATS_APP_TOKEN_FILD_SIZE_IN_PX
 
 class CustomUserCreationForm(UserCreationForm):
     email = forms.EmailField(
@@ -81,3 +81,33 @@ class CustomPasswordChangeForm(PasswordChangeForm):
     old_password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control'}), label="Senha atual")
     new_password1 = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control'}), label="Nova senha")
     new_password2 = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control'}), label="Confirme a nova senha")
+
+class ChatBotForm(forms.ModelForm):
+    aditional_intructions = forms.CharField(
+        max_length=MAX_CHAR_INSTRUCTIONS_CHATBOT_FORM, 
+        label='Instruçãoes para o Chatbot',
+        widget=forms.Textarea(
+            attrs={
+                'style': 'width: {}px;'.format(ADITIONAL_INTRUCTIONS_FIELD_SIZE_IN_PX),
+                'rows': ADITIONAL_INTRUCTIONS_FIELD_ROWS ,
+                'id' : ADITIONAL_INTRUCTIONS_FIELD_ID,
+                'data-max-height': '350',
+                }
+            )
+        )
+    whatsapp_number = forms.CharField(
+        label='Número WhatsApp Business',
+        widget=forms.TextInput(attrs={'style': 'width: {}px;'.format(CELLPHONE_FIELD_SIZE_IN_PX)})
+    )
+    whats_app_api_auth_token = forms.CharField(
+        label='Token de Autenticação API do Whatsapp (conforme instruções)',
+        widget=forms.TextInput(attrs={'style': 'width: {}px;'.format(WHATS_APP_TOKEN_FILD_SIZE_IN_PX)})
+    )
+    facebook_page_id = forms.CharField(
+        label='Page ID do Facebook (conforme instruções)',
+        widget=forms.TextInput(attrs={'style': 'width: {}px;'.format(FACEBOOK_PAG_ID_FIELD_SIZE_IN_PX)})
+    )
+    
+    class Meta:
+        model = ChatBot
+        fields = [ADITIONAL_INTRUCTIONS_FIELD_NAME, 'whatsapp_number', 'whats_app_api_auth_token', 'facebook_page_id' ]

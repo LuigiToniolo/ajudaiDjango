@@ -10,7 +10,7 @@ from constants import AI_PROVIDER_OPEN_AI, BRL_CURRENCY_SIMBOL, GPT3_MODEL_NAME,
 
 phone_regex = RegexValidator(
     regex=r'^\d{10,11}$',
-    message="Favor digitar seu telefone da seguinte forma: seu DDD seguido do seu número"
+    message="Favor digitar seu telefone da seguinte forma: seu DDD seguido do seu número, por exemplo: 11987654321"
 )
 
 class CustomUser(AbstractUser):
@@ -113,10 +113,6 @@ class Product(models.Model):
         default='',
         choices=AI_MODEL_CHOICES,
         )
-    capacity_level = models.CharField(
-        max_length=32,
-        default=''
-        )
     free_use_limit_conversations = models.PositiveIntegerField(
         default=0,
         )
@@ -140,7 +136,6 @@ class ChatBot(models.Model):
     )
     whats_app_api_auth_token = models.CharField(max_length=120)
     facebook_page_id = models.CharField(max_length=120)
-    product = models.ForeignKey(Product, on_delete=models.CASCADE,)
 
     def __str__(self):
         chatot_id = self.id

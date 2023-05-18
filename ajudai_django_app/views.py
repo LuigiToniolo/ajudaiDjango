@@ -1,13 +1,14 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpResponseForbidden
 from ajudai_django_app.ai_chatbot.ai_awnser import generate_gpt_response
+from ajudai_django_app.ai_chatbot.ai_tools import instructions_over_limit_error_messages, instructions_under_the_limits
 from ajudai_django_app.forms import CustomUserCreationForm, LoginForm
 from ajudai_django_app.models import ChatBot, Conversa, CustomUser
 from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
 from ajudai_django_app.phone_integration.messages import send_response
-from constants import FANTASY_NAME, GPT3_MODEL_NAME, GPT3_TOKEK_LIMIT, PASSWORD_FIELD_ID, SUPPORT_EMAIL, USER_NAME_FIELD_ID
+from constants import ADITIONAL_INTRUCTIONS_FIELD_ID, ADITIONAL_INTRUCTIONS_FIELD_NAME, FANTASY_NAME, GPT3_MODEL_NAME, GPT3_TOKEK_LIMIT, PASSWORD_FIELD_ID, SUPPORT_EMAIL, USER_NAME_FIELD_ID
 from get_secret_variables import get_secret_var
-from .forms import CustomPasswordChangeForm
+from .forms import ChatBotForm, CustomPasswordChangeForm
 from django.contrib import messages
 from django.urls import reverse
 from django.core.mail import send_mail
@@ -39,6 +40,7 @@ def user_accounts_view(request):
         'empresaLabel' : 'Nome da Empresa',
         'segmentoLabel' : 'Segmento',
         'cargoLabel' : 'Cargo atual',
+        'create_chatbot_button_text' : 'Criar meu Chatbot para Whatsapp',
         'delte_account_confirm_message' : 'Você tem certeza que gostaria de deletar a sua conta? Todas as suas informações serão deletadas!',
         'change_password_text' : 'Alterar minha senha',
         'LOGOUT_BUTTON_VALUE' : 'Logout',
@@ -256,6 +258,52 @@ def database_error(request):
         }
     )
 
+def chatbot_creation_form(request):
+    try:
+        user = CustomUser.getUser(request)
+    except:
+        return redirect('database_error')
+    
+    if not request.user.is_authenticated:
+        return redirect('login')
+    
+    if request.method == 'POST':
+        form = ChatBotForm(request.POST)
+
+        instructions = form.cleaned_data[ADITIONAL_INTRUCTIONS_FIELD_NAME]
+        if not instructions_under_the_limits(instructions, GPT3_MODEL_NAME, GPT3_TOKEK_LIMIT):
+            form.add_error(ADITIONAL_INTRUCTIONS_FIELD_NAME, instructions_over_limit_error_messages(GPT3_MODEL_NAME, instructions, GPT3_TOKEK_LIMIT))
+        else:
+            try:
+                chatbot = form.save(commit=False)
+                chatbot.user = request.user
+                chatbot.save()
+                return redirect('user_accounts')
+            except Exception as e:
+                form.add_error(None, f"Ocorreu um erro ao tentar criar o chatbot: {str(e)}")
+
+    else:
+        form = ChatBotForm()
+
+    context = {
+        "tab_title" : 'Crie seu Chatbot',
+        'user' : user,
+        "meta_desciption" : '',
+        'page_title' : 'Crie seu Chatbot',
+        'form' : form,
+        'submit_button_text' : 'Ativar ChatBot',
+        'chatbot_create_password_label' : 'Create Chatbot Password:',
+        'ADITIONAL_INTRUCTIONS_FIELD_ID' : ADITIONAL_INTRUCTIONS_FIELD_ID,
+    }
+
+    return render(
+        request,
+        "chatbot_creation_form.html",  # Path from the 'templates' folder inside the app folder
+        context,
+    )
+
+
+
 WEBHOOK_TOKEN = get_secret_var('WHATAPP_WEBHOOK_TOKEN')
 
 @csrf_exempt
@@ -270,6 +318,7 @@ def whatsapp_message_webhook(request, token):
         incoming_message = json.loads(request.body)
         company_client_number = incoming_message.get('from', {}).get('number') #telefone da pessoa mandando mensagem para o chatbot
         company_number = incoming_message.get('to', {}).get('number') #telefone do dono do chatbot recebendo a mensagem em seu whatsapp bot
+        #TODO AQUI PODE SER BECESSÁRIO FAZER AJUSTES PARA IDENTICAR O NÚMERO NO FORMATO QUE API PEDE, COMO ADICIONAR UM +55
         chatbot= get_object_or_404(ChatBot, whatsapp_number=company_number)
         aditional_instructions = chatbot.aditional_intructions
         
@@ -287,7 +336,7 @@ def whatsapp_message_webhook(request, token):
         conversation.total_tokens_used = tokens_used_before + tokens_used_on_this_request
         conversation.save()
 
-        #TODO DEVE HAVER A VERIFICAÇÃO SE O PEDIDO FOI ENCERRADO PARA A GERAÇÃO DO RESUMO
+        #TODO DEVE HAVER A VERIFICAÇÃO SE O PEDIDO FOI ENCERRADO PARA A GERAÇÃO DO RESUMO E MUDANÇA DO STATUS DA CONVERSA
 
         # Respond to the WhatsApp message
         send_response(chatbot.facebook_page_id, chatbot.whats_app_api_auth_token, company_client_number, gpt_response)

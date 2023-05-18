@@ -29,6 +29,11 @@
         <p><b>{{ segmentoLabel }}</b>: {{ user.segmento }}</p>
         <p><b>{{ cargoLabel }}</b>: {{ user.cargo_atual}}</p>
 
+        <form action="{% url 'chatbot_creation_form' %}" method="POST">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-primary">{{ create_chatbot_button_text }}</button>
+        </form>
+
 
         <p><a href="{% url 'change_password' %}">{{ change_password_text }}</a></p>
 

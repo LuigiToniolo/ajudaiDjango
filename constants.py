@@ -34,6 +34,11 @@ REGISTER_EMAIL_FIELD_SIZE_IN_PX=400
 FULL_NAME_FIELD_SIZE_IN_PX = 400
 CELLPHONE_FIELD_SIZE_IN_PX = 200
 COMPANY_NAME_FIELD_SIZE_IN_PX = 400
+WHATS_APP_TOKEN_FILD_SIZE_IN_PX = 700
+FACEBOOK_PAG_ID_FIELD_SIZE_IN_PX = 300
+
+ADITIONAL_INTRUCTIONS_FIELD_SIZE_IN_PX = 900
+ADITIONAL_INTRUCTIONS_FIELD_ROWS = 5
 
 #---------------------------------------------------------------------
 #FORM IDS AND NAMES AND VALUES
@@ -41,6 +46,9 @@ USER_NAME_FIELD_ID = 'username'
 PASSWORD_FIELD_ID = 'password'
 
 BRL_CURRENCY_SIMBOL = 'BRL'
+
+ADITIONAL_INTRUCTIONS_FIELD_ID = 'aditional-instructions-textarea'
+ADITIONAL_INTRUCTIONS_FIELD_NAME = 'aditional_intructions'
 
 #---------------------------------------------------------------------
 # MODELS
