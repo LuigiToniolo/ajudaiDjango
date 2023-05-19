@@ -327,37 +327,45 @@ def whatsapp_message_webhook(request):
     
     if request.method == 'POST':   
 
-        incoming_message = json.loads(request.body)
-        company_client_number = incoming_message.get('from', {}).get('number') #telefone da pessoa mandando mensagem para o chatbot
-        company_number_with_DDI = incoming_message.get('to', {}).get('number') #telefone do dono do chatbot recebendo a mensagem em seu whatsapp bot
-        #AQUI, COMO NO BANCO DE DADOS, O WHATSAPP EMPRESARIAL DO CLIENTE É REGISTRADO SEM O DDI (55 PARA BRASIL), ELE É PARA LOCALIZAÇÃO DO CLIENTE NO BANCO DE DADOS
-        company_number = company_number_with_DDI[2:]
-        chatbot= get_object_or_404(ChatBot, whatsapp_number=company_number)
-        aditional_instructions = chatbot.aditional_intructions
+        data = json.loads(request.body)
+        if 'object' in data and 'entry' in data:
+            if data['object'] == 'whatsapp_business_account':
+                try:
+                    for entry in data['entry']:
+                        company_client_number = entry['changes'][0]['value']['messages'][0]['from']
+                        incoming_message = entry['changes'][0]['value']['messages'][0]['text']['body']
+                        company_number_with_DDI =  entry['changes'][0]['value']['metadata']['display_phone_number']
+                        #AQUI, COMO NO BANCO DE DADOS, O WHATSAPP EMPRESARIAL DO CLIENTE É REGISTRADO SEM O DDI (55 PARA BRASIL), ELE É PARA LOCALIZAÇÃO DO CLIENTE NO BANCO DE DADOS
+                        company_number = company_number_with_DDI[2:]
+                        chatbot= get_object_or_404(ChatBot, whatsapp_number=company_number)
+                        aditional_instructions = chatbot.aditional_intructions
+                        # Get or create a conversation for the phone number
+                        conversation, _ = Conversa.objects.get_or_create(
+                            company_client_number =company_client_number,
+                            chatbot=chatbot,
+                            )
+                        role = 'Você é um atendente virtual que auxilia o cliente a fazer o pedido através das informações a seguir.'
         
-        # Get or create a conversation for the phone number
-        conversation, _ = Conversa.objects.get_or_create(
-            company_client_number =company_client_number,
-            chatbot=chatbot,
-            )
-        role = 'Você é um atendente virtual que auxilia o cliente a fazer o pedido através das informações a seguir.'
+                        gpt_response, new_context, tokens_used_on_this_request = generate_gpt_response(incoming_message, conversation, role,  aditional_instructions, GPT3_MODEL_NAME, GPT3_TOKEK_LIMIT)
+
+                        conversa_finalizada, resumo = pedido_confirmado(gpt_response)
+                        if conversa_finalizada:
+                            conversation.status_da_conversa = STATUS_CONVERSA_PEDIDO_REALIZADO
+                            conversation.resumo_do_pedido_gerado_com_a_conversa = resumo
+                            informar_loja_fechamento_pedido(resumo, company_number)
+
+                        conversation.context = new_context
+                        tokens_used_before = conversation.total_tokens_used
+                        conversation.total_tokens_used = tokens_used_before + tokens_used_on_this_request
+                        conversation.save()
+
+                        #chama função que responde o cliente da loja via integência artificial
+                        send_response(chatbot.facebook_page_id, chatbot.whats_app_api_auth_token, company_client_number, gpt_response)
+                    
+                    return HttpResponse('Message received and awnsered', status=200)
+                
+                except:
+                    pass
         
-        gpt_response, new_context, tokens_used_on_this_request = generate_gpt_response(incoming_message, conversation, role,  aditional_instructions, GPT3_MODEL_NAME, GPT3_TOKEK_LIMIT)
-
-        conversa_finalizada, resumo = pedido_confirmado(gpt_response)
-        if conversa_finalizada:
-            conversation.status_da_conversa = STATUS_CONVERSA_PEDIDO_REALIZADO
-            conversation.resumo_do_pedido_gerado_com_a_conversa = resumo
-            informar_loja_fechamento_pedido(resumo, company_number)
-
-        conversation.context = new_context
-        tokens_used_before = conversation.total_tokens_used
-        conversation.total_tokens_used = tokens_used_before + tokens_used_on_this_request
-        conversation.save()
-
-        #chama função que responde o cliente da loja via integência artificial
-        send_response(chatbot.facebook_page_id, chatbot.whats_app_api_auth_token, company_client_number, gpt_response)
-        
-        return HttpResponse('Message received and awnsered', status=200)
     
     return HttpResponse('Invalid request', status=400)
