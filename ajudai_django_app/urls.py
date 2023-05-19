@@ -20,5 +20,5 @@ urlpatterns = [
     path('reset_password_complete/', auth_views.PasswordResetCompleteView.as_view(template_name='reset_password_complete.html'), name='password_reset_complete'),
     path('privacidade/', views.privacy_policy, name='privacidade'),
     path('termos_e_condicoes/', views.terms_and_conditions, name='termos_e_condicoes'),
-    path('whatsapp/webhook/<str:token>/', views.whatsapp_message_webhook, name='whatsapp_webhook'),
+    path('whatsapp/webhook/', views.whatsapp_message_webhook, name='whatsapp_webhook'),
 ]

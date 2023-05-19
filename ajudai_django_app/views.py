@@ -311,14 +311,21 @@ def chatbot_creation_form(request):
 WEBHOOK_TOKEN = get_secret_var('WHATAPP_WEBHOOK_TOKEN')
 
 @csrf_exempt
-def whatsapp_message_webhook(request, token):
-    #TODO DEVE HAVER A CONFIGURAÇÃO DO WEBHOOK E TOKEN CONFORME NO PAINEL DA META
+def whatsapp_message_webhook(request):
+    if request.method == 'GET':    
+        VERIFY_TOKEN = WEBHOOK_TOKEN
+        mode = request.GET['hub.mode']
+        token = request.GET['hub.verify_token']
+        challenge = request.GET['hub.challenge']
 
-    if token != WEBHOOK_TOKEN:
-        return HttpResponseForbidden("Invalid webhook token")
-    
-    if request.method == 'POST':    
+        if mode == 'subscribe' and token == VERIFY_TOKEN:
+            return HttpResponse(challenge, status=200)
+        else:
+            return HttpResponse('error', status=403)
         # Get the incoming message
+    
+    if request.method == 'POST':   
+
         incoming_message = json.loads(request.body)
         company_client_number = incoming_message.get('from', {}).get('number') #telefone da pessoa mandando mensagem para o chatbot
         company_number = incoming_message.get('to', {}).get('number') #telefone do dono do chatbot recebendo a mensagem em seu whatsapp bot
