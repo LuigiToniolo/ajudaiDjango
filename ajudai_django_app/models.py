@@ -135,7 +135,7 @@ class ChatBot(models.Model):
         validators=[phone_regex],
         default='99999999999',
     )
-    whats_app_api_auth_token = models.CharField(max_length=120)
+    whats_app_api_auth_token = models.CharField(max_length=300)
     facebook_page_id = models.CharField(max_length=120)
 
     def __str__(self):
