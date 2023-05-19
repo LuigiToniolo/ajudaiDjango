@@ -43,7 +43,7 @@ def generate_gpt_response(prompt, context, role, aditional_instructions, model_n
 
             awnser = completions['choices'][0]['message']['content']
             context.append({"role": "assistant", "content": awnser})
-            tokens_used = completions.usage
+            tokens_used = completions.usage['total_tokens']
         
         except Exception as e:
             awnser = CHAT_API_GENERAL_ERROR_MESSAGE
