@@ -369,7 +369,7 @@ def whatsapp_message_webhook(request):
                         #chama função que responde o cliente da loja via integência artificial
                         send_response(chatbot.facebook_page_id, chatbot.whats_app_api_auth_token, numero_cliente, gpt_response)
                     
-                    return HttpResponse('Message received and awnsered', status=200)
+                        return HttpResponse('Message received and awnsered', status=200)
                 
                 except:
                     pass
