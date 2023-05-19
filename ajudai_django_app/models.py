@@ -152,7 +152,7 @@ class Conversa(models.Model):
         )
     
     id = models.AutoField(primary_key=True)
-    date = models.DateField()
+    date = models.DateField(default=timezone.now)
     time = models.TimeField(default=timezone.now)
     chatbot = models.ForeignKey(ChatBot, on_delete=models.CASCADE)
     context = models.JSONField(default=list) #o default numa conversa recem criado é uma lista vazia

@@ -7,7 +7,7 @@ from ajudai_django_app.forms import CustomUserCreationForm, LoginForm
 from ajudai_django_app.models import ChatBot, Conversa, CustomUser
 from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
 from ajudai_django_app.phone_integration.messages import send_response
-from constants import ADITIONAL_INTRUCTIONS_FIELD_ID, ADITIONAL_INTRUCTIONS_FIELD_NAME, FANTASY_NAME, GPT3_MODEL_NAME, GPT3_TOKEK_LIMIT, PASSWORD_FIELD_ID, STATUS_CONVERSA_PEDIDO_REALIZADO, SUPPORT_EMAIL, USER_NAME_FIELD_ID
+from constants import ADITIONAL_INTRUCTIONS_FIELD_ID, ADITIONAL_INTRUCTIONS_FIELD_NAME, FANTASY_NAME, GPT3_MODEL_NAME, GPT3_TOKEK_LIMIT, PASSWORD_FIELD_ID, STATUS_CONVERSA_EM_ANDAMENTO, STATUS_CONVERSA_PEDIDO_REALIZADO, SUPPORT_EMAIL, USER_NAME_FIELD_ID
 from get_secret_variables import get_secret_var
 from .forms import ChatBotForm, CustomPasswordChangeForm
 from django.contrib import messages
@@ -332,7 +332,7 @@ def whatsapp_message_webhook(request):
             if data['object'] == 'whatsapp_business_account':
                 try:
                     for entry in data['entry']:
-                        company_client_number = entry['changes'][0]['value']['messages'][0]['from']
+                        numero_cliente = entry['changes'][0]['value']['messages'][0]['from']
                         incoming_message = entry['changes'][0]['value']['messages'][0]['text']['body']
                         company_number_with_DDI =  entry['changes'][0]['value']['metadata']['display_phone_number']
                         #AQUI, COMO NO BANCO DE DADOS, O WHATSAPP EMPRESARIAL DO CLIENTE É REGISTRADO SEM O DDI (55 PARA BRASIL), ELE É PARA LOCALIZAÇÃO DO CLIENTE NO BANCO DE DADOS
@@ -340,9 +340,16 @@ def whatsapp_message_webhook(request):
                         chatbot= get_object_or_404(ChatBot, whatsapp_number=company_number)
                         aditional_instructions = chatbot.aditional_intructions
                         # Get or create a conversation for the phone number
-                        conversation, _ = Conversa.objects.get_or_create(
-                            company_client_number =company_client_number,
-                            chatbot=chatbot,
+                        try:
+                            conversation = Conversa.objects.get(
+                                company_client_number=numero_cliente,
+                                chatbot=chatbot,
+                                status_da_conversa=STATUS_CONVERSA_EM_ANDAMENTO
+                            )
+                        except:
+                            conversation = Conversa.objects.create(
+                                company_client_number=numero_cliente,
+                                chatbot=chatbot,
                             )
                         role = 'Você é um atendente virtual que auxilia o cliente a fazer o pedido através das informações a seguir.'
         
@@ -360,7 +367,7 @@ def whatsapp_message_webhook(request):
                         conversation.save()
 
                         #chama função que responde o cliente da loja via integência artificial
-                        send_response(chatbot.facebook_page_id, chatbot.whats_app_api_auth_token, company_client_number, gpt_response)
+                        send_response(chatbot.facebook_page_id, chatbot.whats_app_api_auth_token, numero_cliente, gpt_response)
                     
                     return HttpResponse('Message received and awnsered', status=200)
                 
