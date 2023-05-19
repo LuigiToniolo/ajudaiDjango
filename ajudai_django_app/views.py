@@ -328,8 +328,9 @@ def whatsapp_message_webhook(request):
 
         incoming_message = json.loads(request.body)
         company_client_number = incoming_message.get('from', {}).get('number') #telefone da pessoa mandando mensagem para o chatbot
-        company_number = incoming_message.get('to', {}).get('number') #telefone do dono do chatbot recebendo a mensagem em seu whatsapp bot
-        #TODO AQUI PODE SER BECESSÁRIO FAZER AJUSTES PARA IDENTICAR O NÚMERO NO FORMATO QUE API PEDE, COMO ADICIONAR UM +55
+        company_number_with_DDI = incoming_message.get('to', {}).get('number') #telefone do dono do chatbot recebendo a mensagem em seu whatsapp bot
+        #AQUI, COMO NO BANCO DE DADOS, O WHATSAPP EMPRESARIAL DO CLIENTE É REGISTRADO SEM O DDI (55 PARA BRASIL), ELE É PARA LOCALIZAÇÃO DO CLIENTE NO BANCO DE DADOS
+        company_number = company_number_with_DDI[2:]
         chatbot= get_object_or_404(ChatBot, whatsapp_number=company_number)
         aditional_instructions = chatbot.aditional_intructions
         
