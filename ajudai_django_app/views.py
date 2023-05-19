@@ -1,12 +1,13 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpResponseForbidden
-from ajudai_django_app.ai_chatbot.ai_awnser import generate_gpt_response
+from ajudai_django_app.ai_chatbot.ai_awnser import generate_gpt_response, pedido_confirmado
 from ajudai_django_app.ai_chatbot.ai_tools import instructions_over_limit_error_messages, instructions_under_the_limits
+from ajudai_django_app.fechamento_de_pedido.procedimento_de_fechamento import informar_loja_fechamento_pedido
 from ajudai_django_app.forms import CustomUserCreationForm, LoginForm
 from ajudai_django_app.models import ChatBot, Conversa, CustomUser
 from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
 from ajudai_django_app.phone_integration.messages import send_response
-from constants import ADITIONAL_INTRUCTIONS_FIELD_ID, ADITIONAL_INTRUCTIONS_FIELD_NAME, FANTASY_NAME, GPT3_MODEL_NAME, GPT3_TOKEK_LIMIT, PASSWORD_FIELD_ID, SUPPORT_EMAIL, USER_NAME_FIELD_ID
+from constants import ADITIONAL_INTRUCTIONS_FIELD_ID, ADITIONAL_INTRUCTIONS_FIELD_NAME, FANTASY_NAME, GPT3_MODEL_NAME, GPT3_TOKEK_LIMIT, PASSWORD_FIELD_ID, STATUS_CONVERSA_PEDIDO_REALIZADO, SUPPORT_EMAIL, USER_NAME_FIELD_ID
 from get_secret_variables import get_secret_var
 from .forms import ChatBotForm, CustomPasswordChangeForm
 from django.contrib import messages
@@ -343,14 +344,18 @@ def whatsapp_message_webhook(request):
         
         gpt_response, new_context, tokens_used_on_this_request = generate_gpt_response(incoming_message, conversation, role,  aditional_instructions, GPT3_MODEL_NAME, GPT3_TOKEK_LIMIT)
 
+        conversa_finalizada, resumo = pedido_confirmado(gpt_response)
+        if conversa_finalizada:
+            conversation.status_da_conversa = STATUS_CONVERSA_PEDIDO_REALIZADO
+            conversation.resumo_do_pedido_gerado_com_a_conversa = resumo
+            informar_loja_fechamento_pedido(resumo, company_number)
+
         conversation.context = new_context
         tokens_used_before = conversation.total_tokens_used
         conversation.total_tokens_used = tokens_used_before + tokens_used_on_this_request
         conversation.save()
 
-        #TODO DEVE HAVER A VERIFICAÇÃO SE O PEDIDO FOI ENCERRADO PARA A GERAÇÃO DO RESUMO E MUDANÇA DO STATUS DA CONVERSA
-
-        # Respond to the WhatsApp message
+        #chama função que responde o cliente da loja via integência artificial
         send_response(chatbot.facebook_page_id, chatbot.whats_app_api_auth_token, company_client_number, gpt_response)
         
         return HttpResponse('Message received and awnsered', status=200)

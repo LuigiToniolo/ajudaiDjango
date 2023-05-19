@@ -41,13 +41,21 @@ def generate_gpt_response(prompt, context, role, aditional_instructions, model_n
                 messages=context
             )
 
-            #TODO CONFERIR CONTAGEM DE TOKENS COM REGISTRO OPEN AI
             awnser = completions['choices'][0]['message']['content']
             context.append({"role": "assistant", "content": awnser})
-            tokens_used = count_tokens(model_name, messages_to_string(context))
+            tokens_used = completions.usage
         
         except Exception as e:
             awnser = CHAT_API_GENERAL_ERROR_MESSAGE
             tokens_used = 0
 
     return awnser, context, tokens_used
+
+def pedido_confirmado(resposta):
+    if "Pedido Confirmado" in resposta:
+        resumo = resposta.split("Pedido Confirmado")[1]
+        resumo = " ".join(resumo.split())
+        return True, resumo
+    
+    else: 
+        return False, ''
