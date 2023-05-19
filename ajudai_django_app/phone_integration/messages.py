@@ -3,7 +3,6 @@ import requests
 
 
 def send_response(page_id, auth_token, to_number, message_text):
-    #TODO REVER ESSE CÓDIGO COM A DOCUMENTAÇÃO DO META WHATSAPP API
     graph_api_version = "v16.0"
     endpoint = f"https://graph.facebook.com/{graph_api_version}/{page_id}/messages"
 
