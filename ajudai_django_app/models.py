@@ -157,7 +157,7 @@ class Conversa(models.Model):
     # o set null abaixo proteje a conversa em caso do cliente deletar o chatbot, dado que a conversa é usada para cobrança
     chatbot = models.ForeignKey(ChatBot, on_delete=models.SET_NULL, null=True)
     context = models.JSONField(default=list) #o default numa conversa recem criado é uma lista vazia
-    company_client_number  = models.CharField(max_length=20, unique=True) #numero de quem está mandando a mensagem para o bot (NÃO O NÚMERO DO DONO DO BOT)
+    company_client_number  = models.CharField(max_length=20) #numero de quem está mandando a mensagem para o bot (NÃO O NÚMERO DO DONO DO BOT)
     total_tokens_used = models.PositiveIntegerField(
         default=0,
         )
@@ -174,8 +174,8 @@ class Conversa(models.Model):
         )
     
     def __str__(self):
-        usage_id = self.id
-        return f"Conversa n° {usage_id}"
+        conversa_id = self.id
+        return f"Conversa n° {conversa_id} - com o número: {self.company_client_number} - status: {self.status_da_conversa}"
     
 class Pedido(models.Model):
     STATUS_CHOICES = (
