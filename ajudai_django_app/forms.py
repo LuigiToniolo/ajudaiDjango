@@ -89,7 +89,7 @@ class ChatBotForm(forms.ModelForm):
     )
     aditional_intructions = forms.CharField(
         max_length=MAX_CHAR_INSTRUCTIONS_CHATBOT_FORM, 
-        label='Instruçãoes para o Chatbot',
+        label='Instruções para o Chatbot',
         widget=forms.Textarea(
             attrs={
                 'style': 'width: {}px;'.format(ADITIONAL_INTRUCTIONS_FIELD_SIZE_IN_PX),
