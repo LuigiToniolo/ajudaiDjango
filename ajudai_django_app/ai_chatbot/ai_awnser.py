@@ -54,8 +54,12 @@ def generate_gpt_response(prompt, context, role, aditional_instructions, model_n
 def pedido_confirmado(resposta):
     if "Pedido Confirmado" in resposta:
         resumo = resposta.split("Pedido Confirmado")[1]
-        resumo = " ".join(resumo.split())
-        return True, resumo
-    
+    elif "Pedido confirmado" in resposta:
+        resumo = resposta.split("Pedido confirmado")[1]
+    elif "pedido confirmado" in resposta:
+        resumo = resposta.split("pedido confirmado")[1]
     else: 
         return False, ''
+    
+    resumo = " ".join(resumo.split())
+    return True, resumo
