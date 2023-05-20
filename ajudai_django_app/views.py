@@ -59,6 +59,45 @@ def user_accounts_view(request):
         context,
     )
 
+def chatbot_edit_view(request, chatbot_id):
+    try:
+        user = CustomUser.getUser(request)
+    except:
+        return redirect('database_error')
+    
+    if not request.user.is_authenticated:
+        return redirect('login')
+    
+    chatbot = get_object_or_404(ChatBot, id=chatbot_id)
+
+    if request.user != chatbot.user:
+        return redirect('login')
+
+    if request.method == 'POST':
+        form = ChatBotForm(request.POST, instance=chatbot)
+
+        if form.is_valid():
+            form.save()
+            return redirect('user_accounts')
+    else:
+        form = ChatBotForm(instance=chatbot)
+
+    context = {
+        "tab_title" : 'Ajudaí',
+        'chatbot': chatbot,
+        'form': form,
+        "meta_desciption" : '',
+        'user' : user,
+        'page_title' : 'Edite seu Chatbot',
+        'submit_edit_chatbot_text' : 'Salvar as alterações',
+    }
+
+    return render(
+        request,
+        "chatbot_edit.html",  # You need to create this template
+        context,
+    )
+
 def login_view(request):
     login_form = LoginForm()
     context = {

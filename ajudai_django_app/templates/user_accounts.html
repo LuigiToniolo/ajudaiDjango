@@ -31,11 +31,11 @@
         
         <h2>{{ chatbots_list_title }}</h2>
         <ul>
-        {% for chatbot in chatbots %}
-            <li>{{ chatbot }}</li>
-        {% empty %}
+          {% for chatbot in chatbots %}
+            <li><a href="{% url 'chatbot_edit' chatbot.id %}">{{ chatbot }}</a></li>
+          {% empty %}
             <li>{{ no_chatbots_text }}</li>
-        {% endfor %}
+          {% endfor %}
         </ul>
 
         <form action="{% url 'chatbot_creation_form' %}" method="POST">

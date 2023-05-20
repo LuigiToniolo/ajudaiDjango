@@ -6,6 +6,7 @@ from ajudai_django_app import views
 urlpatterns = [
     path('', views.user_accounts_view, name="user_accounts"),
     path('criacao-chatbot/', views.chatbot_creation_form, name='chatbot_creation_form'),
+    path('editar-chatbot/<int:chatbot_id>/', views.chatbot_edit_view, name='chatbot_edit'),
     path('login/', views.login_view, name='login'),
     path('logout/', views.logout_view, name='logout'),
     path('registrar/', views.register_view, name='register'),
