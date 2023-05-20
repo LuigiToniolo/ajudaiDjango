@@ -100,13 +100,6 @@ def chatbot_edit_view(request, chatbot_id):
     )
 
 def chatbot_delete_view(request, chatbot_id):
-    try:
-        user = CustomUser.getUser(request)
-    except:
-        return redirect('database_error')
-    
-    if not request.user.is_authenticated:
-        return redirect('login')
     
     chatbot = get_object_or_404(ChatBot, id=chatbot_id)
 
@@ -116,23 +109,8 @@ def chatbot_delete_view(request, chatbot_id):
     if request.method == 'POST':
         chatbot.delete()
         return redirect('user_accounts')
-
-    context = {
-        "tab_title" : 'Deletar Chatbot',
-        'chatbot': chatbot,
-        "meta_desciption" : '',
-        'user' : user,
-        'page_title' : 'Deletar Chatbot',
-        'mensagem_aviso_confirmacao_deletar_pt_1' : 'Você tem certeza que deseja deletar o: ',
-        'mensagem_aviso_confirmacao_deletar_pt_2' : 'Os referentes a esse chatbot serão apagados para sempre',
-        'submit_delete_chatbot_text' : 'Deletar o Chatbot',
-    }
-
-    return render(
-        request,
-        "chatbot_delete_confirm.html",  # You need to create this template
-        context,
-    )
+    
+    return redirect('user_accounts')
 
 def login_view(request):
     login_form = LoginForm()
