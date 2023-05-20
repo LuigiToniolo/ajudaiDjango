@@ -57,5 +57,9 @@ STATUS_CONVERSA_EM_ANDAMENTO = 'conversa_em_andamento'
 STATUS_CONVERSA_PEDIDO_REALIZADO = 'conversa_pedido_realizado'
 STATUS_CONVERSA_FALHA = 'conversa_falhou'
 
+STATUS_PEDIDO_PENDENTE_DE_ENTREGA = 'pendente_de_entrega'
+STATUS_PEDIDO_ENTREGUE = 'entregue'
+STATUS_PEDIDO_CANCELADO = 'cancelado'
+
 #---------------------------------------------------------------------
 #TEXTS

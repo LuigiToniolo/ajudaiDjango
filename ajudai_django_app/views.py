@@ -4,7 +4,7 @@ from ajudai_django_app.ai_chatbot.ai_awnser import generate_gpt_response, pedido
 from ajudai_django_app.ai_chatbot.ai_tools import instructions_over_limit_error_messages, instructions_under_the_limits
 from ajudai_django_app.fechamento_de_pedido.procedimento_de_fechamento import informar_loja_fechamento_pedido
 from ajudai_django_app.forms import CustomUserCreationForm, LoginForm
-from ajudai_django_app.models import ChatBot, Conversa, CustomUser
+from ajudai_django_app.models import ChatBot, Conversa, CustomUser, Pedido
 from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
 from ajudai_django_app.phone_integration.messages import send_response
 from constants import ADITIONAL_INTRUCTIONS_FIELD_ID, ADITIONAL_INTRUCTIONS_FIELD_NAME, FANTASY_NAME, GPT3_MODEL_NAME, GPT3_TOKEK_LIMIT, PASSWORD_FIELD_ID, STATUS_CONVERSA_EM_ANDAMENTO, STATUS_CONVERSA_PEDIDO_REALIZADO, SUPPORT_EMAIL, USER_NAME_FIELD_ID
@@ -49,6 +49,7 @@ def user_accounts_view(request):
         'LOGOUT_BUTTON_VALUE' : 'Logout',
         'DELETE_ACCOUNT_BUTTON_VALUE' : 'Deletar Conta',
         'chatbots_list_title' : 'Meus chatbots ativos',
+        'link_pedidos_text' : 'Ver pedidos feitos através dos chatbot(s)',
         'no_chatbots_text' : 'Você ainda não possui nenhum chatbot ativo. Para começar, clique no botão de criação abaixo!',
         'chatbots' : chatbots,
     }
@@ -111,6 +112,67 @@ def chatbot_delete_view(request, chatbot_id):
         return redirect('user_accounts')
     
     return redirect('user_accounts')
+
+def pedidos_do_estabelecimento(request):
+    try:
+        user = CustomUser.getUser(request)
+    except:
+        return redirect('database_error')
+    
+    if not request.user.is_authenticated:
+        return redirect('login')
+    
+    pedidos = Pedido.objects.filter(user=user)
+
+    context = {
+        "tab_title" : 'Pedidos',
+        "meta_desciption" : '',
+        'page_title' : 'Pedidos',
+        'texto_link_para_resumo_pedido' : 'Veja o Resumo do Pedido',
+        'user' : user,
+        'pedidos' : pedidos,
+    }
+
+    return render(
+        request,
+        "pedidos_do_estabelecimento.html",  # You need to create this template
+        context,
+    )
+
+def resumo_pedido(request, pedido_id):
+    try:
+        user = CustomUser.getUser(request)
+    except:
+        return redirect('database_error')
+    
+    if not request.user.is_authenticated:
+        return redirect('login')
+    
+    pedido = get_object_or_404(Pedido, id=pedido_id)
+    conversa = pedido.conversa
+    numero_cliente_pedido = conversa.company_client_number
+
+    if request.user != pedido.user:
+        return redirect('login')
+
+    context = {
+        "tab_title" : 'Resumo do Pedido',
+        'pedido': pedido,
+        "meta_desciption" : '',
+        'user' : user,
+        'page_title' : 'Resumo do Pedido',
+        'label_status_pedido' : 'Status do Pedido',
+        'label_resumo_pedido' : 'Resumo do Pedido',
+        'label_numero_cliente_pedido' : 'Número Whatsapp do Cliente',
+        'numero_cliente_pedido' : numero_cliente_pedido,
+    }
+
+    return render(
+        request,
+        "resumo_pedido.html",  # You need to create this template
+        context,
+    )
+  
 
 def login_view(request):
     login_form = LoginForm()
@@ -409,10 +471,15 @@ def whatsapp_message_webhook(request):
             
                             gpt_response, new_context, tokens_used_on_this_request = generate_gpt_response(incoming_message, conversation.context, role,  aditional_instructions, GPT3_MODEL_NAME, GPT3_TOKEK_LIMIT)
 
-                            conversa_finalizada, resumo = pedido_confirmado(gpt_response)
-                            if conversa_finalizada:
+                            conversa_finalizada_com_pedido, resumo = pedido_confirmado(gpt_response)
+                            if conversa_finalizada_com_pedido:
                                 conversation.status_da_conversa = STATUS_CONVERSA_PEDIDO_REALIZADO
-                                conversation.resumo_do_pedido_gerado_com_a_conversa = resumo
+                                user=chatbot.user
+                                pedido = Pedido.objects.create(
+                                    user=user,
+                                    conversa=conversation,
+                                    resumo_do_pedido = resumo,
+                                )
                                 informar_loja_fechamento_pedido(resumo, company_number)
 
                             conversation.context = new_context

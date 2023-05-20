@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <title>{{ tab_title }}</title>
+        {% load static %}
+        <link rel="stylesheet" type="text/css" href="{% static 'ajudai_django_app/css/pedidos_do_estabelecimento.css' %}" />
+    </head>
+    <body>
+        <div id="menu">
+            <nav>
+              <ul>
+                {% if user and user.username %}
+                  <a href="{% url 'user_accounts' %}">{{ user.username }} (my account)</a><br>
+                {% else %}
+                  <a href="{% url 'login' %}">Log In</a><br>
+                {% endif %}
+              </ul>
+            </nav>
+          </div>
+
+        <h1>{{ page_title }}</h1>
+        <ul>
+          {% for pedido in pedidos %}
+            <li>{{ pedido }} - <a href="{% url 'resumo_pedido' pedido.id %}">{{ texto_link_para_resumo_pedido }}</a></li>
+          {% empty %}
+            <li>{{ sem_pedidos_text }}</li>
+          {% endfor %}
+        </ul>
+    </body>
+</html>

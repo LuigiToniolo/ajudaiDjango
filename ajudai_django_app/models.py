@@ -6,7 +6,7 @@ from django.contrib.auth.models import Group, Permission
 from django.core.validators import RegexValidator
 from django.utils import timezone
 
-from constants import AI_PROVIDER_OPEN_AI, BRL_CURRENCY_SIMBOL, GPT3_MODEL_NAME, MAX_CHAR_INSTRUCTIONS_CHATBOT_FORM, STATUS_CONVERSA_EM_ANDAMENTO, STATUS_CONVERSA_FALHA, STATUS_CONVERSA_PEDIDO_REALIZADO
+from constants import AI_PROVIDER_OPEN_AI, BRL_CURRENCY_SIMBOL, GPT3_MODEL_NAME, MAX_CHAR_INSTRUCTIONS_CHATBOT_FORM, STATUS_CONVERSA_EM_ANDAMENTO, STATUS_CONVERSA_FALHA, STATUS_CONVERSA_PEDIDO_REALIZADO, STATUS_PEDIDO_CANCELADO, STATUS_PEDIDO_ENTREGUE, STATUS_PEDIDO_PENDENTE_DE_ENTREGA
 
 phone_regex = RegexValidator(
     regex=r'^\d{10,11}$',
@@ -167,9 +167,6 @@ class Conversa(models.Model):
     numero_do_pedido_gerado_com_a_conversa = models.PositiveIntegerField(
         default=0,
         )
-    resumo_do_pedido_gerado_com_a_conversa = models.CharField(
-        default='',
-        )
     status_da_conversa = models.CharField(
         max_length=120,
         default=STATUS_CONVERSA_EM_ANDAMENTO,
@@ -179,6 +176,28 @@ class Conversa(models.Model):
     def __str__(self):
         usage_id = self.id
         return f"Conversa n° {usage_id}"
+    
+class Pedido(models.Model):
+    STATUS_CHOICES = (
+        (STATUS_PEDIDO_PENDENTE_DE_ENTREGA , 'Pendente de Entrega'),
+        (STATUS_PEDIDO_ENTREGUE , 'Pedido Entregue'),
+        (STATUS_PEDIDO_CANCELADO , 'Pedido Cancelado'),
+        )
+    
+
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    conversa = models.ForeignKey(Conversa, on_delete=models.SET_NULL, null=True)
+    status_do_pedido = models.CharField(
+        max_length=120,
+        default=STATUS_PEDIDO_PENDENTE_DE_ENTREGA,
+        choices=STATUS_CHOICES,
+        )
+    resumo_do_pedido = models.CharField(
+        default='',
+        )
+
+    def __str__(self):
+        return f"Pedido número {self.id}. Status: {self.status_do_pedido}"
 
 
 
