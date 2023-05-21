@@ -9,7 +9,7 @@ from django.contrib.auth import authenticate, login, logout, update_session_auth
 from ajudai_django_app.phone_integration.messages import send_response
 from constants import ADITIONAL_INTRUCTIONS_FIELD_ID, ADITIONAL_INTRUCTIONS_FIELD_NAME, FANTASY_NAME, GPT3_MODEL_NAME, GPT3_TOKEK_LIMIT, PASSWORD_FIELD_ID, STATUS_CONVERSA_EM_ANDAMENTO, STATUS_CONVERSA_PEDIDO_REALIZADO, SUPPORT_EMAIL, USER_NAME_FIELD_ID
 from get_secret_variables import get_secret_var
-from .forms import ChatBotForm, CustomPasswordChangeForm
+from .forms import ChatBotForm, CustomPasswordChangeForm, MessageForm
 from django.contrib import messages
 from django.urls import reverse
 from django.core.mail import send_mail
@@ -52,6 +52,7 @@ def user_accounts_view(request):
         'link_pedidos_text' : 'Ver pedidos feitos através dos chatbot(s)',
         'no_chatbots_text' : 'Você ainda não possui nenhum chatbot ativo. Para começar, clique no botão de criação abaixo!',
         'chatbots' : chatbots,
+        'link_chat_text' : 'Minhas conversas',
     }
 
     return render(
@@ -59,6 +60,76 @@ def user_accounts_view(request):
         "user_accounts.html",  # Path from the 'templates' folder inside the app folder
         context,
     )
+
+def lista_conversas(request):
+    try:
+        user = CustomUser.getUser(request)
+    except:
+        return redirect('database_error')
+    
+    if not request.user.is_authenticated:
+        return redirect('login')
+    
+    conversas = Conversa.objects.filter(user=user)
+
+    context = {
+        "tab_title" : 'Ajudaí - Minhas Conversas',
+        "meta_desciption" : '',
+        'user' : user,
+        'conversas_list_title' : 'Minhas conversas:',
+        'conversas' : conversas,
+        'no_conversas_text' : 'Você ainda não recebeu mensagens',
+    }
+    return render(
+        request,
+        "lista_conversas.html",  # Path from the 'templates' folder inside the app folder
+        context,
+    )
+
+def chat_online(request, conversa_id):
+    try:
+        user = CustomUser.getUser(request)
+    except:
+        return redirect('database_error')
+    
+    if not request.user.is_authenticated:
+        return redirect('login')
+    
+    conversa = get_object_or_404(Conversa, id=conversa_id)
+    chatbot = conversa.chatbot
+
+    if request.user != chatbot.user:
+        return redirect('login')
+    
+    if request.method == 'POST':
+        form = MessageForm(request.POST)
+        if form.is_valid():
+            new_message = form.cleaned_data['message']
+            context = conversa.context
+            context.append({"role": "assistant", "content": new_message})
+            conversa.context = context
+            conversa.save()
+            send_response(chatbot.facebook_page_id, chatbot.whats_app_api_auth_token, conversa.company_client_number, new_message)
+            return redirect('chat_online', conversa_id=conversa.id)
+        
+    else:
+        form = MessageForm()
+        context = {
+            "tab_title" : 'Ajudaí - Chat Online',
+            "meta_desciption" : '',
+            'user' : user,
+            'chat_title' : 'Chat com ' + conversa.company_client_number,
+            'conversa' : conversa,
+            'no_conversas_text' : 'Você ainda não recebeu mensagens',
+            'form' : form,
+            'submit_message_text' : 'Enviar',
+        }
+        return render(
+            request,
+            "chat_online.html",  # Path from the 'templates' folder inside the app folder
+            context,
+        )
+
 
 def chatbot_edit_view(request, chatbot_id):
     try:

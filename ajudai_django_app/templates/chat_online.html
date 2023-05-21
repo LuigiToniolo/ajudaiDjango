@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <title>{{ tab_title }}</title>
+        {% load static %}
+        <link rel="stylesheet" type="text/css" href="{% static 'ajudai_django_app/css/chat_online.css' %}" />
+    </head>
+    <body>
+        <div id="menu">
+            <nav>
+              <ul>
+                {% if user and user.username %}
+                  <a href="{% url 'user_accounts' %}">{{ user.username }} (my account)</a><br>
+                {% else %}
+                  <a href="{% url 'login' %}">Log In</a><br>
+                {% endif %}
+              </ul>
+            </nav>
+        </div>
+
+        <h2>{{ chat_title }}</h2>
+        <ul>
+          {% for message in conversa.context %}
+            {% if not forloop.first %}
+                {% if message.role == "user" %}
+                    <strong>Cliente ({{ conversa.company_client_number }}): </strong><span>{{ message.content }}</span>
+                {% elif message.role == "assistant" %}
+                    <strong>Chatbot ou Você: </strong><span>{{ message.content }}</span>
+                {% endif %}
+            {% endif %}
+          {% endfor %}
+        </ul>
+
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">{{ submit_message_text }}</button>
+        </form>
+    </body>
+</html>

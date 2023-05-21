@@ -119,3 +119,6 @@ class ChatBotForm(forms.ModelForm):
     def clean(self):
         cleaned_data = super().clean()
         return cleaned_data
+    
+class MessageForm(forms.Form):
+    message = forms.CharField(widget=forms.Textarea)

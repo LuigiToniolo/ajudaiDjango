@@ -5,7 +5,9 @@ from ajudai_django_app import views
 
 urlpatterns = [
     path('', views.user_accounts_view, name="user_accounts"),
+    path('minhas-conversas/', views.lista_conversas, name='lista_conversas'),
     path('criacao-chatbot/', views.chatbot_creation_form, name='chatbot_creation_form'),
+    path('chat-online/<int:conversa_id>/', views.chat_online, name='chat_online'),
     path('editar-chatbot/<int:chatbot_id>/', views.chatbot_edit_view, name='chatbot_edit'),
     path('deletar-chatbot/<int:chatbot_id>/', views.chatbot_delete_view, name='chatbot_delete'),
     path('pedidos-do-estabelecimento/', views.pedidos_do_estabelecimento, name='pedidos_do_estabelecimento'),
