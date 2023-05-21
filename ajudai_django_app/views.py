@@ -70,7 +70,8 @@ def lista_conversas(request):
     if not request.user.is_authenticated:
         return redirect('login')
     
-    conversas = Conversa.objects.filter(user=user)
+    chatbots = ChatBot.objects.filter(user=user)
+    conversas = Conversa.objects.filter(chatbot__in=chatbots)
 
     context = {
         "tab_title" : 'Ajudaí - Minhas Conversas',
