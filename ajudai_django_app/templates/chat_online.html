@@ -24,9 +24,9 @@
           {% for message in conversa.context %}
             {% if not forloop.first %}
                 {% if message.role == "user" %}
-                    <strong>Cliente ({{ conversa.company_client_number }}): </strong><span>{{ message.content }}</span>
+                   <p><strong>Cliente ({{ conversa.company_client_number }}): </strong><span>{{ message.content }}</span> </p> 
                 {% elif message.role == "assistant" %}
-                    <strong>Chatbot ou Você: </strong><span>{{ message.content }}</span>
+                    <p><strong>Chatbot ou Você: </strong><span>{{ message.content }}</span> </p>
                 {% endif %}
             {% endif %}
           {% endfor %}
