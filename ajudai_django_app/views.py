@@ -566,10 +566,10 @@ def whatsapp_message_webhook(request):
                         else:
                             return HttpResponse('Message received but not processed', status=200)
                 except:
-                    pass
+                    return HttpResponse('Message received but not processed', status=200)
             else: 
                 return HttpResponse('Message received but not processed', status=200)
         else:
             return HttpResponse('Message received but not processed', status=200)
         
-    return HttpResponse('Invalid request', status=400)
+    return HttpResponse('Received invalid request', status=400)
