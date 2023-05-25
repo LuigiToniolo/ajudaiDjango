@@ -26,7 +26,9 @@ AWNSER_WHEN_MESSAGE_IS_OVER_THE_LIMIT = "A sua mensagem está muito grande para 
 MIN_TOKEN_LIMIT_RATE_LEFT_TO_AWNSER = 0.0
 
 CHAT_API_GENERAL_ERROR_MESSAGE = 'Me descuple, tive problemas para conseguir obter uma resposta para você. Por favor, tente novamente mais tarde...'
+CHAT_API_MESSAGE_AND_AWNSER_OVERLIMT_EVEN_TRYING_TO_SHORT = 'Desulpe, a resposta que você que quer ocuparia um espaço de maior do que sou capaz de processar. Por favor, pergunte algo mais específico.'
 
+TOKEN_LIMIT_MARGIN = 0.08
 #---------------------------------------------------------------------
 #FORM FIELD LIMITS AND SIZES
 REGISTER_FIELD_STANDART_SIZE_IN_PX=300

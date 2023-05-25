@@ -18,6 +18,7 @@ from django.contrib.auth import get_user_model
 from django.views.decorators.csrf import csrf_exempt
 import json
 from django.shortcuts import get_object_or_404
+from django_q.tasks import async_task
 
 def user_accounts_view(request):
     try:
@@ -513,9 +514,15 @@ def whatsapp_message_webhook(request):
         # Get the incoming message
     
     if request.method == 'POST':   
-
         data = json.loads(request.body)
-        if 'object' in data and 'entry' in data:
+        async_task(process_message, data)
+        return HttpResponse('Message received and will be processed', status=200)
+        
+        
+    return HttpResponse('Received invalid request', status=200)
+
+def process_message(data):
+    if 'object' in data and 'entry' in data:
             if data['object'] == 'whatsapp_business_account':
                 try:
                     for entry in data['entry']:
@@ -539,9 +546,13 @@ def whatsapp_message_webhook(request):
                                     company_client_number=numero_cliente,
                                     chatbot=chatbot,
                                 )
-                            role = 'Você é um atendente virtual que auxilia o cliente a fazer o pedido através das informações a seguir.'
-            
-                            gpt_response, new_context, tokens_used_on_this_request = generate_gpt_response(incoming_message, conversation.context, role,  aditional_instructions, GPT3_MODEL_NAME, GPT3_TOKEK_LIMIT)
+                            role = ''
+
+                            try:
+                                gpt_response, new_context, tokens_used_on_this_request = generate_gpt_response(incoming_message, conversation.context, role,  aditional_instructions, GPT3_MODEL_NAME, GPT3_TOKEK_LIMIT)
+                            except Exception as e:
+                                print ('Erro ao chamar função de resposta IA: ', e)
+                                return
 
                             conversa_finalizada_com_pedido, resumo = pedido_confirmado(gpt_response)
                             if conversa_finalizada_com_pedido:
@@ -562,14 +573,12 @@ def whatsapp_message_webhook(request):
                             #chama função que responde o cliente da loja via integência artificial
                             send_response(chatbot.facebook_page_id, chatbot.whats_app_api_auth_token, numero_cliente, gpt_response)
                         
-                            return HttpResponse('Message received and awnsered', status=200)
+                            return
                         else:
-                            return HttpResponse('Message received but not processed', status=200)
+                            return
                 except:
-                    return HttpResponse('Message received but not processed', status=200)
+                    return
             else: 
-                return HttpResponse('Message received but not processed', status=200)
-        else:
-            return HttpResponse('Message received but not processed', status=200)
-        
-    return HttpResponse('Received invalid request', status=400)
+                return
+
+    return

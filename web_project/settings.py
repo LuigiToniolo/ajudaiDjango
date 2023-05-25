@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     MAIN_APP_NAME,
+    'django_q',
 ]
 
 MIDDLEWARE = [
@@ -159,3 +160,15 @@ SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 #SECURE_SSL_REDIRECT = False
 
 #END HTTPS CONFIG
+
+
+# DJANGO - Q config
+Q_CLUSTER = {
+    'name': 'DjangORM',
+    'workers': 4,
+    'timeout': 90,
+    'retry': 120,
+    'queue_limit': 50,
+    'bulk': 10,
+    'orm': 'default',  # Use Django's ORM + database as the broker
+}
