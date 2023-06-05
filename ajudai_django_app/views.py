@@ -20,6 +20,22 @@ import json
 from django.shortcuts import get_object_or_404
 from django_q.tasks import async_task
 
+def welcome_view(request):
+    try:
+        user = CustomUser.getUser(request)
+    except:
+        return redirect('database_error')
+    
+    if not request.user.is_authenticated:
+        return redirect('login')
+    
+    context = {
+        "tab_title" : 'Bem Vindo ao Ajudaí',
+        'user' : user,
+    }
+
+    return render(request, 'welcome.html', context)
+
 def user_accounts_view(request):
     try:
         user = CustomUser.getUser(request)
@@ -29,8 +45,6 @@ def user_accounts_view(request):
     if not request.user.is_authenticated:
         return redirect('login')
     
-    chatbots = ChatBot.objects.filter(user=user)
-
     context = {
         "tab_title" : 'Ajudaí',
         "meta_desciption" : '',
@@ -49,11 +63,6 @@ def user_accounts_view(request):
         'change_password_text' : 'Alterar minha senha',
         'LOGOUT_BUTTON_VALUE' : 'Logout',
         'DELETE_ACCOUNT_BUTTON_VALUE' : 'Deletar Conta',
-        'chatbots_list_title' : 'Meus chatbots ativos',
-        'link_pedidos_text' : 'Ver pedidos feitos através dos chatbot(s)',
-        'no_chatbots_text' : 'Você ainda não possui nenhum chatbot ativo. Para começar, clique no botão de criação abaixo!',
-        'chatbots' : chatbots,
-        'link_chat_text' : 'Minhas conversas',
     }
 
     return render(
@@ -62,7 +71,39 @@ def user_accounts_view(request):
         context,
     )
 
-def lista_conversas(request):
+def dashboard_view(request):
+    #TODO
+    context = {
+    }
+
+    return render(request, 'dashboard.html', context)
+
+def meus_chatbots_view(request):
+    try:
+        user = CustomUser.getUser(request)
+    except:
+        return redirect('database_error')
+    
+    if not request.user.is_authenticated:
+        return redirect('login')
+    
+    chatbots = ChatBot.objects.filter(user=user)
+
+    context = {
+        'user' : user,
+        'chatbots' : chatbots,
+    }
+    return render(request, 'meus-chatbots.html', context)
+
+def planos_disponiveis_view(request):
+    #TODO APÓS INTEGRAÇÃO COM PAGAMENTOD
+    return render(request, 'planos_disponiveis.html')
+
+def meu_plano_view(request):
+    #TODO APÓS INTEGRAÇÃO COM PAGAMENTOD
+    return render(request, 'meu-plano.html')
+
+def minhas_conversas_view(request):
     try:
         user = CustomUser.getUser(request)
     except:
@@ -78,13 +119,11 @@ def lista_conversas(request):
         "tab_title" : 'Ajudaí - Minhas Conversas',
         "meta_desciption" : '',
         'user' : user,
-        'conversas_list_title' : 'Minhas conversas:',
         'conversas' : conversas,
-        'no_conversas_text' : 'Você ainda não recebeu mensagens',
     }
     return render(
         request,
-        "lista_conversas.html",  # Path from the 'templates' folder inside the app folder
+        "minhas-conversas.html",  # Path from the 'templates' folder inside the app folder
         context,
     )
 
@@ -131,7 +170,6 @@ def chat_online(request, conversa_id):
             "chat_online.html",  # Path from the 'templates' folder inside the app folder
             context,
         )
-
 
 def chatbot_edit_view(request, chatbot_id):
     try:
@@ -186,7 +224,7 @@ def chatbot_delete_view(request, chatbot_id):
     
     return redirect('user_accounts')
 
-def pedidos_do_estabelecimento(request):
+def pedidos_realizados_view(request):
     try:
         user = CustomUser.getUser(request)
     except:
@@ -246,7 +284,6 @@ def resumo_pedido(request, pedido_id):
         context,
     )
   
-
 def login_view(request):
     login_form = LoginForm()
     context = {
@@ -495,10 +532,17 @@ def chatbot_creation_form(request):
         context,
     )
 
+def contato_view(request):
+    return render(request, 'contato.html')
+
+def instrucoes_view(request):
+    return render(request, 'instrucoes.html')
+
+def solicitacao_view(request):
+    return render(request, 'solicitacao.html')
 
 
 WEBHOOK_TOKEN = get_secret_var('WHATAPP_WEBHOOK_TOKEN')
-
 @csrf_exempt
 def whatsapp_message_webhook(request):
     if request.method == 'GET':    

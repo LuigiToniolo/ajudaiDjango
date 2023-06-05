@@ -130,9 +130,9 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 #PARA DESENVOLVIMENTO
-#STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static'),]
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static'),]
 #PARA PRODUÇÃO:
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+#STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 #FIM PARA PRODUÇÃO
 
 # Default primary key field type
@@ -150,14 +150,14 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 # *****************************ATIVAR TODOS ABAIXO PARA DEPLOY **************************************************************************************
 #PARA RODAR NO SERVER DE PRODUÇÃO
-CSRF_COOKIE_SECURE = True
-SESSION_COOKIE_SECURE = True
-SECURE_SSL_REDIRECT = True
-SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+#CSRF_COOKIE_SECURE = True
+#SESSION_COOKIE_SECURE = True
+#SECURE_SSL_REDIRECT = True
+#SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 #PARA RODAR DO SERVIDOR INTERNO:
 # *****************************DESATIVAR PARA DEPLOY **************************************************************************************
-#SECURE_SSL_REDIRECT = False
+SECURE_SSL_REDIRECT = False
 
 #END HTTPS CONFIG
 

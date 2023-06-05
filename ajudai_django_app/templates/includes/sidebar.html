@@ -1,0 +1,130 @@
+<nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
+    <div class="sb-sidenav-menu">
+        <div class="nav">
+            <div class="sb-sidenav-menu-heading">Painel de controle</div>
+            <a class="nav-link" href="{% url 'welcome' %}">
+                <div class="sb-nav-link-icon"><i class="fa fa-home"></i></div>
+                Home
+            </a>
+
+            <a class="nav-link" href="{% url 'dashboard' %}">
+                <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
+                Dashboard
+            </a>
+
+            <a class="nav-link" href="{% url 'planos_disponiveis' %}">
+                <div class="sb-nav-link-icon"><i class="fa-solid fa-file-signature"></i></div>
+                Planos disponíveis
+            </a>
+
+            <a class="nav-link" href="{% url 'meu-plano' %}">
+                <div class="sb-nav-link-icon"><i class='fa fa-refresh'></i></div>
+                Meu plano
+            </a>
+
+            <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseLayouts" aria-expanded="false" aria-controls="collapseLayouts">
+                <div class="sb-nav-link-icon"><i class="fa-solid fa-robot"></i></div>
+                Chatbot
+                <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+            </a>
+            <div class="collapse" id="collapseLayouts" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
+                <nav class="sb-sidenav-menu-nested nav">
+                    <a class="nav-link" href="{% url 'meus-chatbots' %}">Meus chatbots</a>
+                    <a class="nav-link" href="{% url 'pedidos-realizados' %}">Pedidos realizados</a>
+                    <a class="nav-link" href="{% url 'minhas-conversas' %}">Minhas conversas</a>
+                </nav>
+            </div>
+
+            <a class="nav-link" href="{% url 'solicitacao' %}">
+                <div class="sb-nav-link-icon">
+                    <i class='fa fa-comment'></i></div>
+                Correção imediata
+            </a>
+
+            <div class="sb-sidenav-menu-heading">Suporte</div>
+
+            <a class="nav-link" href="{% url 'contato' %}">
+                <div class="sb-nav-link-icon"><i class='fa fa-phone'></i></div>
+                Contato
+            </a>
+
+            <a class="nav-link" href="{% url 'instrucoes' %}">
+                <div class="sb-nav-link-icon"><i class='fa fa-file-text'></i></div>
+                Instruções de uso
+            </a>
+
+
+            <div class="sb-sidenav-menu-heading">Minha conta</div>
+
+            <a class="nav-link" href="{% url 'user_accounts' %}">
+                <div class="sb-nav-link-icon"><i class="fas fa-user-cog"></i></div>
+                Meu perfil
+            </a>
+            <a class="nav-link" href="{% url 'change_password' %}">
+                <div class="sb-nav-link-icon"><i class="fas fa-gear"></i></div>
+                Mudar senha
+            </a>
+            <!-- <form class="nav-link" method="post" action="{% url 'logout' %}">
+                <div class="sb-nav-link-icon"><i class="fas fa-sign-out"></i></div>
+                {% csrf_token %}
+                <input class="teste-input" type="submit" value="{{ LOGOUT_BUTTON_VALUE }}">
+            </form>
+            <div class="sb-sidenav-menu-heading">Interface</div>
+            <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseLayouts" aria-expanded="false" aria-controls="collapseLayouts">
+                <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
+                Layouts
+                <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+            </a>
+            <div class="collapse" id="collapseLayouts" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
+                <nav class="sb-sidenav-menu-nested nav">
+                    <a class="nav-link" href="layout-static.html">Static Navigation</a>
+                    <a class="nav-link" href="layout-sidenav-light.html">Light Sidenav</a>
+                </nav>
+            </div> -->
+            <!-- <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapsePages" aria-expanded="false" aria-controls="collapsePages">
+                <div class="sb-nav-link-icon"><i class="fas fa-book-open"></i></div>
+                Pages
+                <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+            </a> -->
+            <!-- <div class="collapse" id="collapsePages" aria-labelledby="headingTwo" data-bs-parent="#sidenavAccordion">
+                <nav class="sb-sidenav-menu-nested nav accordion" id="sidenavAccordionPages">
+                    <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#pagesCollapseAuth" aria-expanded="false" aria-controls="pagesCollapseAuth">
+                        Authentication
+                        <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                    </a>
+                    <div class="collapse" id="pagesCollapseAuth" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordionPages">
+                        <nav class="sb-sidenav-menu-nested nav">
+                            <a class="nav-link" href="login.html">Login</a>
+                            <a class="nav-link" href="register.html">Register</a>
+                            <a class="nav-link" href="password.html">Forgot Password</a>
+                        </nav>
+                    </div>
+                    <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#pagesCollapseError" aria-expanded="false" aria-controls="pagesCollapseError">
+                        Error
+                        <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                    </a>
+                    <div class="collapse" id="pagesCollapseError" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordionPages">
+                        <nav class="sb-sidenav-menu-nested nav">
+                            <a class="nav-link" href="401.html">401 Page</a>
+                            <a class="nav-link" href="404.html">404 Page</a>
+                            <a class="nav-link" href="500.html">500 Page</a>
+                        </nav>
+                    </div>
+                </nav>
+            </div> -->
+            <!-- <div class="sb-sidenav-menu-heading">Addons</div>
+            <a class="nav-link" href="charts.html">
+                <div class="sb-nav-link-icon"><i class="fas fa-chart-area"></i></div>
+                Charts
+            </a>
+            <a class="nav-link" href="tables.html">
+                <div class="sb-nav-link-icon"><i class="fas fa-table"></i></div>
+                Tables
+            </a> -->
+        </div>
+    </div>
+    <div class="sb-sidenav-footer">
+        <div class="small">Logged in as:</div>
+        {{ user.username }}
+    </div>
+</nav>

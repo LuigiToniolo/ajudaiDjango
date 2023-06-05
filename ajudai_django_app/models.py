@@ -137,6 +137,8 @@ class ChatBot(models.Model):
     )
     whats_app_api_auth_token = models.CharField(max_length=300)
     facebook_page_id = models.CharField(max_length=120)
+    creation_date = models.DateField(default=timezone.now)
+    creation_time = models.TimeField(default=timezone.now)
 
     def __str__(self):
         name = self.nome_do_chatbot

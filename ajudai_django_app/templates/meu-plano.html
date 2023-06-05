@@ -1,0 +1,223 @@
+<!-- <!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <title>{{ tab_title }}</title>
+        {% load static %}
+        <link rel="stylesheet" type="text/css" href="{% static 'ajudai_django_app/css/welcome.css' %}" />
+
+        <link rel="preconnect" href="https://fonts.gstatic.com">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;600&display=swap" rel="stylesheet">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body>
+        
+    </body>
+</html> -->
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="" />
+        <meta name="author" content="" />
+        <title>{{ tab_title }}</title>
+        {% load static %}
+        <link href="{% static 'css/styles.css' %}" rel="stylesheet" />
+        <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+    </head>
+    <body>
+        <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
+            <!-- Navbar Brand-->
+            <!-- <a class="navbar-brand ps-3" href="index.html">Start Bootstrap</a> -->
+            <img class="logo" src="{% static 'image/logo-branco-deitado.svg' %}" alt="Logotigo ajudai">
+            <!-- Sidebar Toggle-->
+            <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" href="#!"><i class="fas fa-bars"></i></button>
+            <!-- Navbar Search-->
+            <form class="d-none d-md-inline-block form-inline ms-auto me-0 me-md-3 my-2 my-md-0">
+                <div class="input-group">
+                    <input class="form-control" type="text" placeholder="Search for..." aria-label="Search for..." aria-describedby="btnNavbarSearch" />
+                    <button class="btn btn-primary" id="btnNavbarSearch" type="button"><i class="fas fa-search"></i></button>
+                </div>
+            </form>
+            <!-- Navbar-->
+            <ul class="navbar-nav ms-auto ms-md-0 me-3 me-lg-4">
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="fas fa-user fa-fw"></i></a>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                        <li><a class="dropdown-item" href="#!">Settings</a></li>
+                        <li><a class="dropdown-item" href="#!">Activity Log</a></li>
+                        <li><hr class="dropdown-divider" /></li>
+                        <li><a class="dropdown-item" href="#!">Logout</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </nav>
+        <div id="layoutSidenav">
+            <div id="layoutSidenav_nav">
+               
+               {% include 'includes/sidebar.html' %}
+
+            </div>
+            <div id="layoutSidenav_content">
+                <main>
+                    <div class="container-fluid px-4">
+                        
+                        <div class="cabecalho-planos">
+                            <div class="cabecalho-texto">
+                                <h2>Meus planos</h2>
+                                <h4>Você está assinando um de nossos planos. Obrigado por isso!</h4>
+                            </div>
+                            <img class="doodle-plans" src="{% static 'image/meus-planos.svg' %}" alt="doodle meus planos ajudai">
+                        </div>
+                        <div class="divider"></div>
+
+                        <div class="content-container">
+                            <h4>Plano selecionado</h4>
+
+                            <div class="my-plan">
+                                <img class="standard-img" src="{% static 'image/money.png' %}" alt="advanced plans ajudai">
+                                <div class="content-card-plan">
+                                    <h3 class="title">Plus</h3>
+                                    <ul class="features">
+                                        <li><strong>2500</strong> Conversas por mês</li>
+                                        <li>Suporte AjudaAI em horário comercial</li>
+                                        <li>Acesso ilimitado ao software</li>
+                                        <li>Implementação grátis</li>
+                                        <li>Atendentes ilimitadas</li>
+                                    </ul>
+                                    <!-- <p class="texto-content-plan"><strong>Assinatura atual: </strong>Plus</p>
+                                    <p class="texto-content-plan">Desde 26 de janeiro de 2023</p>
+                                    <p class="texto-content-plan"><strong>Próxima renovação: </strong> R$346,34</p>
+                                    <p class="texto-content-plan">26 de fevereiro de 2023</p> -->
+                                </div>
+                            </div>
+
+                            <h4>Detalhes do meu plano</h4>
+                            <p>Visualize com mais detalhes a tabela de informações do seu plano de assinatura do Ajudai</p>
+
+                            <table class="tabela">
+                                <thead class="head-tabela">
+                                  <tr>
+                                    <th class="top-table">Plano</th>
+                                    <th class="top-table">Valor assinado</th>
+                                    <th class="top-table">Valor uso total</th>
+                                    <th class="top-table">Data Renovação</th>
+                                    <th class="top-table">Pagamento</th>
+                                    <th class="top-table">Entenda os Valores</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  <tr>
+                                    <td class="top-table">Plus</td>
+                                    <td class="top-table">R$299</td>
+                                    <td class="top-table" id="alert">R$334,75</td>
+                                    <td class="top-table">26/02/2023</td>
+                                    <td class="top-table">Aguardando confirmação</td>
+                                    <td class="top-table"><a href="#" class="open-modal">Saiba mais</a></td>
+                                  </tr>
+                                  <!-- Adicione mais linhas conforme necessário -->
+                                </tbody>
+                            </table>
+
+                            <div class="modal">
+                                <div class="modal-content">
+                                  <span class="close">&times;</span>
+                                  <h3>Informação de valores</h3>
+                                    <table class="tabela-modal">
+                                        <tbody>
+                                        <tr>
+                                            <td class="strong-text"><strong>Assinatura atual: </strong></td>
+                                            <td>Plus</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="strong-text"></td>
+                                            <td class="light-content">Desde 26 de janeiro de 2023</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="strong-text"><strong>Renovação: </strong></td>
+                                            <td>R$299/mês</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="strong-text"></td>
+                                            <td class="light-content">Em 26 de fevereiro de 2023</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="strong-text"><strong>Uso do chatbot:</strong></td>
+                                            <td>2500/2643 (Conversas)</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="strong-text"></td>
+                                            <td class="alert-content">Seu uso excedeu 143 conversas do contratado!</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="strong-text"><strong>Valor excedido: </strong></td>
+                                            <td>R$35,75</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="strong-text"></td>
+                                            <td class="light-content">*O custo cobrado por palavra excedida é R$0,25</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="strong-text"><strong>Valor total atual: </strong></td>
+                                            <td>R$334,75</td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                    <p class="suporte-modal">Ainda ficou alguma dúvida?<a href="{% url 'contato' %}">Entre em contato</a></p>
+                                </div>
+                            </div>
+
+                            <h4>Deseja turbinar sem plano?</h4>
+                            <p>Faça um upgrade do seu plano atual e deixe nós <strong>Ajudarmos</strong> a escalar ainda mais seu negócio!</p>
+
+                            <button class="button-upgrade">Upgrade 
+                                <i class='fa fa-rocket'></i></button>
+                            
+                            <!-- <div class="info-prod">
+                                <p><strong>Minha atual assinatura: </strong></p>
+                                <img class="standard-img" src="{% static 'image/coin.png' %}" alt="standard plans ajudai">
+                            </div> -->
+                            
+                        </div>
+                        
+
+                    </div>
+                </main>
+                <footer class="py-4 bg-light mt-auto" id="footer">
+                    <div class="container-fluid px-4">
+                        <div class="d-flex align-items-center justify-content-between small">
+                            <div class="text-muted">Copyright © 2023 Ajudai. Todos os direitos reservados.</div>
+                            <div>
+                                <a href="#">Políticas de pricavidade</a>
+                                &middot;
+                                <a href="#">Termos de condição</a>
+                            </div>
+                        </div>
+                    </div>
+                </footer>
+            </div>
+        </div>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+        <script>
+            // JavaScript para abrir e fechar a modal
+            const modal = document.querySelector('.modal');
+            const openModalLinks = document.querySelectorAll('.open-modal');
+            const closeModal = document.querySelector('.close');
+
+            openModalLinks.forEach(link => {
+                link.addEventListener('click', function(event) {
+                event.preventDefault(); // Impede a ação padrão de navegação
+                modal.style.display = 'block';
+                });
+            });
+
+            closeModal.addEventListener('click', function() {
+                modal.style.display = 'none';
+            });
+        </script>
+    </body>
+</html>
