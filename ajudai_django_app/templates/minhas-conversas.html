@@ -75,7 +75,6 @@
                         <p>{{ message.content }}</p>
                     </div>
                 {% elif message.role == "assistant" %}
-                    <p><strong>Chatbot ou Você: </strong><span>{{ message.content }}</span> </p>
                     <div class="message">
                         <span class="sender">Chatbot ou Você::</span>
                         <span class="timestamp">12:00</span>
@@ -84,10 +83,14 @@
                 {% endif %}
             {% endif %}
           {% endfor %}
-          <div class="message-input">
-            <input type="text" placeholder="Digite sua mensagem...">
-            <button><i class="fa-solid fa-paper-plane" id="icon-send"></i></button>
-          </div>
+          <form id="message-form" method="post">
+            {% csrf_token %}
+            <div class="message-input">
+                <input type="text" name="message" placeholder="Digite sua mensagem...">
+                <input type="hidden" id="conversa_id" name="conversa_id" value="{{ conversa.id }}">
+                <button><i class="fa-solid fa-paper-plane" id="icon-send"></i></button>
+            </div>
+         </form>
         </div>
         {% endfor %}
       </div>

@@ -115,6 +115,19 @@ def minhas_conversas_view(request):
     chatbots = ChatBot.objects.filter(user=user)
     conversas = Conversa.objects.filter(chatbot__in=chatbots)
 
+    if request.method == 'POST':
+        form = MessageForm(request.POST)
+        if form.is_valid():
+            new_message = form.cleaned_data['message']
+            conversa_id= form.cleaned_data['conversa_id']
+            conversa= get_object_or_404(Conversa, id=conversa_id)
+            chatbot= conversa.chatbot
+            context = conversa.context
+            context.append({"role": "assistant", "content": new_message})
+            conversa.context = context
+            conversa.save()
+            send_response(chatbot.facebook_page_id, chatbot.whats_app_api_auth_token, conversa.company_client_number, new_message)
+
     context = {
         "tab_title" : 'Ajudaí - Minhas Conversas',
         "meta_desciption" : '',

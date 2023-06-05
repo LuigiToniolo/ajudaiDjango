@@ -122,3 +122,4 @@ class ChatBotForm(forms.ModelForm):
     
 class MessageForm(forms.Form):
     message = forms.CharField(widget=forms.Textarea)
+    conversa_id = forms.IntegerField()
