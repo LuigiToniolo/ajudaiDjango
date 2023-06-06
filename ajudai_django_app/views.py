@@ -7,7 +7,7 @@ from ajudai_django_app.forms import CustomUserCreationForm, LoginForm
 from ajudai_django_app.models import ChatBot, Conversa, CustomUser, Pedido
 from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
 from ajudai_django_app.phone_integration.messages import send_response
-from constants import ADITIONAL_INTRUCTIONS_FIELD_ID, ADITIONAL_INTRUCTIONS_FIELD_NAME, FANTASY_NAME, GPT3_MODEL_NAME, GPT3_TOKEK_LIMIT, PASSWORD_FIELD_ID, STATUS_CONVERSA_EM_ANDAMENTO, STATUS_CONVERSA_PEDIDO_REALIZADO, SUPPORT_EMAIL, USER_NAME_FIELD_ID
+from constants import ADITIONAL_INTRUCTIONS_FIELD_ID, ADITIONAL_INTRUCTIONS_FIELD_NAME, FANTASY_NAME, GPT3_MODEL_NAME, GPT3_TOKEK_LIMIT, PASSWORD_FIELD_ID, STATUS_CONVERSA_EM_ANDAMENTO, STATUS_CONVERSA_PEDIDO_REALIZADO, STATUS_PEDIDO_ENTREGUE, STATUS_PEDIDO_PENDENTE_DE_ENTREGA, SUPPORT_EMAIL, USER_NAME_FIELD_ID
 from get_secret_variables import get_secret_var
 from .forms import ChatBotForm, CustomPasswordChangeForm, MessageForm
 from django.contrib import messages
@@ -211,11 +211,13 @@ def pedidos_realizados_view(request):
         'texto_link_para_resumo_pedido' : 'Veja o Resumo do Pedido',
         'user' : user,
         'pedidos' : pedidos,
+        'STATUS_PEDIDO_PENDENTE_DE_ENTREGA' : STATUS_PEDIDO_PENDENTE_DE_ENTREGA,
+        'STATUS_PEDIDO_ENTREGUE' : STATUS_PEDIDO_ENTREGUE,
     }
 
     return render(
         request,
-        "pedidos_do_estabelecimento.html",  # You need to create this template
+        "pedidos-realizados.html",  # You need to create this template
         context,
     )
 
