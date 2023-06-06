@@ -7,28 +7,41 @@
         <link rel="stylesheet" type="text/css" href="{% static 'ajudai_django_app/css/register.css' %}" />
     </head>
     <body>
-        <div id="menu">
-            <nav>
-              <ul>
-                {% if user and user.username %}
-                  <a href="{% url 'user_accounts' %}">{{ user.username }} (my account)</a><br>
-                {% else %}
-                  <a href="{% url 'login' %}">Log In</a><br>
-                {% endif %}
-              </ul>
-            </nav>
+      <h1>Registre-se!</h1>
+      <h3 class="subtitulo">Seja membro do Ajudai e alavanque seu negócio com a nossa poderosa ferramenta</h3>
+      <div class="container">
+        <form method="post" action="{% url 'register' %}" class="inputs">
+          {% csrf_token %}
+          {{ form.as_p }}
+          <p class="termos-de-uso">Ao criar a sua conta, você aceita nossos <a href="{% url 'termos_e_condicoes' %}">Termos de Uso</a> e <a href="{% url 'privacidade' %}">Política de Privacidade</a>.</p>
+          <div class="botao-div">
+
+            <div id="menu">
+              <nav>
+                <ul>
+                  <!-- <h1>Seja um membro do Ajudai! Registre-se</h1> -->
+                  {% if user and user.username %}
+                    <a href="{% url 'user_accounts' %}">{{ user.username }} (my account)</a><br>
+                  {% else %}
+                      <a class="login-redirect" href="{% url 'login' %}">Já é membro? Faça Login</a><br>
+                  {% endif %}
+                </ul>
+              </nav>
+            </div>
+
+            <input class="botao" type="submit" value="{{ registeButtonText }}">
+
           </div>
-
-        <form method="post" action="{% url 'register' %}">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <p>Ao criar a sua conta, você aceita nossos <a href="{% url 'termos_e_condicoes' %}">Termos de Uso</a> e <a href="{% url 'privacidade' %}">Política de Privacidade</a>.</p>
-            <input type="submit" value="{{ registeButtonText }}">
         </form>
-
         {% if error_message %}
-            <p>{{ error_message }}</p>
+            <p class="erro-msg">{{ error_message }}</p>
         {% endif %}
 
+        <div class="logotipo">
+          <img class="logo" src="{% static 'image/logo-preto.svg' %}" alt="Logotigo ajudai">
+          <p>Copyright © 2023 Ajudai. Todos os direitos reservados.</p>
+        </div>
+
+      </div>
     </body>
 </html>

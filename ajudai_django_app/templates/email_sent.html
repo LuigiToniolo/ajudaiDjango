@@ -7,20 +7,29 @@
         <link rel="stylesheet" type="text/css" href="{% static 'ajudai_django_app/css/email_sent.css' %}" />
     </head>
     <body>
-        <div id="menu">
-            <nav>
-              <ul>
-                {% if user and user.username %}
-                  <a href="{% url 'user_accounts' %}">{{ user.username }} (my account)</a><br>
-                {% else %}
-                  <a href="{% url 'login' %}">Log In</a><br>
-                {% endif %}
-              </ul>
-            </nav>
-          </div>
+
+        <div class="container">
+          <div class="card">
+            
+            <img class="lock-icon" src="{% static 'image/email-icon.svg' %}" alt="Cadeado">
+            <p class="message">{{ message }}</p>
+            <p>*{{ observation }}</p>
+            <div id="menu">
+              <nav>
+                <ul>
+                  {% if user and user.username %}
+                    <a class="botao-login" href="{% url 'user_accounts' %}">{{ user.username }} (Minha conta)</a><br>
+                  {% else %}
+                    <a href="{% url 'login' %}">Log In</a><br>
+                  {% endif %}
+                </ul>
+              </nav>
+            </div>
           
-        <h3>{{ message }}</h3>
-        <p>{{ observation }}</p>
+
+          </div>
+      </div>
+
         
     </body>
 </html>

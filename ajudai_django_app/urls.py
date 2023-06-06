@@ -34,4 +34,5 @@ urlpatterns = [
     path('privacidade/', views.privacy_policy, name='privacidade'),
     path('termos_e_condicoes/', views.terms_and_conditions, name='termos_e_condicoes'),
     path('whatsapp/webhook/', views.whatsapp_message_webhook, name='whatsapp_webhook'),
+    path('erro-banco-dados/', views.database_error, name="database_error"),
 ]
