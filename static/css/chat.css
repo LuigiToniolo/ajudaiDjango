@@ -1,219 +1,275 @@
 * {
-      box-sizing: border-box;
-    }
+  box-sizing: border-box;
+}
 
-    body {
-      margin: 0;
-      padding: 0;
-      font-family: Arial, sans-serif;
-    }
+body {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+}
 
-    .chat-container {
-      display: flex;
-      height: 100vh;
-    }
+.chat-container {
+  display: flex;
+  height: 100vh;
+}
 
-    .menu {
-      flex: 0.3;
-      background-color: #5C7AD3;
-      /* padding: 20px; */
+.menu {
+  flex: 0.3;
+  background-color: #5C7AD3;
+  /* padding: 20px; */
 
-    }
+}
 
-    #icones-menu {
-        width: 25px;
-        height: 25px;
-        color: #FFFFFF;
-        margin-top: 20px; 
-        width: 100%;
-        cursor: pointer;
-    }
+#icones-menu {
+    width: 25px;
+    height: 25px;
+    color: #FFFFFF;
+    margin-top: 20px; 
+    width: 100%;
+    cursor: pointer;
+}
 
-    #icones-menu:hover {
-        color: #f2f2f2;
-    }
+#icones-menu:hover {
+    color: #f2f2f2;
+}
 
-    .logo {
-        width: 50px;
-        height: 50px;
-        margin: 10px;
-        cursor: pointer;
-    }
+.logo {
+    width: 50px;
+    height: 50px;
+    margin: 10px;
+    cursor: pointer;
+}
 
-    .menu-icons {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      
-    }
+.menu-icons {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  
+}
 
-    .menu-icons i {
-      /* margin-bottom: 10px; */
-      font-size: 24px;
-      text-align: center;
-    }
+.menu-icons i {
+  /* margin-bottom: 10px; */
+  font-size: 24px;
+  text-align: center;
+}
 
-    .contacts {
-      flex: 1.5;
-      background-color: #e5e5e5;
-      padding: 20px;
-      overflow-y: auto;
-      height: 100%;
-    }
+.contacts {
+  flex: 1.5;
+  background-color: #e5e5e5;
+  padding: 20px;
+  overflow-y: auto;
+  height: 100%;
+}
 
-    .contacts ul {
-        padding: 0;
-        margin: 0;
 
-    }
 
-    .contacts li {
-        list-style: none;
-        margin: 0;
-        text-align: start;
-        /* border: 1px solid black; */
-        padding: 10px 0;
-        display: flex;
+.contacts ul {
+    padding: 0;
+    margin: 0;
 
-    }
+}
 
-    .texto-contato {
-        margin: 0;
-        font-size: 14px;
-    }
+.contacts li {
+    list-style: none;
+    margin: 0;
+    text-align: start;
+    /* border: 1px solid black; */
+    padding: 10px 0;
+    display: flex;
 
-    .texto-tempo {
-        margin: 0;
-        font-size: 12px;
-        margin-right: 5px;
-        color: #6c757d;
-    }
+}
 
-    .conteudo-contato {
-        display: flex;
-        flex-direction: row;
-        background-color: #FFFFFF;
-        border-radius: 10px;
-    }
+.texto-contato {
+    margin: 0;
+    font-size: 14px;
+}
 
-    .conteudo-texto-contato {
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-    }
+.texto-tempo {
+    margin: 0;
+    font-size: 12px;
+    margin-right: 5px;
+    margin-top: 5px;
+    color: #6c757d;
+}
 
-    .conversation {
-      flex: 4;
-      background-color: #ffffff;
-      padding: 20px;
-      display: none;
-      flex-direction: column;
-      position: relative;
-      overflow-y: auto;
-      height: 100%;
-    }
+.conteudo-contato {
+    display: flex;
+    flex-direction: row;
+    background-color: #FFFFFF;
+    border-radius: 10px;
+    cursor: pointer;
+}
 
-    .message {
-      margin-bottom: 10px;
-    }
+.conteudo-contato:hover {
+    background-color: #f1f1f1;
+}
 
-    .sender {
-      font-weight: bold;
-    }
+.conteudo-texto-contato {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
 
-    .timestamp {
-      font-size: 12px;
-      color: #777777;
-    }
+.conversation {
+  flex: 4;
+  background-color: #ffffff;
+  padding: 20px;
+  display: none;
+  flex-direction: column;
+  position: relative;
+  overflow-y: auto;
+  height: 100%;
+}
 
-    .message-input {
-      display: flex;
-      align-items: center;
-      width: 100%;
-      background-color: #ffffff;
-      padding: 10px;
-      box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
-      bottom: 0;
-      left: 0;
-      position: absolute;
-    }
+.message-client {
+  margin-bottom: 10px;
+  background-color: #e5e5e5;
+  border-radius: 10px;
+  max-width: 45%;
+  padding: 10px;
+  position: relative;
 
-    .message-input input[type="text"] {
-      flex: 1;
-      /* padding: 10px; */
+}
 
-      width: 100%;
-      padding: 8px;
-      border: none;
-      border-radius: 4px;
-      outline: none;
-    }
+.dialog-response {
+    display: flex;
+    justify-content: flex-start;
+    align-items: start;
+}
 
-    .message-input button {
-      padding: 10px 15px;
-      /* margin-left: 10px; */
-      background-color: #5C7AD3;
-      border-style: none;
-      border-radius: 50px;
-      cursor: pointer;
-    }
+.dialog-client {
+    display: flex;
+    justify-content: flex-end;
+    align-items: end;
+}
 
-    .message-input button:active {
-        background-color: #b5c7fd;
-        border-style: none;
-        outline: none;
-        box-shadow: none;
-    }
+.message-response {
+    margin-bottom: 10px;
+    background-color: #b5c7fd;
+    border-radius: 10px;
+    max-width: 45%;
+    padding: 10px;
+    position: relative;
+}
 
-    .message-input button:focus {
-        border-style: none;
-        outline: none;
-        box-shadow: none;
-    }
+.sender {
+  font-weight: bold;
+}
 
-    #icon-send {
-        color: #f2f2f2;
-    }
+.timestamp {
+  font-size: 12px;
+  color: #777777;
+  
+  position: absolute;
+  bottom: 5px;
+  right: 5px;
+
+}
+
+.message-input {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  background-color: #ffffff;
+  padding: 10px;
+  box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
+  bottom: 0;
+  left: 0;
+  position: absolute;
+}
+
+.message-input input[type="text"] {
+  flex: 1;
+  /* padding: 10px; */
+
+  width: 100%;
+  padding: 8px;
+  border: none;
+  border-radius: 4px;
+  outline: none;
+}
+
+.message-input .botao-send {
+  padding: 10px 15px;
+  /* margin-left: 10px; */
+  background-color: #5C7AD3;
+  border-style: none;
+  border-radius: 50px;
+  cursor: pointer;
+}
+
+.botao-pause-chatbot  {
+    padding: 10px 10px;
+    /* margin-left: 10px; */
+    background-color: #ff9696;
+    border-style: none;
+    border-radius: 50px;
+    cursor: pointer;
+    margin-left: 10px;
+}
+
+.message-input .botao-send:active {
+    background-color: #b5c7fd;
+    border-style: none;
+    outline: none;
+    box-shadow: none;
+}
+
+.message-input .botao-send:focus {
+    border-style: none;
+    outline: none;
+    box-shadow: none;
+}
+
+
+
+#icon-send {
+    color: #f2f2f2;
+}
+
+#icon-pause {
+    color: #000;
+}
 
 /* Estilização da barra de rolagem no Chrome e Safari */
 ::-webkit-scrollbar {
-  width: 10px;
+width: 10px;
 }
 
 ::-webkit-scrollbar-track {
-  background-color: #f2f2f2;
+background-color: #f2f2f2;
 }
 
 ::-webkit-scrollbar-thumb {
-  background-color: #6c757d;
-  opacity: 0.5;
-  border-radius: 5px;
+background-color: #6c757d;
+opacity: 0.5;
+border-radius: 5px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background-color: #555;
+background-color: #555;
 }
 
 /* Estilização da barra de rolagem no Firefox */
 /* A partir do Firefox 64+ é necessário adicionar a classe "scrollbar" ao elemento pai */
 .scrollbar {
-  scrollbar-width: thin;
-  scrollbar-color: #212D40 #f1f1f1;
+scrollbar-width: thin;
+scrollbar-color: #212D40 #f1f1f1;
 }
 
 .scrollbar::-webkit-scrollbar {
-  width: 10px;
+width: 10px;
 }
 
 .scrollbar::-webkit-scrollbar-track {
-  background-color: #f1f1f1;
+background-color: #f1f1f1;
 }
 
 .scrollbar::-webkit-scrollbar-thumb {
-  background-color: #212D40;
-  /* border-radius: 5px; */
+background-color: #212D40;
+/* border-radius: 5px; */
 }
 
 .scrollbar::-webkit-scrollbar-thumb:hover {
-  background-color: #555;
+background-color: #555;
 }
