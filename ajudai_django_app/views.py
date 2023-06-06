@@ -140,51 +140,7 @@ def minhas_conversas_view(request):
         context,
     )
 
-def chat_online(request, conversa_id):
-    try:
-        user = CustomUser.getUser(request)
-    except:
-        return redirect('database_error')
-    
-    if not request.user.is_authenticated:
-        return redirect('login')
-    
-    conversa = get_object_or_404(Conversa, id=conversa_id)
-    chatbot = conversa.chatbot
-
-    if request.user != chatbot.user:
-        return redirect('login')
-    
-    if request.method == 'POST':
-        form = MessageForm(request.POST)
-        if form.is_valid():
-            new_message = form.cleaned_data['message']
-            context = conversa.context
-            context.append({"role": "assistant", "content": new_message})
-            conversa.context = context
-            conversa.save()
-            send_response(chatbot.facebook_page_id, chatbot.whats_app_api_auth_token, conversa.company_client_number, new_message)
-            return redirect('chat_online', conversa_id=conversa.id)
-        
-    else:
-        form = MessageForm()
-        context = {
-            "tab_title" : 'Ajudaí - Chat Online',
-            "meta_desciption" : '',
-            'user' : user,
-            'chat_title' : 'Chat com ' + conversa.company_client_number,
-            'conversa' : conversa,
-            'no_conversas_text' : 'Você ainda não recebeu mensagens',
-            'form' : form,
-            'submit_message_text' : 'Enviar',
-        }
-        return render(
-            request,
-            "chat_online.html",  # Path from the 'templates' folder inside the app folder
-            context,
-        )
-
-def chatbot_edit_view(request, chatbot_id):
+def editar_chatbot_view(request, chatbot_id):
     try:
         user = CustomUser.getUser(request)
     except:
@@ -203,7 +159,7 @@ def chatbot_edit_view(request, chatbot_id):
 
         if form.is_valid():
             form.save()
-            return redirect('user_accounts')
+            return redirect('meus-chatbots')
     else:
         form = ChatBotForm(instance=chatbot)
 
@@ -220,7 +176,7 @@ def chatbot_edit_view(request, chatbot_id):
 
     return render(
         request,
-        "chatbot_edit.html",  # You need to create this template
+        "editar-chatbot.html", 
         context,
     )
 
