@@ -127,12 +127,18 @@ def minhas_conversas_view(request):
             conversa.context = context
             conversa.save()
             send_response(chatbot.facebook_page_id, chatbot.whats_app_api_auth_token, conversa.company_client_number, new_message)
+            updated_conversa_id = conversa_id
+        else:
+            updated_conversa_id = None
+    else:
+        updated_conversa_id = None
 
     context = {
         "tab_title" : 'Ajudaí - Minhas Conversas',
         "meta_desciption" : '',
         'user' : user,
         'conversas' : conversas,
+        'updated_conversa_id': updated_conversa_id,
     }
     return render(
         request,

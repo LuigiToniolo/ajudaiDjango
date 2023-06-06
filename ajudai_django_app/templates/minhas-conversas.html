@@ -111,6 +111,12 @@
                 $(".conversation").hide();
                 $("#conversation-" + id).show();
             });
+            // Note for the code in django template: The following are Django template tags
+            // Your IDE might show them as syntax errors, but they will be processed correctly by Django.
+            {% if updated_conversa_id %}
+                $(".conversation").hide();
+                $("#conversation-{{ updated_conversa_id }}").show();
+            {% endif %}
         });
         </script>
 </html>
