@@ -4,6 +4,46 @@ MAIN_APP_NAME = 'ajudai_django_app'
 SUPPORT_EMAIL = ''
 FANTASY_NAME = 'Ajudaí'
 
+DOMAIN = 'http://127.0.0.1:8000' #TODO PREENCHER COM URL REAL EM PRODUÇÃO (do projeto python no pythonanywhere, que deve ser um um sub da landing page)
+
+#--------------------------------------------------------------------
+#USUARIOS/PAGAMENTOS/PRUDUTOS
+USER_LEVEL_FREE = 'free_user'
+USER_LEVEL_PREMIUM = 'premium_user'
+
+DIAS_TOLERACIA_INADIMPLECIA = 7
+
+PRUDUCT_TYPE_PLAN = 'plan'
+PRUDUCT_TYPE_ADESAO = 'adesao'
+PRUDUCT_TYPE_CONVERSA_AVULSA = 'conversa_avulsa'
+
+PAYMENT_METHOD_REGISTRATION_STATUS_PENDING = 'payment_method_pending'
+PAYMENT_METHOD_REGISTRATION_STATUS_SUCCESS = 'payment_method_success'
+PAYMENT_METHOD_REGISTRATION_STATUS_FAILING = 'payment_method_failing'
+
+USAGE_PAYED_STATUS_PENDING = 'pending_payment'
+USAGE_PAYED_STATUS_SUCCESS = 'payment_success'
+
+ADESAO_PURCHASE_STATUS_PENDING = 'Pending'
+ADESAO_PURCHASE_STATUS_PROCESSED = 'Processed'
+ADESAO_PURCHASE_STATUS_CALCELED = 'Canceled'
+
+EVENT_INVALID_PAYLOAD = 'invalid payload'
+EVENT_INVALID_SIGNATURE = 'invalid sgnature'
+EVENT_TYPE_TO_CHECKOUT_COMPLETE_SUCCESS = 'checkout.session.completed'
+
+USER_PAYMENT_METHOD_NOT_REGISTERED = 'payment_method_not_registered'
+USER_PAYMENT_METHOD_STATUS_OK = 'payment_method_registered_ok'
+USER_PAYMENT_METHOD_FAILED = 'payment_method_failed'
+
+PAYMENT_PERIOD_DAILY = 'daily'
+PAYMENT_PERIOD_MONTHLY = 'monthly'
+PAYMENT_PERIOD_ANUALY = 'anualy'
+STANDART_PERIOD = PAYMENT_PERIOD_MONTHLY
+
+CONVERSA_PAGA = 'paga'
+CONVERSA_PAGAMENTO_PENDENTE = 'pendente'
+CONVERSA_AGUARDANDO_VENCIMENTO = 'aguardando_vencimento'
 
 #---------------------------------------------------------------------
 #API RELATED

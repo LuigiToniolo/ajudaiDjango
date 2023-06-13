@@ -4,10 +4,12 @@ from ajudai_django_app.ai_chatbot.ai_awnser import generate_gpt_response, pedido
 from ajudai_django_app.ai_chatbot.ai_tools import instructions_over_limit_error_messages, instructions_under_the_limits
 from ajudai_django_app.fechamento_de_pedido.procedimento_de_fechamento import informar_loja_fechamento_pedido
 from ajudai_django_app.forms import CustomUserCreationForm, LoginForm
-from ajudai_django_app.models import ChatBot, Conversa, CustomUser, Pedido
+from ajudai_django_app.models import Adesao_Purchase, ChatBot, Conversa, CustomUser, Pedido, Premium_User_Payment_Method_Registration, Product, register_adesao_purchase_after_webhook_confirm, register_payment_method_success_after_webhook_confirm
 from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
+from ajudai_django_app.payments_process.sign_in import create_stripe_customer, return_adesao_checkout_session, return_checkout_session_id, return_checkout_session_url, return_setup_future_payments_checkout_session
+from ajudai_django_app.payments_process.webhooks import HTTP_PAYMENT_API_SIGNATURE, LABEL_TO_CHECKOUT_SESSION_ID, get_session_data, get_webhook_event, success_payment_checkout_and_section_recovery
 from ajudai_django_app.phone_integration.messages import send_response
-from constants import ADITIONAL_INTRUCTIONS_FIELD_ID, ADITIONAL_INTRUCTIONS_FIELD_NAME, FANTASY_NAME, GPT3_MODEL_NAME, GPT3_TOKEK_LIMIT, PASSWORD_FIELD_ID, STATUS_CONVERSA_EM_ANDAMENTO, STATUS_CONVERSA_PEDIDO_REALIZADO, STATUS_PEDIDO_ENTREGUE, STATUS_PEDIDO_PENDENTE_DE_ENTREGA, SUPPORT_EMAIL, USER_NAME_FIELD_ID
+from constants import ADESAO_PURCHASE_STATUS_PENDING, ADITIONAL_INTRUCTIONS_FIELD_ID, ADITIONAL_INTRUCTIONS_FIELD_NAME, DOMAIN, EVENT_INVALID_PAYLOAD, EVENT_INVALID_SIGNATURE, FANTASY_NAME, GPT3_MODEL_NAME, GPT3_TOKEK_LIMIT, PASSWORD_FIELD_ID, PAYMENT_METHOD_REGISTRATION_STATUS_PENDING, PRUDUCT_TYPE_ADESAO, STANDART_PERIOD, STATUS_CONVERSA_EM_ANDAMENTO, STATUS_CONVERSA_PEDIDO_REALIZADO, STATUS_PEDIDO_ENTREGUE, STATUS_PEDIDO_PENDENTE_DE_ENTREGA, SUPPORT_EMAIL, USER_NAME_FIELD_ID
 from get_secret_variables import get_secret_var
 from .forms import ChatBotForm, CustomPasswordChangeForm, MessageForm
 from django.contrib import messages
@@ -19,6 +21,8 @@ from django.views.decorators.csrf import csrf_exempt
 import json
 from django.shortcuts import get_object_or_404
 from django_q.tasks import async_task
+import stripe
+from django.utils import timezone
 
 def welcome_view(request):
     try:
@@ -34,6 +38,8 @@ def welcome_view(request):
         'user' : user,
     }
 
+    user.regular_charge_user_if_needed(STANDART_PERIOD)
+
     return render(request, 'welcome.html', context)
 
 def user_accounts_view(request):
@@ -44,6 +50,8 @@ def user_accounts_view(request):
     
     if not request.user.is_authenticated:
         return redirect('login')
+    
+    user.regular_charge_user_if_needed(STANDART_PERIOD)
     
     context = {
         "tab_title" : 'Ajudaí',
@@ -72,6 +80,19 @@ def user_accounts_view(request):
     )
 
 def dashboard_view(request):
+    try:
+        user = CustomUser.getUser(request)
+    except:
+        return redirect('database_error')
+    
+    if not request.user.is_authenticated:
+        return redirect('login')
+    
+    if not user.usuario_adimplente_ou_tolerancia_de_uso():
+        return redirect('payment_debt_out_service')
+    
+    user.regular_charge_user_if_needed(STANDART_PERIOD)
+    
     #TODO
     context = {
     }
@@ -87,6 +108,11 @@ def meus_chatbots_view(request):
     if not request.user.is_authenticated:
         return redirect('login')
     
+    if not user.usuario_adimplente_ou_tolerancia_de_uso():
+        return redirect('payment_debt_out_service')
+    
+    user.regular_charge_user_if_needed(STANDART_PERIOD)
+    
     chatbots = ChatBot.objects.filter(user=user)
 
     context = {
@@ -96,11 +122,10 @@ def meus_chatbots_view(request):
     return render(request, 'meus-chatbots.html', context)
 
 def planos_disponiveis_view(request):
-    #TODO APÓS INTEGRAÇÃO COM PAGAMENTOD
     return render(request, 'planos_disponiveis.html')
 
 def meu_plano_view(request):
-    #TODO APÓS INTEGRAÇÃO COM PAGAMENTOD
+    #TODO INTEGRAÇÃO COM PAGAMENTOD
     return render(request, 'meu-plano.html')
 
 def minhas_conversas_view(request):
@@ -112,6 +137,11 @@ def minhas_conversas_view(request):
     if not request.user.is_authenticated:
         return redirect('login')
     
+    if not user.usuario_adimplente_ou_tolerancia_de_uso():
+        return redirect('payment_debt_out_service')
+    
+    user.regular_charge_user_if_needed(STANDART_PERIOD)
+
     chatbots = ChatBot.objects.filter(user=user)
     conversas = Conversa.objects.filter(chatbot__in=chatbots)
 
@@ -155,6 +185,11 @@ def editar_chatbot_view(request, chatbot_id):
     if not request.user.is_authenticated:
         return redirect('login')
     
+    if not user.usuario_adimplente_ou_tolerancia_de_uso():
+        return redirect('payment_debt_out_service')
+    
+    user.regular_charge_user_if_needed(STANDART_PERIOD)
+
     chatbot = get_object_or_404(ChatBot, id=chatbot_id)
 
     if request.user != chatbot.user:
@@ -208,7 +243,12 @@ def pedidos_realizados_view(request):
     if not request.user.is_authenticated:
         return redirect('login')
     
+    user.regular_charge_user_if_needed(STANDART_PERIOD)
+
     pedidos = Pedido.objects.filter(user=user)
+
+    if not user.usuario_adimplente_ou_tolerancia_de_uso():
+        return redirect('payment_debt_out_service')
 
     context = {
         "tab_title" : 'Pedidos',
@@ -235,6 +275,9 @@ def resumo_pedido(request, pedido_id):
     
     if not request.user.is_authenticated:
         return redirect('login')
+    
+    if not user.usuario_adimplente_ou_tolerancia_de_uso():
+        return redirect('payment_debt_out_service')
     
     pedido = get_object_or_404(Pedido, id=pedido_id)
     conversa = pedido.conversa
@@ -474,6 +517,9 @@ def chatbot_creation_form(request):
     if not request.user.is_authenticated:
         return redirect('login')
     
+    if not user.usuario_adimplente_ou_tolerancia_de_uso():
+        return redirect('payment_debt_out_service')
+    
     if request.method == 'POST':
         form = ChatBotForm(request.POST)
         if form.is_valid():
@@ -555,6 +601,11 @@ def process_message(data):
                             company_number = company_number_with_DDI[2:]
                             chatbot= get_object_or_404(ChatBot, whatsapp_number=company_number)
                             aditional_instructions = chatbot.aditional_intructions
+
+                            user=chatbot.user
+                            if not user.usuario_adimplente_ou_tolerancia_de_uso:
+                                return
+                            
                             # Get or create a conversation for the phone number
                             try:
                                 conversation = Conversa.objects.get(
@@ -603,3 +654,199 @@ def process_message(data):
                 return
 
     return
+
+def payment_method_checkout(request):
+    try:
+        user = CustomUser.getUser(request)
+    except:
+        return redirect('database_error')
+
+    if not user.is_authenticated:
+        return redirect('login')
+    
+    stripe.api_key = get_secret_var("STRIPE_SECRET_KEY")
+    
+    try:
+        create_stripe_customer(user)
+        checkout_session = return_setup_future_payments_checkout_session(DOMAIN + '/metodo-pagamento-registrado', DOMAIN + '/metodo-pagamento-falhou', user)
+    except Exception as e:
+        return redirect('pricing')
+    
+    user_payment_method_setup_attempt_registered = False 
+
+    try:
+        register_payment_setup_attempt = Premium_User_Payment_Method_Registration.objects.update_or_create(
+            date= timezone.datetime.now().date(),
+            time= timezone.datetime.now().time(),
+            user=user,
+            stripe_checkout_id=return_checkout_session_id(checkout_session),
+            status=PAYMENT_METHOD_REGISTRATION_STATUS_PENDING,
+        )
+        user_payment_method_setup_attempt_registered = True
+    except:
+        return redirect('database_error')
+    
+    if user_payment_method_setup_attempt_registered:
+        return redirect(return_checkout_session_url(checkout_session), code=303)
+    else:
+        return redirect('database_error')
+
+def payment_method_success(request):
+    try:
+        user = CustomUser.getUser(request)
+    except:
+        pass
+
+    return render(
+        request,
+        "sucesso-pagamento.html",
+        {
+            'title' : "Processado com Sucesso",
+            'user' : user,
+        }
+    )
+
+def payment_method_failure(request):
+    try:
+        user = CustomUser.getUser(request)
+    except:
+        pass
+
+    return render(
+        request,
+        "falha-pagamento.html",
+        {
+            'title' : "Processado com Sucesso",
+            'user' : user,
+        }
+    )
+
+def adesao_payment_checkout(request):
+    try:
+        user = CustomUser.getUser(request)
+    except:
+        return redirect('database_error')
+
+    if not user.is_authenticated:
+        return redirect('login')
+    
+    try:
+        product = Product.objects.get(tipo_de_produto=PRUDUCT_TYPE_ADESAO)
+    except:
+        return redirect('database_error')
+    
+    try:
+        checkout_session = return_adesao_checkout_session(product.priceID, DOMAIN + '/adesao-realizada', DOMAIN + '/adesao-falhou')
+    except:
+        return redirect('planos_disponiveis')
+    
+    purchase_database_register_success = False
+    try:
+        purchase = Adesao_Purchase.objects.create(
+            date= timezone.datetime.now().date(),
+            time= timezone.datetime.now().time(),
+            product=product,
+            user=user,
+            stripe_checkout_id=return_checkout_session_id(checkout_session),
+            status=ADESAO_PURCHASE_STATUS_PENDING,
+            )
+        purchase_database_register_success = True
+    except:
+        return redirect('database_error')
+    
+    #redundância proposital para garantir que o sessão se checkout venha apenas após o registro da tentativa de compra no banco de dados
+    if purchase_database_register_success:
+        #dessa forma, leva o usuário à própria página de procesamentento de pagameto / checkout da stripe
+        return redirect(return_checkout_session_url(checkout_session), code=303)
+    else:
+        return redirect('database_error')
+    
+def adesao_payment_success(request):
+    try:
+        user = CustomUser.getUser(request)
+    except:
+        return redirect('database_error')
+
+    if not user.is_authenticated:
+        return redirect('login')
+    
+    return redirect('checkout_metodo_pagamento')
+
+def adesao_payment_failiure(request):
+    try:
+        user = CustomUser.getUser(request)
+    except:
+        pass
+
+    return render(
+        request,
+        "falha-pagamento.html",
+        {
+            'title' : "Processado com Sucesso",
+            'user' : user,
+        }
+    )
+
+@csrf_exempt
+def adesao_payment_webhook(request):
+    payload = request.body
+    sig_header = request.META[HTTP_PAYMENT_API_SIGNATURE]
+    event = None
+    
+    event = get_webhook_event(payload, sig_header)
+
+    if event == EVENT_INVALID_PAYLOAD:
+        return HttpResponse(status=400)
+
+    if event == EVENT_INVALID_SIGNATURE:
+        return HttpResponse(status=400)
+
+    if success_payment_checkout_and_section_recovery(event):
+        
+        session = get_session_data(event)
+        checkout_id = session[LABEL_TO_CHECKOUT_SESSION_ID]
+        
+        register_adesao_purchase_after_webhook_confirm(checkout_id)
+
+    # Passed signature verification
+    return HttpResponse(status=200)
+
+@csrf_exempt
+def payment_method_webhook(request):
+    payload = request.body
+    sig_header = request.META[HTTP_PAYMENT_API_SIGNATURE]
+    event = None
+    
+    event = get_webhook_event(payload, sig_header)
+
+    if event == EVENT_INVALID_PAYLOAD:
+        return HttpResponse(status=400)
+
+    if event == EVENT_INVALID_SIGNATURE:
+        return HttpResponse(status=400)
+
+    if success_payment_checkout_and_section_recovery(event):
+        
+        session = get_session_data(event)
+        checkout_id = session[LABEL_TO_CHECKOUT_SESSION_ID]
+        
+        register_payment_method_success_after_webhook_confirm(checkout_id)
+
+    # Passed signature verification
+    return HttpResponse(status=200)
+
+@csrf_exempt
+def usage_payment_webhook(request):
+    #TODO
+    #TODO DEIXAR USUÁRIO COMO ADIMPLENTE
+    #TODO ATUALIZAR STATUS FINANCEIROS DAS CONVERSAS (TALVEZ AQUI, TENHA QUE PEGAR O VALOR E IR VENDO QUANTAS SAO SUFIENTES PARA ATUALIZAR STATUS PARA PAGAS)
+    pass
+
+def user_in_debt_warning_view(request):
+    #TODO para usuários em débito mas ainda em tolerância
+    pass
+
+def user_in_debt_and_out_of_service_view(request):
+    #TODO para usuários em débito e fora da tolerância
+    #TODO SERÁ MOSTRADA MENSAGEM DE QUE ESTÁ EM DÉBITO E NÃO PODE FAZER MODIFICAÇÕES E NÃO ESTÁ RECEBENDO MENSAGENS
+    pass
