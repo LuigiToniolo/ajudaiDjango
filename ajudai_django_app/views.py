@@ -863,12 +863,17 @@ def usage_payment_webhook(request):
     # Passed signature verification
     return HttpResponseServerError('Error processing request')
 
+#destino do direcionamento de usuários em dívida acima do tempo de tolerância
 def user_in_debt_and_out_of_service_view(request):
-    #para usuários em débito e fora da tolerância
     try:
         user = CustomUser.getUser(request)
     except:
-        pass
+        return redirect('database_error')
+    
+    if not request.user.is_authenticated:
+        return redirect('login')
+
+    valor_em_divida = user.valor_em_debito
 
     return render(
         request,
@@ -876,5 +881,27 @@ def user_in_debt_and_out_of_service_view(request):
         {
             'title' : "Fora de Serviço",
             'user' : user,
+            'valor_em_divida' : valor_em_divida,
         }
     )
+
+def pay_debit(request):
+    try:
+        user = CustomUser.getUser(request)
+    except:
+        return redirect('database_error')
+    
+    if not request.user.is_authenticated:
+        return redirect('login')
+        
+    user.charge_all_user_debt()
+
+    return render(
+        request,
+        "processando-pagamento-debito.html",
+        {
+            'title' : "Tentativa de pagamento",
+            'user' : user,
+        }
+    )
+
