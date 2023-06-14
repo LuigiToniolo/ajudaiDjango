@@ -65,7 +65,7 @@ class CustomUser(AbstractUser):
         default=USER_PAYMENT_METHOD_NOT_REGISTERED,
         choices=USER_USAGE_PAYMENT_METHOD_CHOICES,
         )
-    last_payment_date = models.DateField(null=True)
+    last_payment_date = models.DateField(null=True, blank=True)
 
     stripe_id = models.CharField(max_length=50, blank=True, null=True)
 
@@ -135,14 +135,16 @@ class CustomUser(AbstractUser):
             return False
         
         today = timezone.now().date()
+
+        #usuário recém aderido como premium
+        #o caso do last_payment_date ser None é do usuário que acabou de se tornar premium. Neste caso, ele é setado no dia atual, para que o pagamento devido fique para daqui um período
         if self.last_payment_date is None:
-            self.last_payment_date = timezone.now().date()
+            self.last_payment_date = today
             return False
         
         if reset_period == PAYMENT_PERIOD_DAILY:
             reset_date = self.last_payment_date + timedelta(days=1)
         elif reset_period == PAYMENT_PERIOD_MONTHLY:
-            # Get the next month
             year, month = self.last_payment_date.year, self.last_payment_date.month + 1
             day =self.last_payment_date.day
             if month > 12:
@@ -150,7 +152,6 @@ class CustomUser(AbstractUser):
                 month = 1
             reset_date = self.last_payment_date.replace(year=year, month=month, day=day)
         elif reset_period == PAYMENT_PERIOD_ANUALY:
-            # Get the next month
             year = self.last_payment_date.year + 1
             month = self.last_payment_date.month
             day =self.last_payment_date.day
