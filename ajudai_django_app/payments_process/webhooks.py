@@ -10,7 +10,7 @@ HTTP_PAYMENT_API_SIGNATURE = 'HTTP_STRIPE_SIGNATURE'
 LABEL_TO_CHECKOUT_SESSION_ID = 'id'
 
 def get_webhook_event(payload, sig_header):
-    endpoint_secret = get_secret_var("endpoint_secret")
+    endpoint_secret = get_secret_var("stripe_endpoint_secret")
 
     try:
         event = stripe.Webhook.construct_event(payload, sig_header, endpoint_secret)
