@@ -125,7 +125,7 @@ def planos_disponiveis_view(request):
     return render(request, 'planos_disponiveis.html')
 
 def meu_plano_view(request):
-    #TODO INTEGRAÇÃO COM PAGAMENTOD
+    #TODO APÓS INTEGRAÇÃO COM PAGAMENTOD
     return render(request, 'meu-plano.html')
 
 def minhas_conversas_view(request):
