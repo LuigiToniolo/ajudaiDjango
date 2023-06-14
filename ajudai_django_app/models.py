@@ -6,6 +6,8 @@ from django.contrib.auth.models import Group, Permission
 from django.core.validators import RegexValidator
 from django.utils import timezone
 from datetime import timedelta, datetime
+from django.db.models import Q
+from ajudai_django_app.payments_process.charge_usage import charge_usages
 
 from constants import ADESAO_PURCHASE_STATUS_CALCELED, ADESAO_PURCHASE_STATUS_PENDING, ADESAO_PURCHASE_STATUS_PROCESSED, AI_PROVIDER_OPEN_AI, BRL_CURRENCY_SIMBOL, CONVERSA_AGUARDANDO_VENCIMENTO, CONVERSA_PAGA, CONVERSA_PAGAMENTO_PENDENTE, GPT3_MODEL_NAME, MAX_CHAR_INSTRUCTIONS_CHATBOT_FORM, PAYMENT_METHOD_REGISTRATION_STATUS_FAILING, PAYMENT_METHOD_REGISTRATION_STATUS_PENDING, PAYMENT_METHOD_REGISTRATION_STATUS_SUCCESS, PAYMENT_PERIOD_ANUALY, PAYMENT_PERIOD_DAILY, PAYMENT_PERIOD_MONTHLY, PRUDUCT_TYPE_ADESAO, PRUDUCT_TYPE_CONVERSA_AVULSA, PRUDUCT_TYPE_PLAN, STATUS_CONVERSA_EM_ANDAMENTO, STATUS_CONVERSA_FALHA, STATUS_CONVERSA_PEDIDO_REALIZADO, STATUS_PEDIDO_CANCELADO, STATUS_PEDIDO_ENTREGUE, STATUS_PEDIDO_PENDENTE_DE_ENTREGA, USER_LEVEL_FREE, USER_LEVEL_PREMIUM, USER_PAYMENT_METHOD_FAILED, USER_PAYMENT_METHOD_NOT_REGISTERED, USER_PAYMENT_METHOD_STATUS_OK
 
@@ -65,14 +67,19 @@ class CustomUser(AbstractUser):
         default=USER_PAYMENT_METHOD_NOT_REGISTERED,
         choices=USER_USAGE_PAYMENT_METHOD_CHOICES,
         )
+    
+
     last_payment_date = models.DateField(null=True, blank=True)
-
     stripe_id = models.CharField(max_length=50, blank=True, null=True)
-
     moneatry_limit_set_by_user = models.DecimalField(
         max_digits=7, 
         decimal_places=2, 
         default=5000.00
+        )
+    valor_em_debito = models.DecimalField(
+        max_digits=12, 
+        decimal_places=2, 
+        default=0.00
         )
 
     def usuario_adimplente(self):
@@ -188,16 +195,50 @@ class CustomUser(AbstractUser):
             self.last_payment_date = today
             self.save()
 
-    def regular_charge_user_if_needed(self, reset_period):
+    def atualiza_valor_em_debito(self, reset_period):
         if self.is_payment_time(reset_period):
-            #TODO CALCULAR VALOR DEVIDO, ATRVES DE CONVERSAS MARCADAS COMO CONVERSA_AGUARDANDO_VENCIMENTO (PODE SER ATRAVÉS DE UM MÉTODO EM CONVERSAS)
-            #TODO CHAMAR FUNÇÃO DE COBRANÇA
             self.reset_payment_date(reset_period)
+            Conversa.conversations_to_payment_due(self)
+            conversas_a_pagar = Conversa.count_pending_payment_conversations(self)
+            product = Product.objects.filter(Q(minimo_conversas__lte=conversas_a_pagar) & Q(maximo_conversas__gte=conversas_a_pagar)).first()
+            if product:
+                price = product.price_shown
+                valor_devido_anterior = self.valor_em_debito
+                valor_a_adicionar = price * conversas_a_pagar
+                self.valor_em_debito = valor_devido_anterior + valor_a_adicionar
+                self.save()
 
-    def charge_user_on_debt(self):
-        #TODO CALCULAR VALOR DEVIDO ATRAVES DE CONVERSAS MARCADAS COMO CONVERSA_PAGAMENTO_PENDENTE (PODE SER ATRAVÉS DE UM MÉTODO EM CONVERSAS)
-        #TODO CHAMAR FUNÇÃO DE COBRANÇA
-        pass
+    
+    def charge_new_conversations_first_attempt(self, reset_period):
+        if self.is_payment_time(reset_period):
+            self.reset_payment_date(reset_period)
+            Conversa.conversations_to_payment_due(self)
+            conversas_a_pagar = Conversa.count_pending_payment_conversations(self)
+            product = Product.objects.filter(Q(minimo_conversas__lte=conversas_a_pagar) & Q(maximo_conversas__gte=conversas_a_pagar)).first()
+            if product:
+                price = product.price_shown
+                total_cost = price * conversas_a_pagar
+                charge_usages(total_cost, self)
+
+    def inform_all_user_debt(self):
+        return self.valor_em_debito
+    
+    def charge_all_user_debt(self):
+        total_cost = self.valor_em_debito
+        charge_usages(total_cost, self)
+
+    def finance_check(self, reset_period):
+        self.charge_new_conversations_first_attempt(reset_period)
+        self.atualiza_valor_em_debito(reset_period)
+
+    def reduce_debt_amount(self, amount_payed):
+        valor_devido_anterior = self.valor_em_debito
+        valor_devido_atual = valor_devido_anterior - amount_payed
+        if valor_devido_atual >=0:
+            self.valor_em_debito = valor_devido_atual
+        else:
+            self.valor_em_debito = 0
+        self.save()
 
 class Premium_User_Payment_Method_Registration(models.Model):
     PREMIUM_USER_REGISTER_STATUS_CHOICES = (
@@ -350,6 +391,29 @@ class Conversa(models.Model):
         default=CONVERSA_AGUARDANDO_VENCIMENTO,
         choices=FINANCEIRO_CHOICES,
         )
+    
+    @staticmethod
+    def conversations_to_payment_due(user):
+        user_chatbots = ChatBot.objects.filter(user=user)
+        waiting_due_conversations = Conversa.objects.filter(Q(chatbot__in=user_chatbots) & Q(financial_status=CONVERSA_AGUARDANDO_VENCIMENTO))
+        for conversation in waiting_due_conversations:
+            conversation.financial_status = CONVERSA_PAGAMENTO_PENDENTE
+            conversation.save()
+
+    @staticmethod
+    def count_pending_payment_conversations(user):
+        user_chatbots = ChatBot.objects.filter(user=user)
+        pending_conversations = Conversa.objects.filter(Q(chatbot__in=user_chatbots) & Q(financial_status=CONVERSA_PAGAMENTO_PENDENTE))
+        return pending_conversations.count()
+
+    @staticmethod
+    def register_payed_conversations(user, amount_payed):
+        user_chatbots = ChatBot.objects.filter(user=user)
+        pending_conversations = Conversa.objects.filter(Q(chatbot__in=user_chatbots) & Q(financial_status=CONVERSA_PAGAMENTO_PENDENTE))
+        #TODO VARIFICAR NECESSIDADE DE REFINAR MÉTODO PARA APENAS CONVERTER AS CONVERSAS NO LIMITE DO AMOUNT PAYED
+        for conversation in pending_conversations:
+            conversation.financial_status = CONVERSA_PAGA
+            conversation.save()
     
     def __str__(self):
         conversa_id = self.id

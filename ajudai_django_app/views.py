@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from django.http import HttpResponse, HttpResponseForbidden
+from django.http import HttpResponse, HttpResponseForbidden, HttpResponseServerError
 from ajudai_django_app.ai_chatbot.ai_awnser import generate_gpt_response, pedido_confirmado
 from ajudai_django_app.ai_chatbot.ai_tools import instructions_over_limit_error_messages, instructions_under_the_limits
 from ajudai_django_app.fechamento_de_pedido.procedimento_de_fechamento import informar_loja_fechamento_pedido
@@ -7,9 +7,9 @@ from ajudai_django_app.forms import CustomUserCreationForm, LoginForm
 from ajudai_django_app.models import Adesao_Purchase, ChatBot, Conversa, CustomUser, Pedido, Premium_User_Payment_Method_Registration, Product, register_adesao_purchase_after_webhook_confirm, register_payment_method_success_after_webhook_confirm
 from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
 from ajudai_django_app.payments_process.sign_in import create_stripe_customer, return_adesao_checkout_session, return_checkout_session_id, return_checkout_session_url, return_setup_future_payments_checkout_session
-from ajudai_django_app.payments_process.webhooks import HTTP_PAYMENT_API_SIGNATURE, LABEL_TO_CHECKOUT_SESSION_ID, get_session_data, get_webhook_event, success_payment_checkout_and_section_recovery
+from ajudai_django_app.payments_process.webhooks import HTTP_PAYMENT_API_SIGNATURE, LABEL_TO_CHECKOUT_SESSION_ID, get_session_data, get_usage_payment_webhook_customer, get_webhook_event, success_payment_checkout_and_section_recovery, success_payment_usage_charge
 from ajudai_django_app.phone_integration.messages import send_response
-from constants import ADESAO_PURCHASE_STATUS_PENDING, ADITIONAL_INTRUCTIONS_FIELD_ID, ADITIONAL_INTRUCTIONS_FIELD_NAME, DOMAIN, EVENT_INVALID_PAYLOAD, EVENT_INVALID_SIGNATURE, FANTASY_NAME, GPT3_MODEL_NAME, GPT3_TOKEK_LIMIT, PASSWORD_FIELD_ID, PAYMENT_METHOD_REGISTRATION_STATUS_PENDING, PRUDUCT_TYPE_ADESAO, STANDART_PERIOD, STATUS_CONVERSA_EM_ANDAMENTO, STATUS_CONVERSA_PEDIDO_REALIZADO, STATUS_PEDIDO_ENTREGUE, STATUS_PEDIDO_PENDENTE_DE_ENTREGA, SUPPORT_EMAIL, USER_NAME_FIELD_ID
+from constants import ADESAO_PURCHASE_STATUS_PENDING, ADITIONAL_INTRUCTIONS_FIELD_ID, ADITIONAL_INTRUCTIONS_FIELD_NAME, DOMAIN, EVENT_INVALID_PAYLOAD, EVENT_INVALID_SIGNATURE, FANTASY_NAME, GPT3_MODEL_NAME, GPT3_TOKEK_LIMIT, PASSWORD_FIELD_ID, PAYMENT_METHOD_REGISTRATION_STATUS_PENDING, PRUDUCT_TYPE_ADESAO, STANDART_PERIOD, STATUS_CONVERSA_EM_ANDAMENTO, STATUS_CONVERSA_PEDIDO_REALIZADO, STATUS_PEDIDO_ENTREGUE, STATUS_PEDIDO_PENDENTE_DE_ENTREGA, SUPPORT_EMAIL, USER_NAME_FIELD_ID, WEBHOOK_ADESAO_ID, WEBHOOK_PAYMENT_METHOD_ID, WEBHOOK_USAGE_PAYMENT_ID
 from get_secret_variables import get_secret_var
 from .forms import ChatBotForm, CustomPasswordChangeForm, MessageForm
 from django.contrib import messages
@@ -38,7 +38,7 @@ def welcome_view(request):
         'user' : user,
     }
 
-    user.regular_charge_user_if_needed(STANDART_PERIOD)
+    user.finance_check(STANDART_PERIOD)
 
     return render(request, 'welcome.html', context)
 
@@ -51,7 +51,7 @@ def user_accounts_view(request):
     if not request.user.is_authenticated:
         return redirect('login')
     
-    user.regular_charge_user_if_needed(STANDART_PERIOD)
+    user.finance_check(STANDART_PERIOD)
     
     context = {
         "tab_title" : 'Ajudaí',
@@ -91,7 +91,7 @@ def dashboard_view(request):
     if not user.usuario_adimplente_ou_tolerancia_de_uso():
         return redirect('payment_debt_out_service')
     
-    user.regular_charge_user_if_needed(STANDART_PERIOD)
+    user.finance_check(STANDART_PERIOD)
     
     #TODO
     context = {
@@ -111,7 +111,7 @@ def meus_chatbots_view(request):
     if not user.usuario_adimplente_ou_tolerancia_de_uso():
         return redirect('payment_debt_out_service')
     
-    user.regular_charge_user_if_needed(STANDART_PERIOD)
+    user.finance_check(STANDART_PERIOD)
     
     chatbots = ChatBot.objects.filter(user=user)
 
@@ -140,7 +140,7 @@ def minhas_conversas_view(request):
     if not user.usuario_adimplente_ou_tolerancia_de_uso():
         return redirect('payment_debt_out_service')
     
-    user.regular_charge_user_if_needed(STANDART_PERIOD)
+    user.finance_check(STANDART_PERIOD)
 
     chatbots = ChatBot.objects.filter(user=user)
     conversas = Conversa.objects.filter(chatbot__in=chatbots)
@@ -188,7 +188,7 @@ def editar_chatbot_view(request, chatbot_id):
     if not user.usuario_adimplente_ou_tolerancia_de_uso():
         return redirect('payment_debt_out_service')
     
-    user.regular_charge_user_if_needed(STANDART_PERIOD)
+    user.finance_check(STANDART_PERIOD)
 
     chatbot = get_object_or_404(ChatBot, id=chatbot_id)
 
@@ -243,7 +243,7 @@ def pedidos_realizados_view(request):
     if not request.user.is_authenticated:
         return redirect('login')
     
-    user.regular_charge_user_if_needed(STANDART_PERIOD)
+    user.finance_check(STANDART_PERIOD)
 
     pedidos = Pedido.objects.filter(user=user)
 
@@ -793,7 +793,7 @@ def adesao_payment_webhook(request):
     sig_header = request.META[HTTP_PAYMENT_API_SIGNATURE]
     event = None
     
-    event = get_webhook_event(payload, sig_header)
+    event = get_webhook_event(payload, sig_header, WEBHOOK_ADESAO_ID)
 
     if event == EVENT_INVALID_PAYLOAD:
         return HttpResponse(status=400)
@@ -817,7 +817,7 @@ def payment_method_webhook(request):
     sig_header = request.META[HTTP_PAYMENT_API_SIGNATURE]
     event = None
     
-    event = get_webhook_event(payload, sig_header)
+    event = get_webhook_event(payload, sig_header, WEBHOOK_PAYMENT_METHOD_ID)
 
     if event == EVENT_INVALID_PAYLOAD:
         return HttpResponse(status=400)
@@ -837,10 +837,31 @@ def payment_method_webhook(request):
 
 @csrf_exempt
 def usage_payment_webhook(request):
-    #TODO
-    #TODO DEIXAR USUÁRIO COMO ADIMPLENTE
-    #TODO ATUALIZAR STATUS FINANCEIROS DAS CONVERSAS (TALVEZ AQUI, TENHA QUE PEGAR O VALOR E IR VENDO QUANTAS SAO SUFIENTES PARA ATUALIZAR STATUS PARA PAGAS)
-    pass
+    payload = request.body
+    sig_header = request.META[HTTP_PAYMENT_API_SIGNATURE]
+    event = None
+
+    event = get_webhook_event(payload, sig_header, WEBHOOK_USAGE_PAYMENT_ID)
+
+    if event == EVENT_INVALID_PAYLOAD:
+        return HttpResponse(status=400)
+
+    if event == EVENT_INVALID_SIGNATURE:
+        return HttpResponse(status=400)
+
+    if success_payment_usage_charge(event):
+        try:
+            customer_id, amount_payed = get_usage_payment_webhook_customer(event)
+            user = CustomUser.objects.get(stripe_id=customer_id)
+            Conversa.register_payed_conversations(user, amount_payed)
+            user.reduce_debt_amount(amount_payed)
+            return HttpResponse(status=200)
+        except Exception as e:
+            print(f'Erro processando o sucesso de pagamento de uso: {str(e)}')
+            return HttpResponseServerError('Error processing request')
+
+    # Passed signature verification
+    return HttpResponseServerError('Error processing request')
 
 def user_in_debt_warning_view(request):
     #TODO para usuários em débito mas ainda em tolerância

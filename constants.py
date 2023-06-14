@@ -31,6 +31,7 @@ ADESAO_PURCHASE_STATUS_CALCELED = 'Canceled'
 EVENT_INVALID_PAYLOAD = 'invalid payload'
 EVENT_INVALID_SIGNATURE = 'invalid sgnature'
 EVENT_TYPE_TO_CHECKOUT_COMPLETE_SUCCESS = 'checkout.session.completed'
+EVENT_TYPE_USAGE_PAYMENT_SUCCESS = 'payment_intent.succeeded'
 
 USER_PAYMENT_METHOD_NOT_REGISTERED = 'payment_method_not_registered'
 USER_PAYMENT_METHOD_STATUS_OK = 'payment_method_registered_ok'
@@ -44,6 +45,10 @@ STANDART_PERIOD = PAYMENT_PERIOD_MONTHLY
 CONVERSA_PAGA = 'paga'
 CONVERSA_PAGAMENTO_PENDENTE = 'pendente'
 CONVERSA_AGUARDANDO_VENCIMENTO = 'aguardando_vencimento'
+
+WEBHOOK_ADESAO_ID = 'webhook_adesao'
+WEBHOOK_PAYMENT_METHOD_ID = 'webhook_method'
+WEBHOOK_USAGE_PAYMENT_ID = 'webhook_usage_payment'
 
 #---------------------------------------------------------------------
 #API RELATED
