@@ -44,6 +44,5 @@ urlpatterns = [
     path('metodo-pagamento-falhou/', views.payment_method_failure, name = 'metodo_pagamento_falhou'),
     path('metodo-pagamento-webhook/', views.payment_method_webhook, name = 'payment_method_webhook'),
     path('pagamento-uso-webhook/', views.usage_payment_webhook, name = 'usage_payment_webhook'),
-    path('pagamento-vencido-aviso/', views.user_in_debt_warning_view, name = 'payment_debt_warning'),
     path('pagamento-vencido-fora-de-servico/', views.user_in_debt_and_out_of_service_view, name = 'payment_debt_out_service'),
 ]

@@ -863,11 +863,18 @@ def usage_payment_webhook(request):
     # Passed signature verification
     return HttpResponseServerError('Error processing request')
 
-def user_in_debt_warning_view(request):
-    #TODO para usuários em débito mas ainda em tolerância
-    pass
-
 def user_in_debt_and_out_of_service_view(request):
-    #TODO para usuários em débito e fora da tolerância
-    #TODO SERÁ MOSTRADA MENSAGEM DE QUE ESTÁ EM DÉBITO E NÃO PODE FAZER MODIFICAÇÕES E NÃO ESTÁ RECEBENDO MENSAGENS
-    pass
+    #para usuários em débito e fora da tolerância
+    try:
+        user = CustomUser.getUser(request)
+    except:
+        pass
+
+    return render(
+        request,
+        "user_in_debt.html",
+        {
+            'title' : "Fora de Serviço",
+            'user' : user,
+        }
+    )
