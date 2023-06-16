@@ -22,13 +22,15 @@
       <div class="chat-container">
         <div class="menu">
           <!-- Conteúdo do menu lateral -->
-          <a href="{% url 'meus-chatbots' %}">
-            <img
-            class="logo"
-            src="{% static 'image/logo-branco-simples.svg' %}"
-            alt="Logotigo ajudai"
-            />
-          </a>
+          <div class="logo-div">
+            <a href="{% url 'meus-chatbots' %}">
+              <img
+              class="logo"
+              src="{% static 'image/logo-branco-simples.svg' %}"
+              alt="Logotigo ajudai"
+              />
+            </a>
+          </div>
           <div class="menu-icons">
             <a href="{% url 'meus-chatbots' %}">
               <div class="icons-div">
@@ -47,76 +49,105 @@
             {% for conversa in conversas %}
             <li id="contact-{{ conversa.id }}">
               <div class="conteudo-contato">
-                <img
-                class="logo"
-                src="{% static 'image/user-default.png' %}"
-                alt="Logotigo ajudai"
-                />
-                <div class="conteudo-texto-contato">
-                  <p class="texto-contato"><strong>{{ conversa.company_client_number }}</strong></p>
-                  <p class="texto-contato">Status: {{ conversa.status_da_conversa }}</p>
+
+                <div style="display: flex;">
+                  <div>
+                    <img
+                    class="logo"
+                    src="{% static 'image/user-default.png' %}"
+                    alt="Logotigo ajudai"
+                    />
+                  </div>
+                  <div class="conteudo-texto-contato">
+                    <p class="texto-contato"><strong>{{ conversa.company_client_number }}</strong></p>
+                    <p class="texto-contato">Status: {{ conversa.status_da_conversa }}</p>
+                  </div>  
                 </div>
-                <p class="texto-tempo">{{ conversa.time }}</p>
+
+                <div class="texto-tempo-div">
+                  <p class="texto-tempo">{{ conversa.time }}</p>
+                </div>
+
               </div>
             </li>
             {% endfor %}
           </ul>
         </div>
         
-        {% for conversa in conversas %}
-        <div class="conversation" id="conversation-{{ conversa.id }}">
-          <!-- Diálogos com balões de conversa -->
-          {% for message in conversa.context %}
-            {% if not forloop.first %}
-                {% if message.role == "user" %}
-                    <div class="dialog-client">
-                        <div class="message-client">
-                        <span class="sender">Cliente ({{ conversa.company_client_number }})</span>
-                        <p>{{ message.content }}</p>
-                        <span class="timestamp">10:00 AM</span>
-                        </div>
-                    </div>
-                {% elif message.role == "assistant" %}
-                    <div class="dialog-response">
-                        <div class="message-response">
-                        <span class="sender">Chatbot ou Você</span>
-                        <p>{{ message.content }}</p>
-                        <span class="timestamp">10:05 AM</span> 
-                        </div>
-                    </div>
-                {% endif %}
-            {% endif %}
-          {% endfor %}
-          <form id="message-form" method="post">
-            {% csrf_token %}
-            <div class="message-input">
-                <input type="text" name="message" placeholder="Digite sua mensagem...">
-                <input type="hidden" id="conversa_id" name="conversa_id" value="{{ conversa.id }}">
-                <button><i class="fa-solid fa-paper-plane" id="icon-send"></i></button>
-            </div>
-         </form>
-        </div>
-        {% endfor %}
+        <div class="defaultText">
+          <h1>Hey, {{ user.username }}!</h1>
+          <img class="chat-img" src="{% static 'image/doodleChat.svg' %}" alt="Doodle ajudai chat">
+          <h4 class="subtitulo-welcome">Escolha um cliente para ver o trabalho do seu chatbot</h4>
       </div>
+        
+        <div class="side-conversation">
+          {% for conversa in conversas %}
+          <div class="conversation" id="conversation-{{ conversa.id }}">
+            <!-- Diálogos com balões de conversa -->
+            {% for message in conversa.context %}
+              {% if not forloop.first %}
+                  {% if message.role == "user" %}
+                      <div class="dialog-client">
+                          <div class="message-client">
+                          <span class="sender">Cliente ({{ conversa.company_client_number }})</span>
+                          <p>{{ message.content }}</p>
+                          <span class="timestamp">10:00 AM</span>
+                          </div>
+                      </div>
+                  {% elif message.role == "assistant" %}
+                      <div class="dialog-response">
+                          <div class="message-response">
+                          <span class="sender">Chatbot ou Você</span>
+                          <p>{{ message.content }}</p>
+                          <span class="timestamp">10:05 AM</span> 
+                          </div>
+                      </div>
+                  {% endif %}
+              {% endif %}
+            {% endfor %}
+            <div class="input-reply">
+              <form id="message-form" method="post">
+                {% csrf_token %}
+                <div class="message-input">
+                    <input type="text" name="message" placeholder="Digite sua mensagem...">
+                    <input type="hidden" id="conversa_id" name="conversa_id" value="{{ conversa.id }}">
+                    <button class="botao-send"><i class="fa-solid fa-paper-plane" id="icon-send"></i></button>
+                    <a class="botao-pause-chatbot"><i class="fa-solid fa-robot" id="icon-pause"></i></a>
+                </div>
+             </form>
+            </div>
+          
+          </div>
+          {% endfor %}
 
+        </div>
+      </div>
     </body>
-    
+
     <script src="{% static 'js/scriptsChat.js' %}"></script>
 
     <script>
-        $(document).ready(function() {
-            $("li[id^='contact-']").click(function() {
-                var id = $(this).attr('id').split('-')[1];
-                console.log("Clicked contact ID: ", id);
-                $(".conversation").hide();
-                $("#conversation-" + id).show();
-            });
-            // Note for the code in django template: The following are Django template tags
-            // Your IDE might show them as syntax errors, but they will be processed correctly by Django.
-            {% if updated_conversa_id %}
-                $(".conversation").hide();
-                $("#conversation-{{ updated_conversa_id }}").show();
-            {% endif %}
-        });
-        </script>
+      $(document).ready(function() {
+          $("li[id^='contact-']").click(function() {
+              var id = $(this).attr('id').split('-')[1];
+              console.log("Clicked contact ID: ", id);
+              $(".conversation").hide();
+              $("#conversation-" + id).show();
+              $(".defaultText").hide();
+              $(".side-conversation").css("display", "flex");
+          });
+  
+          {% if updated_conversa_id %}
+              $(".conversation").hide();
+              $("#conversation-{{ updated_conversa_id }}").show();
+              $(".defaultText").hide();
+              $(".side-conversation").css("display", "flex");
+          {% else %}
+              $(".conversation").hide();
+              $(".defaultText").show();
+              $(".side-conversation").css("display", "none");
+          {% endif %}
+      });
+    </script>
+
 </html>

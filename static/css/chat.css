@@ -14,10 +14,19 @@ body {
 }
 
 .menu {
-  flex: 0.3;
+  width: 80px;
+  min-width: 65px;
+  max-width: 85px;
+  width: 7vw;
   background-color: #5C7AD3;
-  /* padding: 20px; */
+  /* padding: 20px; */  
 
+}
+
+.logo-div {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 #icones-menu {
@@ -27,6 +36,7 @@ body {
     margin-top: 20px; 
     width: 100%;
     cursor: pointer;
+    
 }
 
 #icones-menu:hover {
@@ -38,6 +48,7 @@ body {
     height: 50px;
     margin: 10px;
     cursor: pointer;
+    
 }
 
 .menu-icons {
@@ -54,7 +65,7 @@ body {
 }
 
 .contacts {
-  flex: 1.5;
+  min-width: 300px;
   background-color: #e5e5e5;
   padding: 20px;
   overflow-y: auto;
@@ -85,7 +96,7 @@ body {
 }
 
 .texto-tempo {
-    margin: 0;
+    /* margin: 0; */
     font-size: 12px;
     margin-right: 5px;
     margin-top: 5px;
@@ -94,6 +105,9 @@ body {
 
 .conteudo-contato {
     display: flex;
+    justify-content: space-between;
+    /* width: 25vw;
+    min-width: 300px; */
     flex-direction: row;
     background-color: #FFFFFF;
     border-radius: 10px;
@@ -110,15 +124,50 @@ body {
     justify-content: center;
 }
 
-.conversation {
-  flex: 4;
+.defaultText {
+  /* display: none; */
+
+  /* position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center; */
+
+  /* flex: 4; */
+  width: 68vw;
+  padding-top: 20vh;
+  text-align: center;
   background-color: #ffffff;
-  padding: 20px;
   display: none;
   flex-direction: column;
   position: relative;
-  overflow-y: auto;
+  overflow-y: scroll;
   height: 100%;
+  padding-bottom: 8vh;
+}
+
+.chat-img {
+  width: 300px;
+  height: auto;
+}
+
+.conversation {
+  /* flex: 4; */
+  width: 100%;
+  background-color: #ffffff;
+  padding: 20px;
+  display: none;
+  /* flex-direction: column; */
+  position: relative;
+  overflow-y: scroll;
+  height: 100%;
+  /* padding-bottom: 10vh; */
+}
+
+.side-conversation {
+  display: none;
+  flex-direction: column;
+  width: 68vw;
 }
 
 .message-client {
@@ -168,30 +217,25 @@ body {
 
 .message-input {
   display: flex;
-  align-items: center;
+  
   width: 100%;
-  background-color: #ffffff;
   padding: 10px;
-  box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
-  bottom: 0;
-  left: 0;
-  position: absolute;
+  background-color: #ffffff;
 }
 
-.message-input input[type="text"] {
-  flex: 1;
-  /* padding: 10px; */
+.input-reply {
+  border-top: 1px solid rgba(156, 156, 156, 0.1);
+}
 
+
+.message-input input[type="text"] {
   width: 100%;
-  padding: 8px;
   border: none;
-  border-radius: 4px;
   outline: none;
 }
 
-.message-input .botao-send {
+.botao-send {
   padding: 10px 15px;
-  /* margin-left: 10px; */
   background-color: #5C7AD3;
   border-style: none;
   border-radius: 50px;
@@ -199,32 +243,44 @@ body {
 }
 
 .botao-pause-chatbot  {
-    padding: 10px 10px;
-    /* margin-left: 10px; */
+    padding: 10px 15px;
     background-color: #ff9696;
     border-style: none;
     border-radius: 50px;
     cursor: pointer;
     margin-left: 10px;
+    margin-right: 10px;
 }
 
-.message-input .botao-send:active {
+.botao-send:active {
     background-color: #b5c7fd;
     border-style: none;
     outline: none;
     box-shadow: none;
 }
 
-.message-input .botao-send:focus {
+.botao-pause-chatbot:active {
+    background-color: #f8b0b0;
+    border-style: none;
+    outline: none;
+    box-shadow: none;
+}
+
+.botao-send:focus {
+    border-style: none;
+    outline: none;
+    box-shadow: none;
+}
+
+.botao-pause-chatbot:focus {
     border-style: none;
     outline: none;
     box-shadow: none;
 }
 
 
-
 #icon-send {
-    color: #f2f2f2;
+    color: #F2F2F2;
 }
 
 #icon-pause {

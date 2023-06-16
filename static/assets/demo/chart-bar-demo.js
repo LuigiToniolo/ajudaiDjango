@@ -4,15 +4,36 @@ Chart.defaults.global.defaultFontColor = '#292b2c';
 
 // Bar Chart Example
 var ctx = document.getElementById("myBarChart");
+
+// Obter a data atual
+var currentDate = new Date();
+
+// Array para armazenar as labels
+var labels = [];
+
+// Loop para obter os seis meses anteriores, incluindo o mês atual
+for (var i = 5; i >= 0; i--) {
+  var date = new Date(currentDate);
+  date.setMonth(date.getMonth() - i);
+  labels.push(date.toLocaleDateString("pt-BR", { month: 'long' }));
+}
+
+var data = [];
+for (var j = 0; j < 6; j++) {
+  var randomValue = Math.floor(Math.random() * 20000);
+  data.push(randomValue);
+}
+
 var myLineChart = new Chart(ctx, {
   type: 'bar',
   data: {
-    labels: ["January", "February", "March", "April", "May", "June"],
+    labels: labels,
     datasets: [{
       label: "Revenue",
-      backgroundColor: "rgba(2,117,216,1)",
-      borderColor: "rgba(2,117,216,1)",
-      data: [4215, 5312, 6251, 7841, 9821, 14984],
+      // backgroundColor: "rgba(2,117,216,1)",
+      backgroundColor: "#5C7AD3",
+      borderColor: "#5C7AD3",
+      data: data,
     }],
   },
   options: {
@@ -31,7 +52,7 @@ var myLineChart = new Chart(ctx, {
       yAxes: [{
         ticks: {
           min: 0,
-          max: 15000,
+          max: 20000,
           maxTicksLimit: 5
         },
         gridLines: {

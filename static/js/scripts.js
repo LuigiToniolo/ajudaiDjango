@@ -31,18 +31,8 @@ toggleButton.addEventListener('click', function() {
   this.classList.toggle('active');
 });
 
-// // JavaScript para abrir e fechar a modal
-// const modal = document.querySelector('.modal');
-// const openModalLinks = document.querySelectorAll('.open-modal');
-// const closeModal = document.querySelector('.close');
 
-// openModalLinks.forEach(link => {
-//     link.addEventListener('click', function(event) {
-//     event.preventDefault(); // Impede a ação padrão de navegação
-//     modal.style.display = 'block';
-//     });
-// });
 
-// closeModal.addEventListener('click', function() {
-//     modal.style.display = 'none';
-// });
+
+
+//Configuração quantidade de conversas
