@@ -95,6 +95,11 @@ class CustomUser(AbstractUser):
                 if today > max_tolerance_day:
                     return False
         return True
+    
+    def userIsPremium(self):
+        if self.user_plan == USER_LEVEL_PREMIUM:
+            return True
+        return False
 
     @staticmethod
     def getUser(request):
@@ -244,6 +249,20 @@ class CustomUser(AbstractUser):
         else:
             self.valor_em_debito = 0
         self.save()
+
+    def can_create_new_messages(self, reset_period):
+        if self.is_payment_time(reset_period):
+            self.reset_payment_date(reset_period)
+            Conversa.conversations_to_payment_due(self)
+            conversas_a_pagar = Conversa.count_pending_payment_conversations(self)
+            product = Product.objects.filter(Q(minimo_conversas__lte=conversas_a_pagar) & Q(maximo_conversas__gte=conversas_a_pagar)).first()
+            if product:
+                price = product.price_shown
+                total_cost = price * conversas_a_pagar
+                if total_cost >= self.moneatry_limit_set_by_user:
+                    return False
+
+        return True        
 
 class Premium_User_Payment_Method_Registration(models.Model):
     PREMIUM_USER_REGISTER_STATUS_CHOICES = (

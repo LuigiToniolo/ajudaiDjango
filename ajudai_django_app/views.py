@@ -9,7 +9,7 @@ from django.contrib.auth import authenticate, login, logout, update_session_auth
 from ajudai_django_app.payments_process.sign_in import create_stripe_customer, return_adesao_checkout_session, return_checkout_session_id, return_checkout_session_url, return_setup_future_payments_checkout_session
 from ajudai_django_app.payments_process.webhooks import HTTP_PAYMENT_API_SIGNATURE, LABEL_TO_CHECKOUT_SESSION_ID, get_session_data, get_usage_payment_webhook_customer, get_webhook_event, success_payment_checkout_and_section_recovery, success_payment_usage_charge
 from ajudai_django_app.phone_integration.messages import send_response
-from constants import ADESAO_PURCHASE_STATUS_PENDING, ADITIONAL_INTRUCTIONS_FIELD_ID, ADITIONAL_INTRUCTIONS_FIELD_NAME, DOMAIN, EVENT_INVALID_PAYLOAD, EVENT_INVALID_SIGNATURE, FANTASY_NAME, GPT3_MODEL_NAME, GPT3_TOKEK_LIMIT, PASSWORD_FIELD_ID, PAYMENT_METHOD_REGISTRATION_STATUS_PENDING, PRUDUCT_TYPE_ADESAO, STANDART_PERIOD, STATUS_CONVERSA_EM_ANDAMENTO, STATUS_CONVERSA_PEDIDO_REALIZADO, STATUS_PEDIDO_ENTREGUE, STATUS_PEDIDO_PENDENTE_DE_ENTREGA, SUPPORT_EMAIL, USER_NAME_FIELD_ID, WEBHOOK_ADESAO_ID, WEBHOOK_PAYMENT_METHOD_ID, WEBHOOK_USAGE_PAYMENT_ID
+from constants import ADESAO_PURCHASE_STATUS_PENDING, ADITIONAL_INTRUCTIONS_FIELD_ID, ADITIONAL_INTRUCTIONS_FIELD_NAME, DOMAIN, EVENT_INVALID_PAYLOAD, EVENT_INVALID_SIGNATURE, FANTASY_NAME, GPT3_MODEL_NAME, GPT3_TOKEK_LIMIT, PASSWORD_FIELD_ID, PAYMENT_METHOD_REGISTRATION_STATUS_PENDING, PRUDUCT_TYPE_ADESAO, STANDART_PERIOD, STATUS_CONVERSA_EM_ANDAMENTO, STATUS_CONVERSA_PEDIDO_REALIZADO, STATUS_PEDIDO_ENTREGUE, STATUS_PEDIDO_PENDENTE_DE_ENTREGA, SUPPORT_EMAIL, USER_LEVEL_PREMIUM, USER_NAME_FIELD_ID, WEBHOOK_ADESAO_ID, WEBHOOK_PAYMENT_METHOD_ID, WEBHOOK_USAGE_PAYMENT_ID
 from get_secret_variables import get_secret_var
 from .forms import ChatBotForm, CustomPasswordChangeForm, MessageForm
 from django.contrib import messages
@@ -36,6 +36,7 @@ def welcome_view(request):
     context = {
         "tab_title" : 'Bem Vindo ao Ajudaí',
         'user' : user,
+        'userIsPremium' : user.userIsPremium(),
     }
 
     user.finance_check(STANDART_PERIOD)
@@ -52,7 +53,7 @@ def user_accounts_view(request):
         return redirect('login')
     
     user.finance_check(STANDART_PERIOD)
-    
+
     context = {
         "tab_title" : 'Ajudaí',
         "meta_desciption" : '',
@@ -71,6 +72,7 @@ def user_accounts_view(request):
         'change_password_text' : 'Alterar minha senha',
         'LOGOUT_BUTTON_VALUE' : 'Logout',
         'DELETE_ACCOUNT_BUTTON_VALUE' : 'Deletar Conta',
+        'userIsPremium' : user.userIsPremium(),
     }
 
     return render(
@@ -88,6 +90,9 @@ def dashboard_view(request):
     if not request.user.is_authenticated:
         return redirect('login')
     
+    if not user.userIsPremium():
+        return redirect('planos_disponiveis')
+    
     if not user.usuario_adimplente_ou_tolerancia_de_uso():
         return redirect('payment_debt_out_service')
     
@@ -95,6 +100,7 @@ def dashboard_view(request):
     
     #TODO
     context = {
+        'userIsPremium' : user.userIsPremium(),
     }
 
     return render(request, 'dashboard.html', context)
@@ -105,8 +111,11 @@ def meus_chatbots_view(request):
     except:
         return redirect('database_error')
     
-    if not request.user.is_authenticated:
+    if not user.is_authenticated:
         return redirect('login')
+    
+    if not user.userIsPremium():
+        return redirect('planos_disponiveis')
     
     if not user.usuario_adimplente_ou_tolerancia_de_uso():
         return redirect('payment_debt_out_service')
@@ -118,15 +127,46 @@ def meus_chatbots_view(request):
     context = {
         'user' : user,
         'chatbots' : chatbots,
+        'userIsPremium' : user.userIsPremium(),
     }
     return render(request, 'meus-chatbots.html', context)
 
 def planos_disponiveis_view(request):
-    return render(request, 'planos_disponiveis.html')
+    try:
+        user = CustomUser.getUser(request)
+    except:
+        return redirect('database_error')
+
+    context = {
+        'user' : user,
+        'userIsPremium' : user.userIsPremium(),
+    }
+
+    return render(request, 'planos_disponiveis.html', context)
 
 def meu_plano_view(request):
+    try:
+        user = CustomUser.getUser(request)
+    except:
+        return redirect('database_error')
+    
+    if not user.is_authenticated:
+        return redirect('login')
+    
+    if not user.userIsPremium():
+        return redirect('planos_disponiveis')
+    
+    if not user.usuario_adimplente_ou_tolerancia_de_uso():
+        return redirect('payment_debt_out_service')
+    
+    user.finance_check(STANDART_PERIOD)
+
+    context = {
+        'user' : user,
+        'userIsPremium' : user.userIsPremium(),
+    }
     #TODO APÓS INTEGRAÇÃO COM PAGAMENTOD
-    return render(request, 'meu-plano.html')
+    return render(request, 'meu-plano.html', context)
 
 def minhas_conversas_view(request):
     try:
@@ -136,6 +176,9 @@ def minhas_conversas_view(request):
     
     if not request.user.is_authenticated:
         return redirect('login')
+    
+    if not user.userIsPremium():
+        return redirect('planos_disponiveis')
     
     if not user.usuario_adimplente_ou_tolerancia_de_uso():
         return redirect('payment_debt_out_service')
@@ -169,6 +212,7 @@ def minhas_conversas_view(request):
         'user' : user,
         'conversas' : conversas,
         'updated_conversa_id': updated_conversa_id,
+        'userIsPremium' : user.userIsPremium(),
     }
     return render(
         request,
@@ -207,9 +251,12 @@ def editar_chatbot_view(request, chatbot_id):
     if not request.user.is_authenticated:
         return redirect('login')
     
+    if not user.userIsPremium():
+        return redirect('planos_disponiveis')
+    
     if not user.usuario_adimplente_ou_tolerancia_de_uso():
         return redirect('payment_debt_out_service')
-    
+
     user.finance_check(STANDART_PERIOD)
 
     chatbot = get_object_or_404(ChatBot, id=chatbot_id)
@@ -235,6 +282,7 @@ def editar_chatbot_view(request, chatbot_id):
         'page_title' : 'Edite seu Chatbot',
         'submit_edit_chatbot_text' : 'Salvar as alterações',
         'delete_edit_chatbot_text' : 'Deletar o Chatbot',
+        'userIsPremium' : user.userIsPremium(),
     }
 
     return render(
@@ -265,6 +313,9 @@ def pedidos_realizados_view(request):
     if not request.user.is_authenticated:
         return redirect('login')
     
+    if not user.userIsPremium():
+        return redirect('planos_disponiveis')
+    
     user.finance_check(STANDART_PERIOD)
 
     pedidos = Pedido.objects.filter(user=user)
@@ -281,6 +332,7 @@ def pedidos_realizados_view(request):
         'pedidos' : pedidos,
         'STATUS_PEDIDO_PENDENTE_DE_ENTREGA' : STATUS_PEDIDO_PENDENTE_DE_ENTREGA,
         'STATUS_PEDIDO_ENTREGUE' : STATUS_PEDIDO_ENTREGUE,
+        'userIsPremium' : user.userIsPremium(),
     }
 
     return render(
@@ -297,6 +349,9 @@ def resumo_pedido(request, pedido_id):
     
     if not request.user.is_authenticated:
         return redirect('login')
+    
+    if not user.userIsPremium():
+        return redirect('planos_disponiveis')
     
     if not user.usuario_adimplente_ou_tolerancia_de_uso():
         return redirect('payment_debt_out_service')
@@ -318,6 +373,7 @@ def resumo_pedido(request, pedido_id):
         'label_resumo_pedido' : 'Resumo do Pedido',
         'label_numero_cliente_pedido' : 'Número Whatsapp do Cliente',
         'numero_cliente_pedido' : numero_cliente_pedido,
+        'userIsPremium' : user.userIsPremium(),
     }
 
     return render(
@@ -335,6 +391,7 @@ def login_view(request):
         'forgot_password_text': 'Esqueci minha senha',
         'submit_login_text' : 'Acessar',
         'isHome' : False,
+        'userIsPremium' : False,
     }
     if request.method == 'POST':
         # obtenha os dados do formulário de login aqui
@@ -380,6 +437,7 @@ def register_view(request):
                 'error_message': error_message,
                 'registeButtonText' : 'Criar minha conta',
                 'isHome' : False,
+                'userIsPremium' : False,
             }
             return render(request, 'register.html', context)
     else:
@@ -389,6 +447,7 @@ def register_view(request):
             'form': form,
             'registeButtonText' : 'Criar minha conta',
             'isHome' : False,
+            'userIsPremium' : False,
         }
         return render(request, 'register.html', context)
     
@@ -410,6 +469,7 @@ def send_confirmation_email(request):
         'user': user,
         'message': 'Um e-mail de confirmação foi enviado. Verifique sua caixa de entrada (INCLUINDO A CAIXA DE SPAM) e clique no link de confirmação. É comum que os provedores de e-mail direcionem o e-mail para a caixa de spam, então lembre-se de verificar isso também... Lembre-se, para usar nossos serviços, sua conta deve ter um endereço de e-mail confirmado.',
         'observation' : 'Se você não receber dentro de alguns minutos, atualize esta página.',
+        'userIsPremium' : False,
     }
     return render(request, 'email_sent.html', context)
 
@@ -426,6 +486,7 @@ def email_confirmed(request, token):
             'user': user,
             'message': 'Seu email foi confirmado! Obrigado!',
             'observation' : 'Agora você será redirecionado para à página inicial.',
+            'userIsPremium' : False,
         }
         return render(request, 'email_confirmed.html', context)
     
@@ -447,6 +508,7 @@ def email_confirm_link_error(request):
             'SUPPORT_EMAIL' : SUPPORT_EMAIL,
             'user' : user,
             'isHome' : False,
+            'userIsPremium' : False,
         }
     )
 
@@ -463,6 +525,11 @@ def delete_account_view(request):
     return redirect('user_accounts')
 
 def change_password_view(request):
+    try:
+        user = CustomUser.getUser(request)
+    except:
+        return redirect('database_error')
+    
     if not request.user.is_authenticated:
         return redirect('login')
     
@@ -481,7 +548,8 @@ def change_password_view(request):
     return render(request, 'change_password.html', {
         'title' : "Alteração de Senha",
         'form': form,
-        'submit_change_passwird_text' : 'Alterar a senha'
+        'submit_change_passwird_text' : 'Alterar a senha',
+        'userIsPremium' : user.userIsPremium(),
     })
 
 def terms_and_conditions(request):
@@ -495,6 +563,7 @@ def terms_and_conditions(request):
         "terms_and_conditions.html",
         {
             'title' : "Termos de Uso",
+            'userIsPremium' : user.userIsPremium(),
         }
     )
 
@@ -509,6 +578,7 @@ def privacy_policy(request):
         "privacy_policy.html",
         {
             'title' : "Política de Privacidade",
+            'userIsPremium' : user.userIsPremium(),
         }
     )
 
@@ -527,6 +597,7 @@ def database_error(request):
             'SUPPORT_EMAIL' : SUPPORT_EMAIL,
             'user' : user,
             'isHome' : False,
+            'userIsPremium' : user.userIsPremium(),
         }
     )
 
@@ -538,6 +609,9 @@ def chatbot_creation_form(request):
     
     if not request.user.is_authenticated:
         return redirect('login')
+    
+    if not user.userIsPremium():
+        return redirect('planos_disponiveis')
     
     if not user.usuario_adimplente_ou_tolerancia_de_uso():
         return redirect('payment_debt_out_service')
@@ -569,6 +643,7 @@ def chatbot_creation_form(request):
         'submit_button_text' : 'Ativar ChatBot',
         'chatbot_create_password_label' : 'Create Chatbot Password:',
         'ADITIONAL_INTRUCTIONS_FIELD_ID' : ADITIONAL_INTRUCTIONS_FIELD_ID,
+        'userIsPremium' : user.userIsPremium(),
     }
 
     return render(
@@ -578,13 +653,48 @@ def chatbot_creation_form(request):
     )
 
 def contato_view(request):
-    return render(request, 'contato.html')
+    try:
+        user = CustomUser.getUser(request)
+    except:
+        return redirect('database_error')
+    
+    context = {
+        "tab_title" : 'Contato',
+        'user' : user,
+        "meta_desciption" : '',
+        'userIsPremium' : user.userIsPremium(),
+    }
+    return render(request, 'contato.html', context)
 
 def instrucoes_view(request):
-    return render(request, 'instrucoes.html')
+    try:
+        user = CustomUser.getUser(request)
+    except:
+        return redirect('database_error')
+    
+    context = {
+        "tab_title" : 'Instruções',
+        'user' : user,
+        "meta_desciption" : '',
+        'userIsPremium' : user.userIsPremium(),
+    }
+
+    return render(request, 'instrucoes.html', context)
 
 def solicitacao_view(request):
-    return render(request, 'solicitacao.html')
+    try:
+        user = CustomUser.getUser(request)
+    except:
+        return redirect('database_error')
+    
+    context = {
+        "tab_title" : 'Solicitação',
+        'user' : user,
+        "meta_desciption" : '',
+        'userIsPremium' : user.userIsPremium(),
+    }
+
+    return render(request, 'solicitacao.html', context)
 
 
 WEBHOOK_TOKEN = get_secret_var('WHATAPP_WEBHOOK_TOKEN')
@@ -636,10 +746,13 @@ def process_message(data):
                                     status_da_conversa=STATUS_CONVERSA_EM_ANDAMENTO
                                 )
                             except:
-                                conversation = Conversa.objects.create(
-                                    company_client_number=numero_cliente,
-                                    chatbot=chatbot,
-                                )
+                                if user.can_create_new_messages(STANDART_PERIOD):
+                                    conversation = Conversa.objects.create(
+                                        company_client_number=numero_cliente,
+                                        chatbot=chatbot,
+                                    )
+                                else:
+                                    return
                             
                             if conversation.chatbot_ativo:
                                 role = ''
@@ -723,14 +836,18 @@ def payment_method_success(request):
         user = CustomUser.getUser(request)
     except:
         pass
+    
+    context = {
+        "tab_title" : 'Processado com Sucesso',
+        'user' : user,
+        "meta_desciption" : '',
+        'userIsPremium' : user.userIsPremium(),
+    }
 
     return render(
         request,
         "sucesso-pagamento.html",
-        {
-            'title' : "Processado com Sucesso",
-            'user' : user,
-        }
+        context
     )
 
 def payment_method_failure(request):
@@ -739,13 +856,17 @@ def payment_method_failure(request):
     except:
         pass
 
+    context = {
+        "tab_title" : 'Falha no Processamento',
+        'user' : user,
+        "meta_desciption" : '',
+        'userIsPremium' : user.userIsPremium(),
+    }
+
     return render(
         request,
         "falha-pagamento.html",
-        {
-            'title' : "Processado com Sucesso",
-            'user' : user,
-        }
+        context
     )
 
 def adesao_payment_checkout(request):
@@ -811,6 +932,7 @@ def adesao_payment_failiure(request):
         {
             'title' : "Processado com Sucesso",
             'user' : user,
+            'userIsPremium' : user.userIsPremium(),
         }
     )
 
@@ -909,6 +1031,7 @@ def user_in_debt_and_out_of_service_view(request):
             'title' : "Fora de Serviço",
             'user' : user,
             'valor_em_divida' : valor_em_divida,
+            'userIsPremium' : user.userIsPremium(),
         }
     )
 
@@ -929,6 +1052,7 @@ def pay_debit(request):
         {
             'title' : "Tentativa de pagamento",
             'user' : user,
+            'userIsPremium' : user.userIsPremium(),
         }
     )
 
