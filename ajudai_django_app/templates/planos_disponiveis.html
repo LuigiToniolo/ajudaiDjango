@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+    <head>
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="" />
+        <meta name="author" content="" />
+        <title>{{ tab_title }}</title>
+        {% load static %}
+        <link href="{% static 'css/styles.css' %}" rel="stylesheet" />
+        <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+    </head>
+    <body>
+        {% include 'includes/topMenu.html' %}
+        <div id="layoutSidenav">
+            <div id="layoutSidenav_nav">
+
+                {% include 'includes/sidebar.html' %}
+                
+            </div>
+            <div id="layoutSidenav_content">
+                <main>
+                    <div class="container-fluid px-4">
+                        <div class="cabecalho-planos">
+                            <div class="texto-cabecalho">
+                                <h2>Planos disponíveis</h2>
+                                <h4>Você ainda não assinou nenhum plano.</h4>
+                                <p>Escolha o melhor plano para Ajudar a alavancar seu negócio e aumentar suas vendas!</p>
+                            </div>
+                            <img class="doodle-plans" src="{% static 'image/doodle-plans.svg' %}" alt="doodle plans ajudai">
+                        </div>
+                        <div class="divider"></div>
+                        
+                        <div class="plan-container">
+                            <div class="plan">
+                                <img class="standard-img" src="{% static 'image/coin.png' %}" alt="standard plans ajudai">
+                                <h3 class="title">Standard</h3>
+                                <p class="price"><span class="moeda">R$</span>0,20</p>
+                                <p class="cobranca-conversa">/Conversa</p>
+                                <p class="condicao">+ R$559 (Implementação)</p>
+                                <p class="resumo">Ideal para você que deseja automatizar seus pedidos de uma maneira mais inteligente</p>
+                                <ul class="features">
+                                    <li><strong>0 a 1500</strong> Conversas por mês</li>
+                                    <li>Suporte AjudaAI 24 horas</li>
+                                    <li>Acesso ilimitado ao software</li>
+                                    <li>Suporte grátis</li>
+                                    <li>Gestor de pedidos</li>
+                            </ul>
+                            <a href="{% url 'checkout_pagamento_adesao' %}" class="select-plan">Assine já</a>
+                        </div>
+                        
+                        <div class="plan-popular">
+                            <div class="pricing_best">
+                                <span class="pricing_best-text">Popular +</span>
+                            </div>
+                            <img class="standard-img" src="{% static 'image/money.png' %}" alt="advanced plans ajudai">
+                            <h3 class="title">Plus</h3>
+                                <p class="price-pop"><span class="moeda">R$</span>0,18</p>
+                                <p class="cobranca-conversa">/Conversa</p>
+                                <p class="condicao">+ R$559 (Implementação)</p>
+                                <p class="resumo">Essencial para quem deseja reduzir o tempo de atendimento ao cliente e aumentar suas conversões</p>
+                                <ul class="features">
+                                    <li><strong>1501 a 2500</strong> Conversas por mês</li>
+                                    <li>Suporte AjudaAI 24 horas</li>
+                                    <li>Acesso ilimitado ao software</li>
+                                    <li>Suporte e Implementação grátis</li>
+                                    <li>Gestor de pedidos</li>
+                                </ul>
+                                <a href="{% url 'checkout_pagamento_adesao' %}" class="select-plan">Assine já</a>
+                            </div>
+
+                            <div class="plan">
+                                <img class="standard-img" src="{% static 'image/premium.png' %}" alt="premium plans ajudai">
+                                <h2 class="title">Premium</h2>
+                                <p class="price"><span class="moeda">R$</span>0,16</p>
+                                <p class="cobranca-conversa">/Conversa</p>
+                                <p class="condicao">+ R$559 (Implementação)</p>
+                                <p class="resumo">Essencial para quem possui um grande volume de pedidos e deseja usar tecnologia de ponta para Ajudar no atendimento</p>
+                                <ul class="features">
+                                    <li><strong>2501 a 4500</strong>Conversas por mês</li>
+                                    <li>Suporte AjudaAI 24 horas</li>
+                                    <li>Acesso ilimitado ao software</li>
+                                    <li>Suporte grátis</li>
+                                    <li>Gestor de pedidos</li>
+                            </ul>
+                                <a href="{% url 'checkout_pagamento_adesao' %}" class="select-plan">Assine já</a>
+                            </div>
+                            <div class="plan">
+                                <img class="standard-img" src="{% static 'image/rocket.png' %}" alt="business vip plan ajudai">
+                                <h2 class="title">Corporativo VIP</h2>
+                                <p class="price"><span class="moeda">R$</span>0,12</p>
+                                <p class="cobranca-conversa">/Conversa</p>
+                                <p class="condicao">+R$559 (Implementação)</p>
+                                <p class="resumo">Perfeito para empresas com alto volume de pedidos que buscam crescimento seguro e de qualidade.</p>
+                                <ul class="features">
+                                    <li><strong>4501 a 20000</strong> Conversas por mês</li>
+                                    <li>Suporte AjudaAI 24 horas</li>
+                                    <li>Acesso ilimitado ao software</li>
+                                    <li>Suporte grátis</li>
+                                    <li>Gestor de pedidos</li>
+                            </ul>
+                                <a href="{% url 'checkout_pagamento_adesao' %}" class="select-plan">Assine já</a>
+                            </div>
+                          </div>
+                          
+                          <div class="divider"></div>
+                          
+                          <div class="explain-conversation">
+                            <h3>Como funciona a cobrança de uma conversa?</h3>
+                            <p>Nós cobramos por conversa realizada: O custo é baseado no número de mensagens trocadas entre o cliente e o nosso chatbot. Cada vez que uma mensagem é enviada ou recebida, é contabilizada para fins de cobrança.</p>
+                            <h3>O que é considerado uma conversa?</h3>
+                            <p>É considerado uma conversa toda vez que algum cliente manda mensagem para nosso chatbot e ele responde até que um <strong>pedido é realizado</strong> ou em <strong>24 horas</strong> da conversa em andamento: Quando um cliente envia uma mensagem para o chatbot, inicia-se uma conversa. Essa conversa continua até que um pedido seja realizado ou até que 24 horas se passem desde o último contato.</p>
+                            <p>Portanto, é contado como uma conversa quando o <strong>pedido é realizado</strong> ou quando passa <strong>24 horas da conversa</strong> aberta com nosso cliente: Uma conversa é considerada concluída quando um pedido é realizado pelo cliente. Nesse momento, a contagem é fechada. Além disso, se não houver um pedido realizado, a conversa será encerrada automaticamente após 24 horas do último contato. Após esse período, a conversa é considerada concluída para fins de cobrança.</p>
+                            <p>Essa estrutura nos permite medir e cobrar de forma justa o uso do nosso chatbot, levando em consideração o engajamento e o tempo de interação com os clientes. Garantimos transparência e clareza no processo de contagem de conversas, proporcionando uma forma eficiente de precificação aos nossos clientes.</p>
+                          </div>
+
+                          <table class="tabela">
+                            <thead class="head-tabela">
+                              <tr>
+                                <th class="left-table">Plano</th>
+                                <th class="top-table-plan">Basic</th>
+                                <th class="top-table-plan">Plus</th>
+                                <th class="top-table-plan">Premium</th>
+                                <th class="top-table-plan">Corporativo VIP</th>
+                                <!-- <th class="top-table">Entenda os Valores</th> -->
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr>
+                                <td class="left-table">Conversas</td>
+                                <td class="top-table">0 - 1500</td>
+                                <td class="top-table">1501 - 2500</td>
+                                <td class="top-table">2501 - 4500</td>
+                                <td class="top-table">4501 - 20000</td>
+                                <!-- <td class="top-table"><a href="#" class="open-modal">Saiba mais</a></td> -->
+                              </tr>
+                              <!-- Adicione mais linhas conforme necessário -->
+                            </tbody>
+                        </table>
+
+                        <h3>Faça o cálculo ideal para seu negócio</h3>
+                        <p>Coloque o número de conversas no campo abaixo para fazer o cálculo exato do valor do nosso serviço</p>
+
+                        <div class="calculadora">
+                            <div class="calculadora-conversas">
+                                <!-- <label for="conversas" class="label-calculadora">Quantidade de Conversas:</label> -->
+                                <input type="number" id="conversas" min="0" placeholder="Digite o número de conversas..." class="input-calculadora">
+                                <button id="calcular-btn" class="button-calculadora">Calcular<i class="fa-solid fa-calculator"></i></button>
+                            </div>
+                            
+                            <div class="resposta-valores">
+                                
+                                <p><span id="quantidade-conversas-label">Para a quantidade de conversas de: </span></p>
+                                <p class="quantidade-conversas"><span id="quantidade-conversas"></span></p>
+                                <p class="mensagem-erro"><span class="mensagem-erro" id="mensagem-erro"></span></p>
+
+                                <p><span id="valor-total-label">Seu investimento total mensal será: </span></p>
+                                <p class="valor-total"><span id="valor-total"></span></p>
+                            </div>
+                        </div>
+                        
+
+                    </div>
+                </main>
+                <footer class="py-4 bg-light mt-auto" id="footer">
+                    <div class="container-fluid px-4">
+                        <div class="d-flex align-items-center justify-content-between small">
+                            <div class="text-muted">Copyright © 2023 Ajudai. Todos os direitos reservados.</div>
+                            <div>
+                                <a href="#">Políticas de pricavidade</a>
+                                &middot;
+                                <a href="#">Termos de condição</a>
+                            </div>
+                        </div>
+                    </div>
+                </footer>
+            </div>
+        </div>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+        <script src="{% static 'js/scripts.js' %}"></script>
+
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                var inputConversas = document.getElementById("conversas");
+                var calcularBtn = document.getElementById("calcular-btn");
+                var quantidadeConversasLabel = document.getElementById("quantidade-conversas-label");
+                var quantidadeConversasElement = document.getElementById("quantidade-conversas");
+                var valorTotalLabel = document.getElementById("valor-total-label");
+                var valorTotalElement = document.getElementById("valor-total");
+                var messageError = document.getElementById("mensagem-erro");
+              
+                inputConversas.addEventListener("keydown", function(event) {
+                  if (event.key === "Enter") {
+                    event.preventDefault();
+                    calcularPrecificacao();
+                  }
+                });
+              
+                calcularBtn.addEventListener("click", function() {
+                  calcularPrecificacao();
+                });
+              
+                function calcularPrecificacao() {
+                  var quantidadeConversas = parseInt(inputConversas.value);
+                  var valorPrecificacao;
+              
+                  if (quantidadeConversas >= 0 && quantidadeConversas <= 1500) {
+                    valorPrecificacao = 0.20;
+                  } else if (quantidadeConversas >= 1501 && quantidadeConversas <= 2500) {
+                    valorPrecificacao = 0.18;
+                  } else if (quantidadeConversas >= 2501 && quantidadeConversas <= 4500) {
+                    valorPrecificacao = 0.16;
+                  } else if (quantidadeConversas >= 4501 && quantidadeConversas <= 20000) {
+                    valorPrecificacao = 0.12;
+                  } else {
+                    valorPrecificacao = "N/A";
+                  }
+              
+                  if (valorPrecificacao === "N/A") {
+                    quantidadeConversasLabel.textContent = "Para a quantidade de conversas de: ";
+                    messageError.textContent = "Valor indisponível para a quantidade de conversas inserida. Coloque um valor entre 1 e 20000"
+                    valorTotalLabel.textContent = "Seu investimento total será: ";
+                    valorTotalElement.textContent = "";
+                  } else {
+                    var valorTotal = (quantidadeConversas * valorPrecificacao).toFixed(2);
+                    quantidadeConversasLabel.textContent = "Para a quantidade de conversas de: ";
+                    quantidadeConversasElement.textContent = quantidadeConversas.toString();
+                    messageError.textContent = "";
+                    valorTotalLabel.textContent = "Seu investimento total será: ";
+                    valorTotalElement.textContent = "R$" + valorTotal;
+                  }
+                }
+              });
+              
+              
+        </script>
+        
+    </body>
+</html>

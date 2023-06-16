@@ -85,14 +85,16 @@ class CustomPasswordChangeForm(PasswordChangeForm):
 class ChatBotForm(forms.ModelForm):
     nome_do_chatbot = forms.CharField(
         label='De um nome de identificação para o chatbot',
-        widget=forms.TextInput(attrs={'style': 'width: {}px;'.format(CHATBOT_NAME_FIELD_SIZE_IN_PX)})
+        widget=forms.TextInput(attrs={
+            # 'style': 'width: {}px;'.format(CHATBOT_NAME_FIELD_SIZE_IN_PX)
+            })
     )
     aditional_intructions = forms.CharField(
         max_length=MAX_CHAR_INSTRUCTIONS_CHATBOT_FORM, 
-        label='Instruçãoes para o Chatbot',
+        label='Instruções para o Chatbot',
         widget=forms.Textarea(
             attrs={
-                'style': 'width: {}px;'.format(ADITIONAL_INTRUCTIONS_FIELD_SIZE_IN_PX),
+                # 'style': 'width: {}px;'.format(ADITIONAL_INTRUCTIONS_FIELD_SIZE_IN_PX),
                 'rows': ADITIONAL_INTRUCTIONS_FIELD_ROWS ,
                 'id' : ADITIONAL_INTRUCTIONS_FIELD_ID,
                 'data-max-height': '350',
@@ -101,15 +103,21 @@ class ChatBotForm(forms.ModelForm):
         )
     whatsapp_number = forms.CharField(
         label='Número WhatsApp Business',
-        widget=forms.TextInput(attrs={'style': 'width: {}px;'.format(CELLPHONE_FIELD_SIZE_IN_PX)})
+        widget=forms.TextInput(attrs={
+            # 'style': 'width: {}px;'.format(CELLPHONE_FIELD_SIZE_IN_PX)
+            })
     )
     whats_app_api_auth_token = forms.CharField(
         label='Token de Autenticação API do Whatsapp (conforme instruções)',
-        widget=forms.TextInput(attrs={'style': 'width: {}px;'.format(WHATS_APP_TOKEN_FILD_SIZE_IN_PX)})
+        widget=forms.TextInput(attrs={
+            # 'style': 'width: {}px;'.format(WHATS_APP_TOKEN_FILD_SIZE_IN_PX)
+            })
     )
     facebook_page_id = forms.CharField(
         label='Page ID do Facebook (conforme instruções)',
-        widget=forms.TextInput(attrs={'style': 'width: {}px;'.format(FACEBOOK_PAG_ID_FIELD_SIZE_IN_PX)})
+        widget=forms.TextInput(attrs={
+            # 'style': 'width: {}px;'.format(FACEBOOK_PAG_ID_FIELD_SIZE_IN_PX)
+            })
     )
     
     class Meta:
@@ -119,3 +127,7 @@ class ChatBotForm(forms.ModelForm):
     def clean(self):
         cleaned_data = super().clean()
         return cleaned_data
+    
+class MessageForm(forms.Form):
+    message = forms.CharField(widget=forms.Textarea)
+    conversa_id = forms.IntegerField()

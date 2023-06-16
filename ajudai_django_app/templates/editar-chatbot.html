@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="" />
+        <meta name="author" content="" />
+        <title>{{ tab_title }}</title>
+        {% load static %}
+        <link href="{% static 'css/styles.css' %}" rel="stylesheet" />
+        <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+    </head>
+    <body>
+
+        {% include 'includes/topMenu.html' %}
+        <div id="layoutSidenav">
+            <div id="layoutSidenav_nav">
+
+                {% include 'includes/sidebar.html' %}
+
+            </div>
+            <div id="layoutSidenav_content">
+                <main>
+                    <div class="container-fluid px-4">
+                        <div class="cabecalho-planos">
+                            <div class="cabecalho-texto">
+                                <h2>Faça a edição do seu chatbot</h2>
+                                <p>Aqui você irá sincronizar as chaves da API do What's App, o número de telefone e o prompt do chatbot</p>
+                            </div>
+                            <img class="doodle-plans" src="{% static 'image/chatbot-config.svg' %}" alt="doodle contato ajudai">
+                        </div>
+                        <div class="divider"></div>
+
+                        <h3>Essa área é permitida apenas para usuários master! <i class="fa-solid fa-lock"></i></h3>
+                        
+                        <div class="msg-alert">
+                            <form method="post">
+                                {% csrf_token %}
+                                {{ form.as_p }}
+                                <div class="botao-acao-chatbots">
+                                    <button class="botao-save-chatbot" type="submit">{{ submit_edit_chatbot_text }}</button>
+                                    <form method="post" action="{% url 'chatbot_delete' chatbot.id %}">
+                                        {% csrf_token %}
+                                        <input class="botao-deletar-chatbot" type="submit" value="{{ delete_edit_chatbot_text }}" onclick="return confirm('Você tem certeza que deseja deletar esse Chatbot? Essa ação não pode ser desfeita!');">
+                                    </form>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </main>
+                <footer class="py-4 bg-light mt-auto" id="footer">
+                    <div class="container-fluid px-4">
+                        <div class="d-flex align-items-center justify-content-between small">
+                            <div class="text-muted">Copyright © 2023 Ajudai. Todos os direitos reservados.</div>
+                            <div>
+                                <a href="#">Políticas de pricavidade</a>
+                                &middot;
+                                <a href="#">Termos de condição</a>
+                            </div>
+                        </div>
+                    </div>
+                </footer>
+            </div>
+        </div>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+        <script src="{% static 'js/scripts.js' %}"></script>
+    </body>
+</html>

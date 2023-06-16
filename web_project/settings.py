@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     MAIN_APP_NAME,
+    'django_q',
 ]
 
 MIDDLEWARE = [
@@ -128,11 +129,10 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = 'static/'
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'static'),
-]
+#PARA DESENVOLVIMENTO
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static'),]
 #PARA PRODUÇÃO:
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+#STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 #FIM PARA PRODUÇÃO
 
 # Default primary key field type
@@ -145,18 +145,35 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 
+STATICFILES_FINDERS = [
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+]
+
 
 #HTTPS config PARA AMBIENTE DE PRODUÇÃO. DESATIVAR TUDO COM COMENTÁRIOS PARA RODAR EM SERVER INTERNO E ATIVAR O ÚLTIMO (false)
 
 # *****************************ATIVAR TODOS ABAIXO PARA DEPLOY **************************************************************************************
 #PARA RODAR NO SERVER DE PRODUÇÃO
-CSRF_COOKIE_SECURE = True
-SESSION_COOKIE_SECURE = True
-SECURE_SSL_REDIRECT = True
-SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+#CSRF_COOKIE_SECURE = True
+#SESSION_COOKIE_SECURE = True
+#SECURE_SSL_REDIRECT = True
+#SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 #PARA RODAR DO SERVIDOR INTERNO:
 # *****************************DESATIVAR PARA DEPLOY **************************************************************************************
-#SECURE_SSL_REDIRECT = False
+SECURE_SSL_REDIRECT = False
 
 #END HTTPS CONFIG
+
+
+# DJANGO - Q config
+Q_CLUSTER = {
+    'name': 'DjangORM',
+    'workers': 4,
+    'timeout': 90,
+    'retry': 120,
+    'queue_limit': 50,
+    'bulk': 10,
+    'orm': 'default',  # Use Django's ORM + database as the broker
+}

@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="" />
+        <meta name="author" content="" />
+        <title>{{ tab_title }}</title>
+        {% load static %}
+        <link href="{% static 'css/styles.css' %}" rel="stylesheet" />
+        <link href="{% static 'css/modal-global.css' %}" rel="stylesheet" />
+        <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+        <script src="{% static 'js/pagamentos.js' %}"></script>
+    </head>
+    <body>
+        {% include 'includes/topMenu.html' %}
+        <div id="layoutSidenav">
+            <div id="layoutSidenav_nav">
+               
+               {% include 'includes/sidebar.html' %}
+
+            </div>
+            <div id="layoutSidenav_content">
+                <main>
+                    <div class="container-fluid px-4">
+                        
+                        <div class="cabecalho-planos">
+                            <div class="cabecalho-texto">
+                                <h2>Meus planos</h2>
+                                <h4>Você está assinando um de nossos planos. Obrigado por isso!</h4>
+                            </div>
+                            <img class="doodle-plans" src="{% static 'image/meus-planos.svg' %}" alt="doodle meus planos ajudai">
+                        </div>
+                        <div class="divider"></div>
+
+                        <div class="content-container">
+                            <h4>Plano atual</h4>
+
+                            <div class="meus-planos">
+
+                                <div class="my-plan popular">
+                                    <img class="standard-img" src="{% static 'image/coin.png' %}" alt="advanced plans ajudai">
+                                    <div class="content-card-plan">
+                                        <h3 class="title">Basic</h3>
+                                        <ul class="features">
+                                            <li><strong>1501 a 2500</strong> Conversas por mês</li>
+                                            <li>Suporte AjudaAI 24 horas</li>
+                                            <li>Acesso ilimitado ao software</li>
+                                            <li>Suporte e Implementação grátis</li>
+                                            <li>Gestor de pedidos</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="my-plan">
+                                    <img class="standard-img" src="{% static 'image/money.png' %}" alt="advanced plans ajudai">
+                                    <div class="content-card-plan">
+                                        <h3 class="title">Plus</h3>
+                                        <ul class="features">
+                                            <li><strong>1501 a 2500</strong> Conversas por mês</li>
+                                            <li>Suporte AjudaAI 24 horas</li>
+                                            <li>Acesso ilimitado ao software</li>
+                                            <li>Suporte e Implementação grátis</li>
+                                            <li>Gestor de pedidos</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="my-plan">
+                                    <img class="standard-img" src="{% static 'image/premium.png' %}" alt="advanced plans ajudai">
+                                    <div class="content-card-plan">
+                                        <h3 class="title">Premium</h3>
+                                        <ul class="features">
+                                            <li><strong>2501 a 4500</strong> Conversas por mês</li>
+                                            <li>Suporte AjudaAI 24 horas</li>
+                                            <li>Acesso ilimitado ao software</li>
+                                            <li>Suporte grátis</li>
+                                            <li>Gestor de pedidos</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="my-plan">
+                                    <img class="standard-img" src="{% static 'image/rocket.png' %}" alt="advanced plans ajudai">
+                                    <div class="content-card-plan">
+                                        <h3 class="title">Corporativo VIP</h3>
+                                        <ul class="features">
+                                            <li><strong>4501 a 20000</strong> Conversas por mês</li>
+                                            <li>Suporte AjudaAI 24 horas</li>
+                                            <li>Acesso ilimitado ao software</li>
+                                            <li>Suporte grátis</li>
+                                            <li>Gestor de pedidos</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {% include 'includes/modal-meu-plano.html' %}
+
+                            <h4>Detalhes do meu plano</h4>
+                            <p>Visualize com mais detalhes a tabela de informações do seu plano de assinatura do Ajudai</p>
+
+                            <div class="card-body">
+                                <table id="datatablesSimple" class="tabela">
+                                    <thead>
+                                        <tr class="titulo-tabela">
+                                            <th class="titulo-tabela">Plano</th>
+                                            <th>Valor por conversa</th>
+                                            <th>Valor atual</th>
+                                            <th>Conversas totais</th>
+                                            <th>Data fatura</th>
+                                            <th>Pagamento</th>
+                                            <th>Entenda valores</th>
+                                        </tr>
+                                    </thead>
+                                    <tfoot>
+                                        <tr>
+                                            <th>Plano</th>
+                                            <th>Valor por conversa</th>
+                                            <th>Valor atual</th>
+                                            <th>Conversas totais</th>
+                                            <th>Data fatura</th>
+                                            <th>Pagamento</th>
+                                            <th>Entenda valores</th>
+                                        </tr>
+                                    </tfoot>
+                                    <tbody>
+                                        <tr>
+                                            <td>Basic</td>
+                                            <td>R$0,20</td>
+                                            <td>R$220,00</td>
+                                            <td>1100</td>
+                                            <td>26/02/2023</td>
+                                            <td>Pagamento confirmado</td>
+                                            <td class="top-table"><a href="#ancora-modal" data-modal-id="modal1-plano">Saiba mais</a></td>
+                                        </tr>
+                                            <td>Plus</td>
+                                            <td>R$0,18</td>
+                                            <td>R$338,22</td>
+                                            <td>1879</td>
+                                            <td>26/03/2023</td>
+                                            <td>Pagamento confirmado</td>
+                                            <td class="top-table"><a href="#ancora-modal" data-modal-id="modal2-plano">Saiba mais</a></td>
+                                        </tr>
+                                            <td>Premium</td>
+                                            <td>R$0,16</td>
+                                            <td>R$566,40</td>
+                                            <td>3540</td>
+                                            <td>26/04/2023</td>
+                                            <td>Aguardando confirmação</td>
+                                            <td class="top-table"><a href="#ancora-modal" data-modal-id="modal3-plano">Saiba mais</a></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <h4 id="ancora-modal">Detalhes do software</h4>
+                            <p>Aqui você consegue visualizar os detalhes do pagamento de seu software vitalício do Ajudai.</p>
+
+                            <table class="tabela">  
+                                <thead class="head-tabela">
+                                  <tr>
+                                    <th class="top-table">Software</th>
+                                    <th class="top-table">Valor total</th>
+                                    <th class="top-table">Data do pagamento</th>
+                                    <th class="top-table">Validade</th>
+                                    <th class="top-table">Pagamento</th>
+                                    <th class="top-table">Meio de pagamento</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  <tr>
+                                    <td class="top-table">Ajudai</td>
+                                    <td class="top-table">R$559,00</td>
+                                    <td class="top-table">26/02/2023</td>
+                                    <td class="top-table">Vitalício</td>
+                                    <td class="top-table">Aguardando confirmação</td>
+                                    <td class="top-table">Cartão de crédito</td>
+                                  </tr>
+                                  <!-- Adicione mais linhas conforme necessário -->
+                                </tbody>
+                            </table>
+
+                            <div class="pagamento-fatura" id="conteudo-fatura-fechada-plano">
+                                <h4>Sua fatura desse mês chegou!</h4>
+                                <p>Faça o pagamento da sua fatura para não ficar sem o melhor serviço de chatbot para o WhatsApp!</p>
+                                <button class="button-upgrade">Pague aqui 
+                                  <i class="fa-solid fa-sack-dollar"></i>
+                                </button>
+                              </div>
+                              
+                            
+                            <!-- <div class="info-prod">
+                                <p><strong>Minha atual assinatura: </strong></p>
+                                <img class="standard-img" src="{% static 'image/coin.png' %}" alt="standard plans ajudai">
+                            </div> -->
+                            
+                        </div>
+                        
+                    </div>
+                </main>
+                <footer class="py-4 bg-light mt-auto" id="footer">
+                    <div class="container-fluid px-4">
+                        <div class="d-flex align-items-center justify-content-between small">
+                            <div class="text-muted">Copyright © 2023 Ajudai. Todos os direitos reservados.</div>
+                            <div>
+                                <a href="#">Políticas de pricavidade</a>
+                                &middot;
+                                <a href="#">Termos de condição</a>
+                            </div>
+                        </div>
+                    </div>
+                </footer>
+            </div>
+        </div>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+        <!-- <script>
+            // JavaScript para abrir e fechar a modal
+            const modal = document.querySelector('.modal-plano');
+            const openModalLinks = document.querySelectorAll('.open-modal');
+            const closeModal = document.querySelector('.close');
+
+            openModalLinks.forEach(link => {
+                link.addEventListener('click', function(event) {
+                event.preventDefault(); // Impede a ação padrão de navegação
+                modal.style.display = 'block';
+                });
+            });
+
+            closeModal.addEventListener('click', function() {
+                modal.style.display = 'none';
+            });
+        </script> -->
+        <script>
+            // Função para abrir a modal ao clicar no link da linha da tabela
+            function openModal(event) {
+                event.preventDefault(); // Evita o comportamento padrão do link
+            
+                var modalId = this.getAttribute("data-modal-id");
+                var modal = document.getElementById(modalId);
+                modal.style.display = "block";
+            }
+            
+            // Função para fechar a modal ao clicar no botão de fechar (x)
+            function closeModal(event) {
+                var modal = event.target.closest(".modal-global");
+                modal.style.display = "none";
+            }
+            
+            // Função para fechar a modal ao clicar fora dela
+            window.onclick = function(event) {
+                var modal = document.querySelector(".modal-global");
+                if (event.target == modal) {
+                modal.style.display = "none";
+                }
+            }
+            
+            // Adiciona um evento de clique a cada link da tabela
+            var modalLinks = document.querySelectorAll(".top-table a");
+            for (var i = 0; i < modalLinks.length; i++) {
+                modalLinks[i].addEventListener("click", openModal);
+            }
+            
+            // Adiciona um evento de clique ao botão de fechar (x) de cada modal
+            var closeButtons = document.getElementsByClassName("close-modal-global");
+            for (var j = 0; j < closeButtons.length; j++) {
+                closeButtons[j].addEventListener("click", closeModal);
+            }
+  
+        </script>
+        <script src="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/umd/simple-datatables.min.js" crossorigin="anonymous"></script>
+        <script src="{% static 'js/datatables-simple-demo.js' %}"></script>
+        <script src="{% static 'js/pagamentos.js' %}"></script>
+    </body>
+</html>

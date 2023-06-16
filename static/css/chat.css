@@ -1,0 +1,331 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+}
+
+.chat-container {
+  display: flex;
+  height: 100vh;
+}
+
+.menu {
+  width: 80px;
+  min-width: 65px;
+  max-width: 85px;
+  width: 7vw;
+  background-color: #5C7AD3;
+  /* padding: 20px; */  
+
+}
+
+.logo-div {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#icones-menu {
+    width: 25px;
+    height: 25px;
+    color: #FFFFFF;
+    margin-top: 20px; 
+    width: 100%;
+    cursor: pointer;
+    
+}
+
+#icones-menu:hover {
+    color: #f2f2f2;
+}
+
+.logo {
+    width: 50px;
+    height: 50px;
+    margin: 10px;
+    cursor: pointer;
+    
+}
+
+.menu-icons {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  
+}
+
+.menu-icons i {
+  /* margin-bottom: 10px; */
+  font-size: 24px;
+  text-align: center;
+}
+
+.contacts {
+  min-width: 300px;
+  background-color: #e5e5e5;
+  padding: 20px;
+  overflow-y: auto;
+  height: 100%;
+}
+
+
+
+.contacts ul {
+    padding: 0;
+    margin: 0;
+
+}
+
+.contacts li {
+    list-style: none;
+    margin: 0;
+    text-align: start;
+    /* border: 1px solid black; */
+    padding: 10px 0;
+    display: flex;
+
+}
+
+.texto-contato {
+    margin: 0;
+    font-size: 14px;
+}
+
+.texto-tempo {
+    /* margin: 0; */
+    font-size: 12px;
+    margin-right: 5px;
+    margin-top: 5px;
+    color: #6c757d;
+}
+
+.conteudo-contato {
+    display: flex;
+    justify-content: space-between;
+    /* width: 25vw;
+    min-width: 300px; */
+    flex-direction: row;
+    background-color: #FFFFFF;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.conteudo-contato:hover {
+    background-color: #f1f1f1;
+}
+
+.conteudo-texto-contato {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.defaultText {
+  /* display: none; */
+
+  /* position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center; */
+
+  /* flex: 4; */
+  width: 68vw;
+  padding-top: 20vh;
+  text-align: center;
+  background-color: #ffffff;
+  display: none;
+  flex-direction: column;
+  position: relative;
+  overflow-y: scroll;
+  height: 100%;
+  padding-bottom: 8vh;
+}
+
+.chat-img {
+  width: 300px;
+  height: auto;
+}
+
+.conversation {
+  /* flex: 4; */
+  width: 100%;
+  background-color: #ffffff;
+  padding: 20px;
+  display: none;
+  /* flex-direction: column; */
+  position: relative;
+  overflow-y: scroll;
+  height: 100%;
+  /* padding-bottom: 10vh; */
+}
+
+.side-conversation {
+  display: none;
+  flex-direction: column;
+  width: 68vw;
+}
+
+.message-client {
+  margin-bottom: 10px;
+  background-color: #e5e5e5;
+  border-radius: 10px;
+  max-width: 45%;
+  padding: 10px;
+  position: relative;
+
+}
+
+.dialog-response {
+    display: flex;
+    justify-content: flex-start;
+    align-items: start;
+}
+
+.dialog-client {
+    display: flex;
+    justify-content: flex-end;
+    align-items: end;
+}
+
+.message-response {
+    margin-bottom: 10px;
+    background-color: #b5c7fd;
+    border-radius: 10px;
+    max-width: 45%;
+    padding: 10px;
+    position: relative;
+}
+
+.sender {
+  font-weight: bold;
+}
+
+.timestamp {
+  font-size: 12px;
+  color: #777777;
+  
+  position: absolute;
+  bottom: 5px;
+  right: 5px;
+
+}
+
+.message-input {
+  display: flex;
+  
+  width: 100%;
+  padding: 10px;
+  background-color: #ffffff;
+}
+
+.input-reply {
+  border-top: 1px solid rgba(156, 156, 156, 0.1);
+}
+
+
+.message-input input[type="text"] {
+  width: 100%;
+  border: none;
+  outline: none;
+}
+
+.botao-send {
+  padding: 10px 15px;
+  background-color: #5C7AD3;
+  border-style: none;
+  border-radius: 50px;
+  cursor: pointer;
+}
+
+.botao-pause-chatbot  {
+    padding: 10px 15px;
+    background-color: #ff9696;
+    border-style: none;
+    border-radius: 50px;
+    cursor: pointer;
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+.botao-send:active {
+    background-color: #b5c7fd;
+    border-style: none;
+    outline: none;
+    box-shadow: none;
+}
+
+.botao-pause-chatbot:active {
+    background-color: #f8b0b0;
+    border-style: none;
+    outline: none;
+    box-shadow: none;
+}
+
+.botao-send:focus {
+    border-style: none;
+    outline: none;
+    box-shadow: none;
+}
+
+.botao-pause-chatbot:focus {
+    border-style: none;
+    outline: none;
+    box-shadow: none;
+}
+
+
+#icon-send {
+    color: #F2F2F2;
+}
+
+#icon-pause {
+    color: #000;
+}
+
+/* Estilização da barra de rolagem no Chrome e Safari */
+::-webkit-scrollbar {
+width: 10px;
+}
+
+::-webkit-scrollbar-track {
+background-color: #f2f2f2;
+}
+
+::-webkit-scrollbar-thumb {
+background-color: #6c757d;
+opacity: 0.5;
+border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+background-color: #555;
+}
+
+/* Estilização da barra de rolagem no Firefox */
+/* A partir do Firefox 64+ é necessário adicionar a classe "scrollbar" ao elemento pai */
+.scrollbar {
+scrollbar-width: thin;
+scrollbar-color: #212D40 #f1f1f1;
+}
+
+.scrollbar::-webkit-scrollbar {
+width: 10px;
+}
+
+.scrollbar::-webkit-scrollbar-track {
+background-color: #f1f1f1;
+}
+
+.scrollbar::-webkit-scrollbar-thumb {
+background-color: #212D40;
+/* border-radius: 5px; */
+}
+
+.scrollbar::-webkit-scrollbar-thumb:hover {
+background-color: #555;
+}

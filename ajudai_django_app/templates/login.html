@@ -5,31 +5,55 @@
         <title>{{ tab_title }}</title>
         {% load static %}
         <link rel="stylesheet" type="text/css" href="{% static 'ajudai_django_app/css/login.css' %}" />
+
+        <link rel="preconnect" href="https://fonts.gstatic.com">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;600&display=swap" rel="stylesheet">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <!--Stylesheet-->
     </head>
     <body>
-        <div id="menu">
-            <nav>
-              <ul>
-                {% if user and user.username %}
-                  <a href="{% url 'user_accounts' %}">{{ user.username }} (my account)</a><br>
-                {% else %}
-                  <a href="{% url 'login' %}">Log In</a><br>
-                {% endif %}
-              </ul>
-            </nav>
-          </div>
-          
-        <form method="post" action="{% url 'login' %}">
-            {% csrf_token %}
-            {{ login_form.as_p }}
-            <input type="submit" value="{{ submit_login_text }}">
-        </form>
+        <div class="container" id="container">
+          <div class="form-container sign-in-container">
+            <!-- <form action="#"> -->
 
-        {% if error_message %}
-            <p>{{ error_message }}</p>
-        {% endif %}
-        <p><a href="{% url 'password_reset' %}">{{ forgot_password_text }}</a></p>
-        <a href="{% url 'register' %}">{{ LINK_TO_REGISTER_TEXT }}</a><br><br><br><br>
+              <form method="post" action="{% url 'login' %}">
+                <div id="menu">
+                  <nav>
+                    <ul>
+                      {% if user and user.username %}
+                        <a href="{% url 'user_accounts' %}">{{ user.username }} (my account)</a><br>
+                      {% else %}
+                        <h1 class="titulo-login" href="{% url 'login' %}">Log In</h1><br>
+                      {% endif %}
+                    </ul>
+                  </nav>
+                </div>
+                {% csrf_token %}
+                <div class="inputs">
+                  {{ login_form.as_p }}
+                </div>
+                <p class="forget"><a href="{% url 'password_reset' %}">{{ forgot_password_text }}</a></p>
+                <input class="botao" type="submit" value="{{ submit_login_text }}">
+                {% if error_message %}
+                  <p class="erro-msg">{{ error_message }}</p>
+                {% endif %}
+                
+              </form>
+            <!-- </form> -->
+          </div>
+        
+          <div class="overlay-container">
+            <div class="overlay">
+              <div class="overlay-panel overlay-right">
+                <img class="logo" src="{% static 'image/logo-ajudai.svg' %}" alt="Logotigo ajudai">
+                <p class="conteudo-texto">Ainda nao possui uma conta? Deixe a gente <strong>Ajudar</strong> você!</p>
+                <a class="botao-registrar" href="{% url 'register' %}">{{ LINK_TO_REGISTER_TEXT }}</a>
+              </div>
+            </div>
+          </div>
+        
+        </div>
 
     </body>
 </html>
