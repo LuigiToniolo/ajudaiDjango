@@ -396,6 +396,7 @@ class Conversa(models.Model):
         default=CONVERSA_AGUARDANDO_VENCIMENTO,
         choices=FINANCEIRO_CHOICES,
         )
+    chatbot_ativo = models.BooleanField(default=True)
     
     @staticmethod
     def conversations_to_payment_due(user):

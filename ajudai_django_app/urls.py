@@ -46,4 +46,5 @@ urlpatterns = [
     path('pagamento-uso-webhook/', views.usage_payment_webhook, name = 'usage_payment_webhook'),
     path('fora-de-servico-valores-a-pagar/', views.user_in_debt_and_out_of_service_view, name = 'payment_debt_out_service'),
     path('processando-pagamento-debito/', views.pay_debit, name = 'processando_pagamento_debito'),
+    path('toggle_chatbot/', views.toggle_chatbot, name='toggle_chatbot'),
 ]

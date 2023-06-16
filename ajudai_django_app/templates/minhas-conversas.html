@@ -115,6 +115,7 @@
                     <a class="botao-pause-chatbot"><i class="fa-solid fa-robot" id="icon-pause"></i></a>
                 </div>
              </form>
+             
             </div>
           
           </div>
@@ -147,7 +148,37 @@
               $(".defaultText").show();
               $(".side-conversation").css("display", "none");
           {% endif %}
+
+        $(".botao-pause-chatbot").click(function() {
+          var parentConversa = $(this).closest('.conversation');
+          var conversaId = parentConversa.find("#conversa_id").val();
+          
+          $.ajax({
+            url: '{% url "toggle_chatbot" %}',
+            type: 'POST',
+            data: {
+              'conversa_id': conversaId,
+              'csrfmiddlewaretoken': '{{ csrf_token }}'
+            },
+            success: function(response) {
+              if (response.status == 'success') {
+                console.log('Chatbot toggled successfully');
+                // You can add some visual feedback here
+              }
+            }
+          });
+      });
       });
     </script>
+
+  <script>
+    $(document).ready(function() {
+      // ... existing code ...
+
+      
+
+    });
+  </script>
+
 
 </html>

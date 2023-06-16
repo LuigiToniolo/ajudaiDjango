@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from django.http import HttpResponse, HttpResponseForbidden, HttpResponseServerError
+from django.http import HttpResponse, HttpResponseForbidden, HttpResponseServerError, JsonResponse
 from ajudai_django_app.ai_chatbot.ai_awnser import generate_gpt_response, pedido_confirmado
 from ajudai_django_app.ai_chatbot.ai_tools import instructions_over_limit_error_messages, instructions_under_the_limits
 from ajudai_django_app.fechamento_de_pedido.procedimento_de_fechamento import informar_loja_fechamento_pedido
@@ -175,6 +175,28 @@ def minhas_conversas_view(request):
         "minhas-conversas.html",  # Path from the 'templates' folder inside the app folder
         context,
     )
+
+def toggle_chatbot(request):
+    try:
+        user = CustomUser.getUser(request)
+    except:
+        return redirect('database_error')
+    
+    if not user.is_authenticated:
+        return redirect('login')
+    
+    if request.method == 'POST':
+        conversa_id = request.POST.get('conversa_id')
+        conversa = Conversa.objects.get(id=conversa_id)
+
+        if conversa.chatbot.user != user:
+            return JsonResponse({'status': 'error'})
+
+        conversa.chatbot_ativo = not conversa.chatbot_ativo
+        conversa.save()
+        return JsonResponse({'status': 'success'})
+
+    return JsonResponse({'status': 'error'})
 
 def editar_chatbot_view(request, chatbot_id):
     try:
@@ -618,24 +640,29 @@ def process_message(data):
                                     company_client_number=numero_cliente,
                                     chatbot=chatbot,
                                 )
-                            role = ''
+                            
+                            if conversation.chatbot_ativo:
+                                role = ''
+                                try:
+                                    gpt_response, new_context, tokens_used_on_this_request = generate_gpt_response(incoming_message, conversation.context, role,  aditional_instructions, GPT3_MODEL_NAME, GPT3_TOKEK_LIMIT)
+                                except Exception as e:
+                                    print ('Erro ao chamar função de resposta IA: ', e)
+                                    return
 
-                            try:
-                                gpt_response, new_context, tokens_used_on_this_request = generate_gpt_response(incoming_message, conversation.context, role,  aditional_instructions, GPT3_MODEL_NAME, GPT3_TOKEK_LIMIT)
-                            except Exception as e:
-                                print ('Erro ao chamar função de resposta IA: ', e)
-                                return
+                                conversa_finalizada_com_pedido, resumo = pedido_confirmado(gpt_response)
+                                if conversa_finalizada_com_pedido:
+                                    conversation.status_da_conversa = STATUS_CONVERSA_PEDIDO_REALIZADO
+                                    user=chatbot.user
+                                    pedido = Pedido.objects.create(
+                                        user=user,
+                                        conversa=conversation,
+                                        resumo_do_pedido = resumo,
+                                    )
+                                    informar_loja_fechamento_pedido(resumo, company_number)
 
-                            conversa_finalizada_com_pedido, resumo = pedido_confirmado(gpt_response)
-                            if conversa_finalizada_com_pedido:
-                                conversation.status_da_conversa = STATUS_CONVERSA_PEDIDO_REALIZADO
-                                user=chatbot.user
-                                pedido = Pedido.objects.create(
-                                    user=user,
-                                    conversa=conversation,
-                                    resumo_do_pedido = resumo,
-                                )
-                                informar_loja_fechamento_pedido(resumo, company_number)
+                            else: #caso da resposta automatica com chatbot estiver desativada
+                                new_context = conversation.context({"role": "user", "content": incoming_message})
+                                tokens_used_on_this_request = 0
 
                             conversation.context = new_context
                             tokens_used_before = conversation.total_tokens_used
