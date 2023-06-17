@@ -111,7 +111,7 @@ def meus_chatbots_view(request):
     except:
         return redirect('database_error')
     
-    if not user.is_authenticated:
+    if not request.user.is_authenticated:
         return redirect('login')
     
     if not user.userIsPremium():
@@ -150,7 +150,7 @@ def meu_plano_view(request):
     except:
         return redirect('database_error')
     
-    if not user.is_authenticated:
+    if not request.user.is_authenticated:
         return redirect('login')
     
     if not user.userIsPremium():
@@ -226,7 +226,7 @@ def toggle_chatbot(request):
     except:
         return redirect('database_error')
     
-    if not user.is_authenticated:
+    if not request.user.is_authenticated:
         return redirect('login')
     
     if request.method == 'POST':
@@ -801,7 +801,7 @@ def payment_method_checkout(request):
     except:
         return redirect('database_error')
 
-    if not user.is_authenticated:
+    if not request.user.is_authenticated:
         return redirect('login')
     
     stripe.api_key = get_secret_var("STRIPE_SECRET_KEY")
@@ -875,7 +875,7 @@ def adesao_payment_checkout(request):
     except:
         return redirect('database_error')
 
-    if not user.is_authenticated:
+    if not request.user.is_authenticated:
         return redirect('login')
     
     try:
@@ -915,7 +915,7 @@ def adesao_payment_success(request):
     except:
         return redirect('database_error')
 
-    if not user.is_authenticated:
+    if not request.user.is_authenticated:
         return redirect('login')
     
     return redirect('checkout_metodo_pagamento')
