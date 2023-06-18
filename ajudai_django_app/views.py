@@ -815,12 +815,14 @@ def payment_method_checkout(request):
     user_payment_method_setup_attempt_registered = False 
 
     try:
-        register_payment_setup_attempt = Premium_User_Payment_Method_Registration.objects.update_or_create(
-            date= timezone.datetime.now().date(),
-            time= timezone.datetime.now().time(),
-            user=user,
-            stripe_checkout_id=return_checkout_session_id(checkout_session),
-            status=PAYMENT_METHOD_REGISTRATION_STATUS_PENDING,
+        register_payment_setup_attempt, created = Premium_User_Payment_Method_Registration.objects.update_or_create(
+            user=user, 
+            defaults={
+                'date': timezone.datetime.now().date(),
+                'time': timezone.datetime.now().time(),
+                'stripe_checkout_id': return_checkout_session_id(checkout_session),
+                'status': PAYMENT_METHOD_REGISTRATION_STATUS_PENDING,
+            }
         )
         user_payment_method_setup_attempt_registered = True
     except:
