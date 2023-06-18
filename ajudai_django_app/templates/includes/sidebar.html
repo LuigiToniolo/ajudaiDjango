@@ -6,17 +6,20 @@
                 <div class="sb-nav-link-icon"><i class="fa fa-home"></i></div>
                 Home
             </a>
-
+            
+            {% if userIsPremium %}
             <a class="nav-link" href="{% url 'dashboard' %}">
                 <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
                 Dashboard
             </a>
+            {% endif %}
 
             <a class="nav-link" href="{% url 'planos_disponiveis' %}">
                 <div class="sb-nav-link-icon"><i class="fa-solid fa-file-signature"></i></div>
                 Planos disponíveis
             </a>
 
+            {% if userIsPremium %}
             <a class="nav-link" href="{% url 'meu-plano' %}">
                 <div class="sb-nav-link-icon"><i class='fa fa-refresh'></i></div>
                 Meu plano
@@ -40,7 +43,8 @@
                     <i class='fa fa-comment'></i></div>
                 Correção imediata
             </a>
-
+            {% endif %}
+            
             <div class="sb-sidenav-menu-heading">Suporte</div>
 
             <a class="nav-link" href="{% url 'contato' %}">

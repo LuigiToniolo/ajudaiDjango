@@ -12,41 +12,23 @@
         <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
     </head>
     <body>
-
-        {% include 'includes/topMenu.html' %}
+        <p>Página de Aviso de Suspensão de serviço por débito - A desenvolver o front</p>
+        <p>Valor em débito não pago: {{ valor_em_divida }}</p>
+        <p><a href="{% url 'checkout_metodo_pagamento' %}">Atualizar Forma de Pagamento</a></p>
+        <p><a href="{% url 'processando_pagamento_debito' %}">Realizar tentativa de pagamento do valor em débito</a></p>
         <div id="layoutSidenav">
             <div id="layoutSidenav_nav">
 
                 {% include 'includes/sidebar.html' %}
-
+                
             </div>
             <div id="layoutSidenav_content">
                 <main>
                     <div class="container-fluid px-4">
-                        <div class="cabecalho-planos">
-                            <div class="cabecalho-texto">
-                                <h2>Faça a edição do seu chatbot</h2>
-                                <p>Aqui você irá sincronizar as chaves da API do What's App, o número de telefone e o prompt do chatbot</p>
-                            </div>
-                            <img class="doodle-plans" src="{% static 'image/chatbot-config.svg' %}" alt="doodle contato ajudai">
-                        </div>
-                        <div class="divider"></div>
-
-                        <h3>Essa área é permitida apenas para usuários master! <i class="fa-solid fa-lock"></i></h3>
-                        
-                        <div class="msg-alert">
-                            <form method="post">
-                                {% csrf_token %}
-                                {{ form.as_p }}
-                                <div class="botao-acao-chatbots">
-                                    <button class="botao-save-chatbot" type="submit">{{ submit_edit_chatbot_text }}</button>
-                                    <form method="post" action="{% url 'chatbot_delete' chatbot.id %}">
-                                        {% csrf_token %}
-                                        <input class="botao-deletar-chatbot" type="submit" value="{{ delete_edit_chatbot_text }}" onclick="return confirm('Você tem certeza que deseja deletar esse Chatbot? Essa ação não pode ser desfeita!');">
-                                    </form>
-                                </div>
-                            </form>
-                        </div>
+					
+					
+					
+					
                     </div>
                 </main>
                 <footer class="py-4 bg-light mt-auto" id="footer">

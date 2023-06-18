@@ -1,21 +1,3 @@
-<!-- <!DOCTYPE html>
-<html>
-    <head>
-        <meta charset="utf-8" />
-        <title>{{ tab_title }}</title>
-        {% load static %}
-        <link rel="stylesheet" type="text/css" href="{% static 'ajudai_django_app/css/welcome.css' %}" />
-
-        <link rel="preconnect" href="https://fonts.gstatic.com">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;600&display=swap" rel="stylesheet">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    </head>
-    <body>
-        
-    </body>
-</html> -->
-
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -27,35 +9,12 @@
         <title>{{ tab_title }}</title>
         {% load static %}
         <link href="{% static 'css/styles.css' %}" rel="stylesheet" />
+        <link href="{% static 'css/modal-global.css' %}" rel="stylesheet" />
         <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+        <script src="{% static 'js/pagamentos.js' %}"></script>
     </head>
     <body>
-        <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
-            <!-- Navbar Brand-->
-            <!-- <a class="navbar-brand ps-3" href="index.html">Start Bootstrap</a> -->
-            <img class="logo" src="{% static 'image/logo-branco-deitado.svg' %}" alt="Logotigo ajudai">
-            <!-- Sidebar Toggle-->
-            <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" href="#!"><i class="fas fa-bars"></i></button>
-            <!-- Navbar Search-->
-            <form class="d-none d-md-inline-block form-inline ms-auto me-0 me-md-3 my-2 my-md-0">
-                <div class="input-group">
-                    <input class="form-control" type="text" placeholder="Search for..." aria-label="Search for..." aria-describedby="btnNavbarSearch" />
-                    <button class="btn btn-primary" id="btnNavbarSearch" type="button"><i class="fas fa-search"></i></button>
-                </div>
-            </form>
-            <!-- Navbar-->
-            <ul class="navbar-nav ms-auto ms-md-0 me-3 me-lg-4">
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="fas fa-user fa-fw"></i></a>
-                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                        <li><a class="dropdown-item" href="#!">Settings</a></li>
-                        <li><a class="dropdown-item" href="#!">Activity Log</a></li>
-                        <li><hr class="dropdown-divider" /></li>
-                        <li><a class="dropdown-item" href="#!">Logout</a></li>
-                    </ul>
-                </li>
-            </ul>
-        </nav>
+        {% include 'includes/topMenu.html' %}
         <div id="layoutSidenav">
             <div id="layoutSidenav_nav">
                
@@ -76,106 +35,158 @@
                         <div class="divider"></div>
 
                         <div class="content-container">
-                            <h4>Plano selecionado</h4>
+                            <h4>Plano atual</h4>
 
-                            <div class="my-plan">
-                                <img class="standard-img" src="{% static 'image/money.png' %}" alt="advanced plans ajudai">
-                                <div class="content-card-plan">
-                                    <h3 class="title">Plus</h3>
-                                    <ul class="features">
-                                        <li><strong>2500</strong> Conversas por mês</li>
-                                        <li>Suporte AjudaAI em horário comercial</li>
-                                        <li>Acesso ilimitado ao software</li>
-                                        <li>Implementação grátis</li>
-                                        <li>Atendentes ilimitadas</li>
-                                    </ul>
-                                    <!-- <p class="texto-content-plan"><strong>Assinatura atual: </strong>Plus</p>
-                                    <p class="texto-content-plan">Desde 26 de janeiro de 2023</p>
-                                    <p class="texto-content-plan"><strong>Próxima renovação: </strong> R$346,34</p>
-                                    <p class="texto-content-plan">26 de fevereiro de 2023</p> -->
+                            <div class="meus-planos">
+
+                                <div class="my-plan popular">
+                                    <img class="standard-img" src="{% static 'image/coin.png' %}" alt="advanced plans ajudai">
+                                    <div class="content-card-plan">
+                                        <h3 class="title">Basic</h3>
+                                        <ul class="features">
+                                            <li><strong>1501 a 2500</strong> Conversas por mês</li>
+                                            <li>Suporte AjudaAI 24 horas</li>
+                                            <li>Acesso ilimitado ao software</li>
+                                            <li>Suporte e Implementação grátis</li>
+                                            <li>Gestor de pedidos</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="my-plan">
+                                    <img class="standard-img" src="{% static 'image/money.png' %}" alt="advanced plans ajudai">
+                                    <div class="content-card-plan">
+                                        <h3 class="title">Plus</h3>
+                                        <ul class="features">
+                                            <li><strong>1501 a 2500</strong> Conversas por mês</li>
+                                            <li>Suporte AjudaAI 24 horas</li>
+                                            <li>Acesso ilimitado ao software</li>
+                                            <li>Suporte e Implementação grátis</li>
+                                            <li>Gestor de pedidos</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="my-plan">
+                                    <img class="standard-img" src="{% static 'image/premium.png' %}" alt="advanced plans ajudai">
+                                    <div class="content-card-plan">
+                                        <h3 class="title">Premium</h3>
+                                        <ul class="features">
+                                            <li><strong>2501 a 4500</strong> Conversas por mês</li>
+                                            <li>Suporte AjudaAI 24 horas</li>
+                                            <li>Acesso ilimitado ao software</li>
+                                            <li>Suporte grátis</li>
+                                            <li>Gestor de pedidos</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="my-plan">
+                                    <img class="standard-img" src="{% static 'image/rocket.png' %}" alt="advanced plans ajudai">
+                                    <div class="content-card-plan">
+                                        <h3 class="title">Corporativo VIP</h3>
+                                        <ul class="features">
+                                            <li><strong>4501 a 20000</strong> Conversas por mês</li>
+                                            <li>Suporte AjudaAI 24 horas</li>
+                                            <li>Acesso ilimitado ao software</li>
+                                            <li>Suporte grátis</li>
+                                            <li>Gestor de pedidos</li>
+                                        </ul>
+                                    </div>
                                 </div>
                             </div>
+
+                            {% include 'includes/modal-meu-plano.html' %}
 
                             <h4>Detalhes do meu plano</h4>
                             <p>Visualize com mais detalhes a tabela de informações do seu plano de assinatura do Ajudai</p>
 
-                            <table class="tabela">
+                            <div class="card-body">
+                                <table id="datatablesSimple" class="tabela">
+                                    <thead>
+                                        <tr class="titulo-tabela">
+                                            <th class="titulo-tabela">Plano</th>
+                                            <th>Valor por conversa</th>
+                                            <th>Valor atual</th>
+                                            <th>Conversas totais</th>
+                                            <th>Data fatura</th>
+                                            <th>Pagamento</th>
+                                            <th>Entenda valores</th>
+                                        </tr>
+                                    </thead>
+                                    <tfoot>
+                                        <tr>
+                                            <th>Plano</th>
+                                            <th>Valor por conversa</th>
+                                            <th>Valor atual</th>
+                                            <th>Conversas totais</th>
+                                            <th>Data fatura</th>
+                                            <th>Pagamento</th>
+                                            <th>Entenda valores</th>
+                                        </tr>
+                                    </tfoot>
+                                    <tbody>
+                                        <tr>
+                                            <td>Basic</td>
+                                            <td>R$0,20</td>
+                                            <td>R$220,00</td>
+                                            <td>1100</td>
+                                            <td>26/02/2023</td>
+                                            <td>Pagamento confirmado</td>
+                                            <td class="top-table"><a href="#ancora-modal" data-modal-id="modal1-plano">Saiba mais</a></td>
+                                        </tr>
+                                            <td>Plus</td>
+                                            <td>R$0,18</td>
+                                            <td>R$338,22</td>
+                                            <td>1879</td>
+                                            <td>26/03/2023</td>
+                                            <td>Pagamento confirmado</td>
+                                            <td class="top-table"><a href="#ancora-modal" data-modal-id="modal2-plano">Saiba mais</a></td>
+                                        </tr>
+                                            <td>Premium</td>
+                                            <td>R$0,16</td>
+                                            <td>R$566,40</td>
+                                            <td>3540</td>
+                                            <td>26/04/2023</td>
+                                            <td>Aguardando confirmação</td>
+                                            <td class="top-table"><a href="#ancora-modal" data-modal-id="modal3-plano">Saiba mais</a></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <h4 id="ancora-modal">Detalhes do software</h4>
+                            <p>Aqui você consegue visualizar os detalhes do pagamento de seu software vitalício do Ajudai.</p>
+
+                            <table class="tabela">  
                                 <thead class="head-tabela">
                                   <tr>
-                                    <th class="top-table">Plano</th>
-                                    <th class="top-table">Valor assinado</th>
-                                    <th class="top-table">Valor uso total</th>
-                                    <th class="top-table">Data Renovação</th>
+                                    <th class="top-table">Software</th>
+                                    <th class="top-table">Valor total</th>
+                                    <th class="top-table">Data do pagamento</th>
+                                    <th class="top-table">Validade</th>
                                     <th class="top-table">Pagamento</th>
-                                    <th class="top-table">Entenda os Valores</th>
+                                    <th class="top-table">Meio de pagamento</th>
                                   </tr>
                                 </thead>
                                 <tbody>
                                   <tr>
-                                    <td class="top-table">Plus</td>
-                                    <td class="top-table">R$299</td>
-                                    <td class="top-table" id="alert">R$334,75</td>
+                                    <td class="top-table">Ajudai</td>
+                                    <td class="top-table">R$559,00</td>
                                     <td class="top-table">26/02/2023</td>
+                                    <td class="top-table">Vitalício</td>
                                     <td class="top-table">Aguardando confirmação</td>
-                                    <td class="top-table"><a href="#" class="open-modal">Saiba mais</a></td>
+                                    <td class="top-table">Cartão de crédito</td>
                                   </tr>
                                   <!-- Adicione mais linhas conforme necessário -->
                                 </tbody>
                             </table>
 
-                            <div class="modal">
-                                <div class="modal-content">
-                                  <span class="close">&times;</span>
-                                  <h3>Informação de valores</h3>
-                                    <table class="tabela-modal">
-                                        <tbody>
-                                        <tr>
-                                            <td class="strong-text"><strong>Assinatura atual: </strong></td>
-                                            <td>Plus</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="strong-text"></td>
-                                            <td class="light-content">Desde 26 de janeiro de 2023</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="strong-text"><strong>Renovação: </strong></td>
-                                            <td>R$299/mês</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="strong-text"></td>
-                                            <td class="light-content">Em 26 de fevereiro de 2023</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="strong-text"><strong>Uso do chatbot:</strong></td>
-                                            <td>2500/2643 (Conversas)</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="strong-text"></td>
-                                            <td class="alert-content">Seu uso excedeu 143 conversas do contratado!</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="strong-text"><strong>Valor excedido: </strong></td>
-                                            <td>R$35,75</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="strong-text"></td>
-                                            <td class="light-content">*O custo cobrado por palavra excedida é R$0,25</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="strong-text"><strong>Valor total atual: </strong></td>
-                                            <td>R$334,75</td>
-                                        </tr>
-                                        </tbody>
-                                    </table>
-                                    <p class="suporte-modal">Ainda ficou alguma dúvida?<a href="{% url 'contato' %}">Entre em contato</a></p>
-                                </div>
-                            </div>
-
-                            <h4>Deseja turbinar sem plano?</h4>
-                            <p>Faça um upgrade do seu plano atual e deixe nós <strong>Ajudarmos</strong> a escalar ainda mais seu negócio!</p>
-
-                            <button class="button-upgrade">Upgrade 
-                                <i class='fa fa-rocket'></i></button>
+                            <div class="pagamento-fatura" id="conteudo-fatura-fechada-plano">
+                                <h4>Sua fatura desse mês chegou!</h4>
+                                <p>Faça o pagamento da sua fatura para não ficar sem o melhor serviço de chatbot para o WhatsApp!</p>
+                                <button class="button-upgrade">Pague aqui 
+                                  <i class="fa-solid fa-sack-dollar"></i>
+                                </button>
+                              </div>
+                              
                             
                             <!-- <div class="info-prod">
                                 <p><strong>Minha atual assinatura: </strong></p>
@@ -184,7 +195,6 @@
                             
                         </div>
                         
-
                     </div>
                 </main>
                 <footer class="py-4 bg-light mt-auto" id="footer">
@@ -202,9 +212,9 @@
             </div>
         </div>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
-        <script>
+        <!-- <script>
             // JavaScript para abrir e fechar a modal
-            const modal = document.querySelector('.modal');
+            const modal = document.querySelector('.modal-plano');
             const openModalLinks = document.querySelectorAll('.open-modal');
             const closeModal = document.querySelector('.close');
 
@@ -218,6 +228,46 @@
             closeModal.addEventListener('click', function() {
                 modal.style.display = 'none';
             });
+        </script> -->
+        <script>
+            // Função para abrir a modal ao clicar no link da linha da tabela
+            function openModal(event) {
+                event.preventDefault(); // Evita o comportamento padrão do link
+            
+                var modalId = this.getAttribute("data-modal-id");
+                var modal = document.getElementById(modalId);
+                modal.style.display = "block";
+            }
+            
+            // Função para fechar a modal ao clicar no botão de fechar (x)
+            function closeModal(event) {
+                var modal = event.target.closest(".modal-global");
+                modal.style.display = "none";
+            }
+            
+            // Função para fechar a modal ao clicar fora dela
+            window.onclick = function(event) {
+                var modal = document.querySelector(".modal-global");
+                if (event.target == modal) {
+                modal.style.display = "none";
+                }
+            }
+            
+            // Adiciona um evento de clique a cada link da tabela
+            var modalLinks = document.querySelectorAll(".top-table a");
+            for (var i = 0; i < modalLinks.length; i++) {
+                modalLinks[i].addEventListener("click", openModal);
+            }
+            
+            // Adiciona um evento de clique ao botão de fechar (x) de cada modal
+            var closeButtons = document.getElementsByClassName("close-modal-global");
+            for (var j = 0; j < closeButtons.length; j++) {
+                closeButtons[j].addEventListener("click", closeModal);
+            }
+  
         </script>
+        <script src="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/umd/simple-datatables.min.js" crossorigin="anonymous"></script>
+        <script src="{% static 'js/datatables-simple-demo.js' %}"></script>
+        <script src="{% static 'js/pagamentos.js' %}"></script>
     </body>
 </html>
