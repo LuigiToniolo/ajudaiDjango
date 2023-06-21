@@ -125,3 +125,69 @@
     border: 1px solid #FF9C9C;
 }
 
+.container-alert {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    padding: 20px;
+    width: 80%;
+    align-items: center;
+    justify-content: center;
+    margin-top: 3vh;
+}
+
+.fa-triangle-exclamation {
+    color: #F58A07;
+    width: 100px;
+    height: auto;
+}
+
+.title-alert {
+    background: linear-gradient(to right, #F58A07 0%, #eca042 100%);;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    
+}
+.valor-debito {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    justify-content: space-around;
+}
+
+.subtitulo-valor {
+    font-size: 18px;
+    color: #6c757d;
+}
+
+.danger {
+    color: red
+}
+
+.texto-conteudo-debito {
+    margin: 0 0 3vh 0;
+    color: #6c757d;
+}
+
+.botao-regularize-pagamento {
+    border-radius: 20px;
+    border: 1px solid #5C7AD3;
+    background-color: #5C7AD3;
+    color: #FFFFFF;
+    font-size: 16 px;
+    font-weight: bold;
+    padding: 12px 45px;
+    letter-spacing: 1px;
+    transition: transform 80ms ease-in;
+    cursor: pointer;
+    text-decoration: none;
+    text-align: center;
+    width: 50%;
+    margin-bottom: 3vh;
+}
+
+.botao-regularize-pagamento:hover {
+  transform: scale(1.02);
+  color: #FFFFFF;
+}
+
