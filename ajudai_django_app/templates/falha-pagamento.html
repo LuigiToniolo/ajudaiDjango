@@ -9,10 +9,11 @@
         <title>{{ tab_title }}</title>
         {% load static %}
         <link href="{% static 'css/styles.css' %}" rel="stylesheet" />
+        <link href="{% static 'css/paymentsStyle.css' %}" rel="stylesheet" />
         <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
     </head>
     <body>
-        Página de Falha No Processamento de Cartão - A desenvolver
+        {% include 'includes/topMenu.html' %}
         <div id="layoutSidenav">
             <div id="layoutSidenav_nav">
 
@@ -22,10 +23,20 @@
             <div id="layoutSidenav_content">
                 <main>
                     <div class="container-fluid px-4">
-					
-					
-					
-					
+					<!-- <h3>Página de Falha No Processamento de Cartão - A desenvolver</h3> -->
+                    <div class="ticket-div">
+                        <i class="fa-solid fa-circle-xmark"></i>
+                        <h3 class="titulo-falha">O pagamento foi recusado!</h3>
+                        <h4 class="subtitulo-sucesso">Houve algum erro com o seu cartão..</h4>
+                        <div class="divisor">
+                            <div class="hole1"></div>
+                            <div class="divider-ticket"></div>
+                            <div class="hole2"></div>
+                        </div>
+                        <p class="msg-redirect">Aconteceu algum erro ao processar os dados do seu cartão :(</p>
+                        <p style="color: #6c757d;">Se você tentou mais de uma vez com esse cartão, tente usar outro ou entre em contato conosco clicando no botão abaixo</p>
+                        <a href="{% url 'contato' %}" class="botao-meu-plano falha">Entre em contato</a>
+                    </div>
                     </div>
                 </main>
                 <footer class="py-4 bg-light mt-auto" id="footer">
