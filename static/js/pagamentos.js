@@ -19,7 +19,7 @@
   
 
   // Função para alternar a exibição das divs com base no valor fornecido
-function toggleDiv(valor) {
+  function toggleDiv(valor) {
     var divFaturaAberta = document.getElementById("conteudo-fatura-aberta");
     var divFaturaFechada = document.getElementById("conteudo-fatura-fechada");
     var divFaturaFechadaPlano = document.getElementById("conteudo-fatura-fechada-plano");

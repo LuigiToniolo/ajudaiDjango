@@ -111,7 +111,7 @@ def meus_chatbots_view(request):
     except:
         return redirect('database_error')
     
-    if not user.is_authenticated:
+    if not request.user.is_authenticated:
         return redirect('login')
     
     if not user.userIsPremium():
@@ -150,7 +150,7 @@ def meu_plano_view(request):
     except:
         return redirect('database_error')
     
-    if not user.is_authenticated:
+    if not request.user.is_authenticated:
         return redirect('login')
     
     if not user.userIsPremium():
@@ -226,7 +226,7 @@ def toggle_chatbot(request):
     except:
         return redirect('database_error')
     
-    if not user.is_authenticated:
+    if not request.user.is_authenticated:
         return redirect('login')
     
     if request.method == 'POST':
@@ -386,7 +386,7 @@ def login_view(request):
     login_form = LoginForm()
     context = {
         'title' : 'Login',
-        'LINK_TO_REGISTER_TEXT' : 'Ainda não possui uma conta? Registre aqui',
+        'LINK_TO_REGISTER_TEXT' : 'Registre-se',
         'login_form' : login_form,
         'forgot_password_text': 'Esqueci minha senha',
         'submit_login_text' : 'Acessar',
@@ -801,7 +801,7 @@ def payment_method_checkout(request):
     except:
         return redirect('database_error')
 
-    if not user.is_authenticated:
+    if not request.user.is_authenticated:
         return redirect('login')
     
     stripe.api_key = get_secret_var("STRIPE_SECRET_KEY")
@@ -815,12 +815,14 @@ def payment_method_checkout(request):
     user_payment_method_setup_attempt_registered = False 
 
     try:
-        register_payment_setup_attempt = Premium_User_Payment_Method_Registration.objects.update_or_create(
-            date= timezone.datetime.now().date(),
-            time= timezone.datetime.now().time(),
-            user=user,
-            stripe_checkout_id=return_checkout_session_id(checkout_session),
-            status=PAYMENT_METHOD_REGISTRATION_STATUS_PENDING,
+        register_payment_setup_attempt, created = Premium_User_Payment_Method_Registration.objects.update_or_create(
+            user=user, 
+            defaults={
+                'date': timezone.datetime.now().date(),
+                'time': timezone.datetime.now().time(),
+                'stripe_checkout_id': return_checkout_session_id(checkout_session),
+                'status': PAYMENT_METHOD_REGISTRATION_STATUS_PENDING,
+            }
         )
         user_payment_method_setup_attempt_registered = True
     except:
@@ -875,7 +877,7 @@ def adesao_payment_checkout(request):
     except:
         return redirect('database_error')
 
-    if not user.is_authenticated:
+    if not request.user.is_authenticated:
         return redirect('login')
     
     try:
@@ -915,7 +917,7 @@ def adesao_payment_success(request):
     except:
         return redirect('database_error')
 
-    if not user.is_authenticated:
+    if not request.user.is_authenticated:
         return redirect('login')
     
     return redirect('checkout_metodo_pagamento')

@@ -9,13 +9,11 @@
         <title>{{ tab_title }}</title>
         {% load static %}
         <link href="{% static 'css/styles.css' %}" rel="stylesheet" />
+        <link href="{% static 'css/paymentsStyle.css' %}" rel="stylesheet" />
         <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
     </head>
     <body>
-        <p>Página de Aviso de Suspensão de serviço por débito - A desenvolver o front</p>
-        <p>Valor em débito não pago: {{ valor_em_divida }}</p>
-        <p><a href="{% url 'checkout_metodo_pagamento' %}">Atualizar Forma de Pagamento</a></p>
-        <p><a href="{% url 'processando_pagamento_debito' %}">Realizar tentativa de pagamento do valor em débito</a></p>
+        {% include 'includes/topMenu.html' %}
         <div id="layoutSidenav">
             <div id="layoutSidenav_nav">
 
@@ -24,10 +22,28 @@
             </div>
             <div id="layoutSidenav_content">
                 <main>
-                    <div class="container-fluid px-4">
+                    <div class="container-fluid px-4" style="display: flex; justify-content: center;"">
 					
-					
-					
+                        <div class="container-alert">
+                            <i class="fa-solid fa-triangle-exclamation"></i>
+                            <h3 class="title-alert">Sua conta foi suspensa devido à falta de pagamento</h3>
+                            <div class="valor-debito">
+                                <p class="subtitulo-valor">O valor em débito não pago é: </p>
+                                <p class="subtitulo-valor">R${{ valor_em_divida }}</p>
+                            </div>
+                            <div class="divider-ticket"></div>
+                            <p class="texto-conteudo-debito">Nós do Ajudai suspendemos sua conta devido a um débito que você tem conosco</p>
+                            <p class="texto-conteudo-debito">Para voltar a usar o melhor serviço de chatbot regularize já sua conta! Para <strong>atualizar a forma de pagamento</strong> clique no botão abaixo</p>
+                            <a class="botao-regularize-pagamento" href="{% url 'checkout_metodo_pagamento' %}">Atualizar Forma de Pagamento</a>
+                            <p class="texto-conteudo-debito">Caso você deseja realizar uma <strong>tentativa de pagamento</strong> do valor em débito, você pode clicar no botão abaixo</p>
+                            <a class="botao-regularize-pagamento" href="{% url 'processando_pagamento_debito' %}">Pagamento de débito</a>
+                        </div>
+<!-- 
+                        <p>Página de Aviso de Suspensão de serviço por débito - A desenvolver o front</p>
+                        <p>Valor em débito não pago: {{ valor_em_divida }}</p>
+                        <p><a href="{% url 'checkout_metodo_pagamento' %}">Atualizar Forma de Pagamento</a></p>
+                        <p><a href="{% url 'processando_pagamento_debito' %}">Realizar tentativa de pagamento do valor em débito</a></p>
+					 -->
 					
                     </div>
                 </main>

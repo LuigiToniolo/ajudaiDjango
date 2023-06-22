@@ -9,6 +9,7 @@
         <meta name="description" content="" />
         <meta name="author" content="" />
         <title>Área do cliente - Ajudai</title>
+        <link rel="icon" href="{% static 'image/logo-ajudai-circulo.png' %}">
         <link href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css" rel="stylesheet" />
         <link href="{% static 'css/styles.css' %}" rel="stylesheet" />
         <link href="{% static 'css/dashboard-style.css' %}" rel="stylesheet" />
@@ -247,18 +248,7 @@
 
                     </div>
                 </main>
-                <footer class="py-4 bg-light mt-auto" id="footer">
-                    <div class="container-fluid px-4">
-                        <div class="d-flex align-items-center justify-content-between small">
-                          <div class="text-muted">Copyright © 2023 Ajudai. Todos os direitos reservados.</div>
-                          <div>
-                              <a href="#">Políticas de pricavidade</a>
-                              &middot;
-                              <a href="#">Termos de condição</a>
-                          </div>
-                        </div>
-                    </div>
-                </footer>
+                {% include 'includes/footer.html' %}
             </div>
         </div>
         <script>            
@@ -393,16 +383,16 @@
           </script>
 
           <script>
-            var checkbox = document.querySelector('.switch-toggle input');
+            var checkboxLimit = document.querySelector('.switch-toggle input');
             var wrapper = document.getElementById('wrapper');
             
             // Desabilitar o switch e bloquear a div ao carregar a página
-            checkbox.checked = false;
+            checkboxLimit.checked = false;
             wrapper.style.pointerEvents = 'none';
             wrapper.style.opacity = 0.5;
             
-            checkbox.addEventListener('change', function() {
-              if (checkbox.checked) {
+            checkboxLimit.addEventListener('change', function() {
+              if (checkboxLimit.checked) {
                 wrapper.style.pointerEvents = 'auto';
                 wrapper.style.opacity = 1;
               } else {

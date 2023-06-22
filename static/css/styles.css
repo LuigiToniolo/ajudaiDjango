@@ -11654,6 +11654,14 @@ outline: none;
   width: 30%;
 }
 
+.logout-button-dropdown {
+  background-color: red;
+  padding: 4px 16px;
+  text-decoration: none;
+  border: none;
+  background-color: transparent;
+}
+
 .logout-button {
   width: 150px;
   background-color: #FFFFFF;
@@ -12269,8 +12277,8 @@ label{
 }
 
 #popup {
-  background-color: #00a884;
-  border-color: #00a884;
+  background-color: #5C7AD3;
+  border-color: #5C7AD3;
   border-radius: 20px;
   display: flex;
   justify-content: center;
@@ -12350,7 +12358,6 @@ label{
     width: 100%;
   }
 }
-
 
 
 

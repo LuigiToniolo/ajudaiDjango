@@ -1,0 +1,216 @@
+.ticket-div {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    border-radius: 25px;
+    background-color: #FFFFFF;
+    
+    padding: 20px;
+    width: 80%;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 0 0 rgba(0,0,0,.1)
+}
+
+
+.fa-circle-check {
+    color: #43e97b;
+    width: 100px;
+    height: auto;
+}
+
+.fa-circle-xmark {
+    color: #FF9C9C;
+    width: 100px;
+    height: auto;
+}
+
+.titulo-sucesso {
+    margin: 3vh 0 1vh 0;
+    background: linear-gradient(to right, #43e97b 0%, #38f9d7 100%);;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    
+}
+
+.titulo-falha {
+    margin: 3vh 0 1vh 0;
+    background: linear-gradient(to right, #FF9C9C 0%, #fd7070 100%);;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    
+}
+
+.subtitulo-sucesso {
+    color: #6c757d;
+    font-size: 18px;
+}
+
+.divider-ticket {
+    margin: 3vh 0;
+    width: 100%;
+    border-bottom: 2px dashed #f2f2f2;
+    border-spacing: 8px;
+}
+
+.divisor {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+}
+
+.hole1 {
+    position: relative;
+    /* margin: 3vh 0; */
+    margin-left: -50px;
+    position: relative;
+    background-color: #F6F5F7;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+}
+
+.hole2 {
+    position: relative;
+    /* margin: 3vh 0; */
+    margin-right: -50px;
+    position: relative;
+    background-color: #F6F5F7;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+}
+
+.text-info-success {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    width: 100%;
+    font-size: 22px;
+    color: #6c757d;
+}
+
+.msg-redirect {
+    color: #6c757d;
+    margin-top: 3vh;
+}
+
+.botao-meu-plano {
+  border-radius: 20px;
+	border: 1px solid #43e97b;
+	background-color: #43e97b;
+	color: #FFFFFF;
+	font-size: 16 px;
+	font-weight: bold;
+	padding: 12px 45px;
+	letter-spacing: 1px;
+	transition: transform 80ms ease-in;
+  cursor: pointer;
+  text-decoration: none;
+  text-align: center;
+  width: 80%;
+}
+
+.botao-meu-plano:hover {
+  transform: scale(1.02);
+  color: #FFFFFF;
+}
+
+.falha {
+    background-color: #FF9C9C;
+    border: 1px solid #FF9C9C;
+}
+
+.container-alert {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    padding: 20px;
+    width: 80%;
+    align-items: center;
+    justify-content: center;
+    margin-top: 3vh;
+}
+
+.fa-triangle-exclamation {
+    color: #F58A07;
+    width: 100px;
+    height: auto;
+}
+
+.title-alert {
+    background: linear-gradient(to right, #F58A07 0%, #eca042 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    
+}
+.valor-debito {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    justify-content: space-around;
+}
+
+.subtitulo-valor {
+    font-size: 18px;
+    color: #6c757d;
+}
+
+
+.texto-conteudo-debito {
+    margin: 0 0 3vh 0;
+    color: #6c757d;
+}
+
+.botao-regularize-pagamento {
+    border-radius: 20px;
+    /* border: 1px solid #5C7AD3; */
+    border: none;
+    /* background-color: #5C7AD3; */
+    background: linear-gradient(to right, #F58A07 0%, #eca042 100%);
+    color: #FFFFFF;
+    font-size: 16 px;
+    font-weight: bold;
+    padding: 12px 45px;
+    letter-spacing: 1px;
+    transition: transform 80ms ease-in;
+    cursor: pointer;
+    text-decoration: none;
+    text-align: center;
+    width: 50%;
+    margin-bottom: 3vh;
+}
+
+.botao-regularize-pagamento:hover {
+  transform: scale(1.02);
+  color: #FFFFFF;
+}
+
+.container-redirect {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    border-radius: 25px;
+    background-color: #FFFFFF;
+    
+    padding: 20px;
+    width: 50%;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 1px 30px 0 rgba(0,0,0,.2), 0 1px 1px 0 rgba(0,0,0,.14), 0 2px 1px -1px rgba(0,0,0,.12);
+}
+
+.fa-clock {
+    width: 100px;
+    height: auto;
+    color: #5C7AD3;
+}
+

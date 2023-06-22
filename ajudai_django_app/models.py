@@ -272,7 +272,7 @@ class Premium_User_Payment_Method_Registration(models.Model):
     STATUS_CHOICES=(
         (PAYMENT_METHOD_REGISTRATION_STATUS_PENDING, 'Pending Payment Method'),
         (PAYMENT_METHOD_REGISTRATION_STATUS_SUCCESS, 'Approved Payment Method'),
-        (PAYMENT_METHOD_REGISTRATION_STATUS_PENDING, 'Rejected Paging Method. Please change it to continue using the services'),
+        (PAYMENT_METHOD_REGISTRATION_STATUS_FAILING, 'Rejected Paging Method. Please change it to continue using the services'),
     )
 
     id = models.AutoField(primary_key=True)
@@ -488,7 +488,7 @@ def register_payment_method_success_after_webhook_confirm(checkout_id):
     try:
         #garantindo que a operação seja realizada inteiramente, ou não executada 
         with transaction.atomic():
-            payment_method = Adesao_Purchase.objects.get(stripe_checkout_id=checkout_id)
+            payment_method = Premium_User_Payment_Method_Registration.objects.get(stripe_checkout_id=checkout_id)
             user = CustomUser.objects.get(id=payment_method.user.id)
 
             payment_method.status = PAYMENT_METHOD_REGISTRATION_STATUS_SUCCESS

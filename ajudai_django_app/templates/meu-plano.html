@@ -188,47 +188,15 @@
                               </div>
                               
                             
-                            <!-- <div class="info-prod">
-                                <p><strong>Minha atual assinatura: </strong></p>
-                                <img class="standard-img" src="{% static 'image/coin.png' %}" alt="standard plans ajudai">
-                            </div> -->
-                            
                         </div>
                         
                     </div>
                 </main>
-                <footer class="py-4 bg-light mt-auto" id="footer">
-                    <div class="container-fluid px-4">
-                        <div class="d-flex align-items-center justify-content-between small">
-                            <div class="text-muted">Copyright © 2023 Ajudai. Todos os direitos reservados.</div>
-                            <div>
-                                <a href="#">Políticas de pricavidade</a>
-                                &middot;
-                                <a href="#">Termos de condição</a>
-                            </div>
-                        </div>
-                    </div>
-                </footer>
+                {% include 'includes/footer.html' %}
             </div>
         </div>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
-        <!-- <script>
-            // JavaScript para abrir e fechar a modal
-            const modal = document.querySelector('.modal-plano');
-            const openModalLinks = document.querySelectorAll('.open-modal');
-            const closeModal = document.querySelector('.close');
 
-            openModalLinks.forEach(link => {
-                link.addEventListener('click', function(event) {
-                event.preventDefault(); // Impede a ação padrão de navegação
-                modal.style.display = 'block';
-                });
-            });
-
-            closeModal.addEventListener('click', function() {
-                modal.style.display = 'none';
-            });
-        </script> -->
         <script>
             // Função para abrir a modal ao clicar no link da linha da tabela
             function openModal(event) {

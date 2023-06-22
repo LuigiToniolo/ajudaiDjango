@@ -6,13 +6,14 @@
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
         <meta name="description" content="" />
         <meta name="author" content="" />
-        <title>{{ tab_title }}</title>
+        <title>Pagamento com sucesso!</title>
         {% load static %}
         <link href="{% static 'css/styles.css' %}" rel="stylesheet" />
+        <link href="{% static 'css/paymentsStyle.css' %}" rel="stylesheet" />
         <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
     </head>
     <body>
-        Página de Sucesso No Processamento de Cartão - A desenvolver
+        {% include 'includes/topMenu.html' %}
         <div id="layoutSidenav">
             <div id="layoutSidenav_nav">
 
@@ -22,13 +23,32 @@
             <div id="layoutSidenav_content">
                 <main>
                     <div class="container-fluid px-4">
-					
-					
-					
-					
+                        <!-- <h3>Página de Sucesso No Processamento de Cartão - A desenvolver</h3>					 -->
+                        <div class="ticket-div">
+                            <i class="fa-solid fa-circle-check"></i>
+                            <h3 class="titulo-sucesso">O pagamento foi um sucesso!</h3>
+                            <h4 class="subtitulo-sucesso">Software adquirido: Ajudai chatbot</h4>
+                            <div class="divisor">
+                                <div class="hole1"></div>
+                                <div class="divider-ticket"></div>
+                                <div class="hole2"></div>
+                            </div>
+                            <div class="text-info-success">
+                                <div>
+                                    <p>Valor do software</p>
+                                    <p>Data de compra</p>
+                                </div>
+                                <div>
+                                    <p>R$559,00</p>
+                                    <p>23/06/2023</p>
+                                </div>
+                            </div>
+                            <p class="msg-redirect">*Se a página não redirecionar automaticamente, você pode clicar no botão abaixo para entrar na página do seu plano</p>
+                            <a href="{% url 'meu-plano' %}" class="botao-meu-plano">Meu plano</a>
+                        </div>
                     </div>
                 </main>
-                <footer class="py-4 bg-light mt-auto" id="footer">
+                <!-- <footer class="py-4 bg-light mt-auto" id="footer">
                     <div class="container-fluid px-4">
                         <div class="d-flex align-items-center justify-content-between small">
                             <div class="text-muted">Copyright © 2023 Ajudai. Todos os direitos reservados.</div>
@@ -39,7 +59,7 @@
                             </div>
                         </div>
                     </div>
-                </footer>
+                </footer> -->
             </div>
         </div>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
