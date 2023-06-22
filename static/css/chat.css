@@ -168,6 +168,7 @@ body {
   display: none;
   flex-direction: column;
   width: 68vw;
+  padding-bottom: 8vh;
 }
 
 .message-client {
@@ -217,18 +218,21 @@ body {
 
 .message-input {
   display: flex;
-  
+  align-items: center;
   width: 100%;
-  padding: 10px;
   background-color: #ffffff;
-}
-
-.input-reply {
-  border-top: 1px solid rgba(156, 156, 156, 0.1);
+  padding: 10px;
+  box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
+  bottom: 0;
+  left: 0;
+  position: absolute;
 }
 
 
 .message-input input[type="text"] {
+  flex: 1;
+  /* padding: 10px; */
+
   width: 100%;
   border: none;
   outline: none;
