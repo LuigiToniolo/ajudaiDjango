@@ -1,13 +1,14 @@
 <!DOCTYPE html>
 <html lang="pt-br">
     <head>
+        {% load static %}
         <meta charset="utf-8" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
         <meta name="description" content="" />
         <meta name="author" content="" />
-        <title>{{ tab_title }}</title>
-        {% load static %}
+        <title>Planos disponíveis - Ajudai</title>
+        <link rel="icon" href="{% static 'image/logo-ajudai-circulo.png' %}">
         <link href="{% static 'css/styles.css' %}" rel="stylesheet" />
         <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
     </head>
@@ -47,7 +48,7 @@
                                     <li>Suporte grátis</li>
                                     <li>Gestor de pedidos</li>
                             </ul>
-                            <a href="{% url 'checkout_pagamento_adesao' %}" class="select-plan">Assine já</a>
+                            <a href="#" class="select-plan">Assine já</a>
                         </div>
                         
                         <div class="plan-popular">
@@ -67,7 +68,7 @@
                                     <li>Suporte e Implementação grátis</li>
                                     <li>Gestor de pedidos</li>
                                 </ul>
-                                <a href="{% url 'checkout_pagamento_adesao' %}" class="select-plan">Assine já</a>
+                                <a href="#" class="select-plan">Assine já</a>
                             </div>
 
                             <div class="plan">
@@ -84,7 +85,7 @@
                                     <li>Suporte grátis</li>
                                     <li>Gestor de pedidos</li>
                             </ul>
-                                <a href="{% url 'checkout_pagamento_adesao' %}" class="select-plan">Assine já</a>
+                                <a href="#" class="select-plan">Assine já</a>
                             </div>
                             <div class="plan">
                                 <img class="standard-img" src="{% static 'image/rocket.png' %}" alt="business vip plan ajudai">
@@ -100,7 +101,7 @@
                                     <li>Suporte grátis</li>
                                     <li>Gestor de pedidos</li>
                             </ul>
-                                <a href="{% url 'checkout_pagamento_adesao' %}" class="select-plan">Assine já</a>
+                                <a href="#" class="select-plan">Assine já</a>
                             </div>
                           </div>
                           
@@ -163,18 +164,7 @@
 
                     </div>
                 </main>
-                <footer class="py-4 bg-light mt-auto" id="footer">
-                    <div class="container-fluid px-4">
-                        <div class="d-flex align-items-center justify-content-between small">
-                            <div class="text-muted">Copyright © 2023 Ajudai. Todos os direitos reservados.</div>
-                            <div>
-                                <a href="#">Políticas de pricavidade</a>
-                                &middot;
-                                <a href="#">Termos de condição</a>
-                            </div>
-                        </div>
-                    </div>
-                </footer>
+                {% include 'includes/footer.html' %}
             </div>
         </div>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>

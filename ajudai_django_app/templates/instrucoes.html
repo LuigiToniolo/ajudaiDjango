@@ -1,13 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
+        {% load static %}
         <meta charset="utf-8" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
         <meta name="description" content="" />
         <meta name="author" content="" />
-        <title>{{ tab_title }}</title>
-        {% load static %}
+        <title>Instruções de uso - Ajudai</title>
+        <link rel="icon" href="{% static 'image/logo-ajudai-circulo.png' %}">
         <link href="{% static 'css/styles.css' %}" rel="stylesheet" />
         <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
     </head>
@@ -31,28 +32,92 @@
                             <img class="doodle-plans" src="{% static 'image/doodle-instrucoes.svg' %}" alt="doodle contato ajudai">
                         </div>
                         <div class="divider"></div>
+                        <h4>Pagamento e aquisição do chatbot</h4>
+                        <p>Após entrar em contato com nossa equipe de vendas e concluir o registro na plataforma Ajudai, é 
+                            necessário adquirir o software e iniciar a utilização do nosso plano pós-pago de chatbot. Para isso, 
+                            siga os passos abaixo:</p>
+                        <ul>
+                            <li>Clique na aba <a href="{% url 'planos_disponiveis' %}">“Planos disponíveis”</a>  localizada na barra de menu lateral.</li>
+                            <li>Nessa página, você encontrará uma visão geral dos valores dos nossos planos. Quanto mais mensagens você utilizar, mais vantajoso será o preço.</li>
+                            <li>Além disso, fornecemos uma explicação sobre o que é considerado uma conversa e disponibilizamos uma calculadora de conversas para auxiliá-lo na escolha.</li>
+                            <li>Para efetuar o pagamento, clique em um dos botões <strong>"Assine já"</strong>. Isso o direcionará para a página de checkout, onde poderá realizar o pagamento do nosso software (no valor de R$559).</li>
+                            <li>No processo de checkout, oferecemos várias opções de pagamento, incluindo integração com o Stripe para facilitar sua transação.</li>
+                        </ul>
+                        <p>Estamos à disposição para qualquer dúvida adicional ou suporte durante o processo de aquisição do plano.</p>
+
                         <h4>Integração do chatbot com o What's App</h4>
+
+                        <p>Após a conclusão do pagamento, os usuários premium terão acesso a novos menus para integração e controle do chatbot. Para iniciar a integração do seu chatbot, siga as etapas abaixo:</p>
+                        <ul>
+                            <li>Clique na aba "Chatbot" e selecione a subaba <a href="{% url 'meus-chatbots' %}">Meus chatbots</a> para criar um chatbot para o seu estabelecimento.</li>
+                            <li>Em seguida, clique no card com o sinal de adição.</li>
+                            <li>Um formulário será aberto, contendo campos para inserir os detalhes da API do WhatsApp. Esses campos incluem:</li>
+                            <ul>
+                                <li>Nome do chatbot</li>
+                                <li>Número do WhatsApp (pode ser um número novo ou um número existente)</li>
+                                <li>Token de autenticação da API do WhatsApp</li>
+                                <li>Page ID do Facebook</li>
+                                <li>Instruções do chatbot (prompt)</li>
+                            </ul>
+                            <li>Após preencher os campos, clique no botão "Ativar chatbot" para criar um novo chatbot. A partir desse momento, sua secretária automatizada estará em pleno funcionamento.</li>
+                            <li>Para testar seu chatbot, você pode enviar uma mensagem para o número cadastrado e verificar o seu desempenho na página <a href="{% url 'minhas-conversas' %}">Minhas conversas</a>.</li>
+                        </ul>
+                        <p>É importante ressaltar que <strong>a equipe do Ajudai realizará toda a configuração do seu chatbot</strong>, garantindo que você não encontre problemas durante essas etapas. Estamos aqui para auxiliá-lo em todas as etapas do processo de integração do chatbot. Não hesite em entrar em contato caso necessite de suporte adicional.</p>
+
+
                         <h4>Visualização do consumo de conversas</h4>
+                        <p>O Ajudai oferece um sistema de monitoramento abrangente para todas as conversas e pedidos. Para acessar esses dados, siga os passos abaixo:</p>
+                        <ul>
+                            <li>Acesse a página <a href="{% url 'dashboard' %}">Dashboard</a> disponível no menu lateral.</li>
+                            <li>Ao entrar nessa página, você poderá visualizar o número total de conversas no card azul denominado <strong>"Conversas totais"</strong>.</li>
+                            <li>Ao clicar nesse card, uma janela modal será aberta, exibindo os detalhes de todas as conversas. Você poderá ver informações como o plano atual, valor por conversa, quantidade de conversas utilizadas e o valor total calculado simultaneamente. Além disso, terá uma visão mais detalhada do seu plano atual por meio de cards e uma barra de progresso com o número de conversas atualmente em uso.</li>
+                            <li>Além desse card, você poderá visualizar os gráficos que mostram as conversas diárias e mensais, permitindo uma análise mais aprofundada.</li>
+                        </ul>
+                        <p>O monitoramento fornecido pelo Ajudai oferece uma visão completa das interações do chatbot, fornecendo informações valiosas para você acompanhar o desempenho e a eficácia do seu serviço. Estamos à disposição para ajudar caso tenha alguma dúvida ou precise de suporte adicional.</p>
                         <h4>Envio de correção do prompt</h4>
+                        <p>Após a configuração inicial feita pela equipe do Ajudai, estamos prontos para atender às suas solicitações de atualização do prompt da sua secretária. Se você precisar adicionar informações ao seu cardápio, atualizar detalhes sobre o seu estabelecimento ou qualquer outra modificação, basta seguir estes passos simples:</p>
+                        <ul>
+                            <li>Acesse a página de <a href="{% url 'solicitacao' %}">correção imediata</a>.</li>
+                            <li>Preencha o formulário com todas as alterações desejadas para a sua secretária.</li>
+                            <li>Clique no botão "Enviar solicitação".</li>
+                        </ul>
+                        <p>Após recebermos a sua solicitação, nossa equipe trabalhará diligentemente para fazer as alterações necessárias no prompt de comando em até 24 horas. Você pode ficar tranquilo sabendo que suas atualizações serão implementadas rapidamente para garantir que a sua secretária automatizada esteja sempre atualizada e oferecendo um serviço eficiente.</p>
+                        <p>Estamos à disposição para ajudar a personalizar e aprimorar a sua experiência com a secretária automatizada. Caso precise de suporte adicional ou tenha alguma dúvida, entre em contato conosco. Estamos aqui para ajudar você a obter o máximo do seu assistente virtual.</p>
                         <h4>Controle de pedidos</h4>
+                        <p>Com o objetivo de aprimorar o monitoramento dos pedidos em seu estabelecimento, o Ajudai desenvolveu um sistema de gerenciamento de pedidos por meio do chatbot. Para visualizar esses pedidos, siga as seguintes etapas:</p>
+                        <ul>
+                            <li>Acesse a página <a href="{% url 'dashboard' %}">Dashboard</a>.
+                                Nessa página, você encontrará o card amarelo referente aos pedidos realizados.</li>
+                            <li>Ao clicar nesse card, você será redirecionado para uma tabela que exibirá todos os pedidos feitos no mês atual.</li>
+                        </ul>
+                        <p>Além das informações fornecidas na dashboard, disponibilizamos um kanban com todos os pedidos realizados. Para acessá-lo, siga estas etapas:</p>
+                        <ul>
+                            <li>No menu lateral, selecione a página <a href="{% url 'pedidos-realizados' %}">Pedidos Realizados</a> Nessa página, você poderá atualizar o status de cada pedido</li>
+                            <li>Ao arrastar um pedido de uma coluna para outra, será gerada uma notificação no WhatsApp do cliente. Por exemplo, ao mover um pedido de <strong>"Pedidos Realizados"</strong> para <strong>"Pedidos em Processo"</strong>, o chatbot enviará uma mensagem de notificação ao cliente com o seguinte conteúdo: <strong>"Seu pedido foi aceito e está sendo processado!"</strong>.</li>
+                            <li>Ao clicar no card do pedido, uma página será aberta com os detalhes completos do pedido.</li>
+                        </ul>
+                        <p>Se surgir alguma dúvida, não hesite em entrar em contato com nosso canal de suporte. Estamos à disposição para ajudar!</p>
+
                         <h4>Página de mensagens</h4>
+
+                        <p>No Ajudai, utilizamos a API do WhatsApp para conectar nossos serviços, e disponibilizamos todas as conversas dos seus clientes na seção <a href="{% url 'minhas-conversas' %}">Minhas Conversas</a>. Nessa página, o funcionamento será semelhante ao do WhatsApp Web, mas com a estilização exclusiva do Ajudai.</p>
+                        <p>Além disso, na mesma página, oferecemos a possibilidade de <strong>monitorar</strong> o desempenho do nosso chatbot em todos os seus clientes. Também é possível intervir em cada conversa, escrevendo <strong>mensagens personalizadas</strong>, bem como <strong>pausar</strong> o chatbot temporariamente para aquele cliente específico.</p>
+                        <p>Dessa forma, proporcionamos a você uma visão abrangente das interações dos seus clientes, permitindo um acompanhamento eficiente e a capacidade de interagir de maneira direta quando necessário.</p>
+
                         <h4>Criação e edição dos chatbots</h4>
+
+                        <p>Para a criação e edição dos seus chatbots, oferecemos a página <a href="{% url 'meus-chatbots' %}">Meus Chatbots</a>. Nessa área, você pode ter o controle total sobre todos os seus chatbots, permitindo criar e editar conforme suas necessidades. Vale ressaltar que o acesso a essa tela de configuração dos chatbots é <strong>restrito</strong> aos nossos usuários, garantindo assim a excelência do nosso serviço e a nossa responsabilidade por qualquer eventual erro no funcionamento dos chatbots.</p>
+
                         <h4>Informações do usuário</h4>
+
+                        <p>Disponibilizamos uma página dedicada à edição e informações do usuário, localizada no menu e chamada de <a href="{% url 'user_accounts' %}">Meu Perfil</a>. Nessa página, você terá acesso a todos os dados do seu perfil, podendo visualizá-los, <strong>alterar sua senha, fazer logout</strong> e até mesmo <strong>deletar</strong> sua conta, se desejar. É uma área completa para você gerenciar e personalizar suas informações conforme suas necessidades.</p>
+
                         <h4>Formas de contato do suporte</h4>
+
+                        <p>A maneira de entrar em contato com nossa equipe de especialistas no Ajudai é por meio da página de <a href="{% url 'contato' %}">Contatos</a>. Nessa página, oferecemos opções para enviar uma mensagem pelo <strong>WhatsApp</strong> ou por <strong>e-mail</strong>. Visando fornecer o melhor atendimento aos nossos clientes, estamos atualmente desenvolvendo um chat instantâneo diretamente em nossa plataforma. Além disso, sempre buscamos solucionar os problemas de nossos clientes da melhor forma possível, por isso, também agendamos <strong>video chamadas</strong> para garantir uma resolução eficiente. Estamos empenhados em proporcionar um suporte abrangente e ágil para atender às necessidades de todos.</p>
                     </div>
                 </main>
-                <footer class="py-4 bg-light mt-auto" id="footer">
-                    <div class="container-fluid px-4">
-                        <div class="d-flex align-items-center justify-content-between small">
-                            <div class="text-muted">Copyright © 2023 Ajudai. Todos os direitos reservados.</div>
-                            <div>
-                                <a href="#">Políticas de pricavidade</a>
-                                &middot;
-                                <a href="#">Termos de condição</a>
-                            </div>
-                        </div>
-                    </div>
-                </footer>
+                {% include 'includes/footer.html' %}
             </div>
         </div>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>

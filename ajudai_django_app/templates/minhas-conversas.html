@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
+        {% load static %}
         <meta charset="utf-8" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
         <meta name="description" content="" />
         <meta name="author" content="" />
-        <title>{{ tab_title }}</title>
-
-        {% load static %}
+        <title>Minhas conversas - Ajudai</title>
+        <link rel="icon" href="{% static 'image/logo-ajudai-circulo.png' %}">
         <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
@@ -105,80 +105,55 @@
                   {% endif %}
               {% endif %}
             {% endfor %}
-            <div class="input-reply">
-              <form id="message-form" method="post">
-                {% csrf_token %}
-                <div class="message-input">
-                    <input type="text" name="message" placeholder="Digite sua mensagem...">
-                    <input type="hidden" id="conversa_id" name="conversa_id" value="{{ conversa.id }}">
-                    <button class="botao-send"><i class="fa-solid fa-paper-plane" id="icon-send"></i></button>
-                    <a class="botao-pause-chatbot"><i class="fa-solid fa-robot" id="icon-pause"></i></a>
-                </div>
-             </form>
-             
-            </div>
           
           </div>
           {% endfor %}
 
+          <div class="input-reply">
+            <form id="message-form" method="post">
+              {% csrf_token %}
+              <div class="message-input">
+                  <input type="text" name="message" placeholder="Digite sua mensagem...">
+                  <input type="hidden" id="conversa_id" name="conversa_id" value="{{ conversa.id }}">
+                  <button class="botao-send"><i class="fa-solid fa-paper-plane" id="icon-send"></i></button>
+                  <a class="botao-pause-chatbot"><i class="fa-solid fa-robot" id="icon-pause"></i></a>
+              </div>
+           </form>
+          </div>
         </div>
-      </div>
-    </body>
 
+
+
+      </div>
+
+
+
+    </body>
+    
     <script src="{% static 'js/scriptsChat.js' %}"></script>
 
-    <script>
-      $(document).ready(function() {
-          $("li[id^='contact-']").click(function() {
-              var id = $(this).attr('id').split('-')[1];
-              console.log("Clicked contact ID: ", id);
-              $(".conversation").hide();
-              $("#conversation-" + id).show();
-              $(".defaultText").hide();
-              $(".side-conversation").css("display", "flex");
+
+        <script>
+          $(document).ready(function() {
+              $("li[id^='contact-']").click(function() {
+                  var id = $(this).attr('id').split('-')[1];
+                  console.log("Clicked contact ID: ", id);
+                  $(".conversation").hide();
+                  $("#conversation-" + id).show();
+                  $(".defaultText").hide(); // Oculta a mensagem "Escolha uma mensagem"
+                  $(".side-conversation").css("display", "flex");
+              });
+              // Note for the code in django template: The following are Django template tags
+              // Your IDE might show them as syntax errors, but they will be processed correctly by Django.
+              {% if updated_conversa_id %}
+                  $(".conversation").hide();
+                  $("#conversation-{{ updated_conversa_id }}").show();
+                  $(".defaultText").hide(); // Oculta a mensagem "Escolha uma mensagem"
+              {% else %}
+                  $(".conversation").hide();
+                  $(".defaultText").show(); // Exibe a mensagem "Escolha uma mensagem"
+              {% endif %}
           });
-  
-          {% if updated_conversa_id %}
-              $(".conversation").hide();
-              $("#conversation-{{ updated_conversa_id }}").show();
-              $(".defaultText").hide();
-              $(".side-conversation").css("display", "flex");
-          {% else %}
-              $(".conversation").hide();
-              $(".defaultText").show();
-              $(".side-conversation").css("display", "none");
-          {% endif %}
-
-        $(".botao-pause-chatbot").click(function() {
-          var parentConversa = $(this).closest('.conversation');
-          var conversaId = parentConversa.find("#conversa_id").val();
-          
-          $.ajax({
-            url: '{% url "toggle_chatbot" %}',
-            type: 'POST',
-            data: {
-              'conversa_id': conversaId,
-              'csrfmiddlewaretoken': '{{ csrf_token }}'
-            },
-            success: function(response) {
-              if (response.status == 'success') {
-                console.log('Chatbot toggled successfully');
-                // You can add some visual feedback here
-              }
-            }
-          });
-      });
-      });
-    </script>
-
-  <script>
-    $(document).ready(function() {
-      // ... existing code ...
-
+      </script>
       
-
-    });
-  </script>
-
-
 </html>
