@@ -133,27 +133,79 @@
     <script src="{% static 'js/scriptsChat.js' %}"></script>
 
 
-        <script>
-          $(document).ready(function() {
-              $("li[id^='contact-']").click(function() {
-                  var id = $(this).attr('id').split('-')[1];
-                  console.log("Clicked contact ID: ", id);
-                  $(".conversation").hide();
-                  $("#conversation-" + id).show();
-                  $(".defaultText").hide(); // Oculta a mensagem "Escolha uma mensagem"
-                  $(".side-conversation").css("display", "flex");
-              });
-              // Note for the code in django template: The following are Django template tags
-              // Your IDE might show them as syntax errors, but they will be processed correctly by Django.
-              {% if updated_conversa_id %}
-                  $(".conversation").hide();
-                  $("#conversation-{{ updated_conversa_id }}").show();
-                  $(".defaultText").hide(); // Oculta a mensagem "Escolha uma mensagem"
-              {% else %}
-                  $(".conversation").hide();
-                  $(".defaultText").show(); // Exibe a mensagem "Escolha uma mensagem"
-              {% endif %}
+    <script>
+      $(document).ready(function() {
+          // Initial value for activeConversaId can be null or the id of the first conversa
+          var activeConversaId = null;
+    
+          $("li[id^='contact-']").click(function() {
+              activeConversaId = $(this).attr('id').split('-')[1];
+              var id = $(this).attr('id').split('-')[1];
+              console.log("Clicked contact ID: ", id);
+              $(".conversation").hide();
+              $("#conversation-" + id).show();
+              $(".defaultText").hide();
+              $(".side-conversation").css("display", "flex");
           });
-      </script>
+    
+          $("#message-form").submit(function(event) {
+              event.preventDefault();
+              $("#conversa_id").val(activeConversaId);
+              var messageContent = $("input[name='message']").val(); // get the message content
+              var formData = $(this).serialize();
+
+              $.ajax({
+                  url: $(this).attr('action'),
+                  type: 'POST',
+                  data: formData,
+                  success: function(response) {
+                      // Append new message to conversation
+                      var newMessage = $("<div>").addClass("dialog-response").html(`
+                          <div class="message-response">
+                              <span class="sender">You</span>
+                              <p>${messageContent}</p>
+                              <span class="timestamp">${response.timestamp}</span>
+                          </div>
+                      `);
+                      $("#conversation-" + activeConversaId).append(newMessage);
+                      // Clear input field
+                      $("input[name='message']").val("");
+                  }
+              });
+          });
+
+          {% if updated_conversa_id %}
+              $(".conversation").hide();
+              $("#conversation-{{ updated_conversa_id }}").show();
+              $(".defaultText").hide();
+              $(".side-conversation").css("display", "flex");
+          {% else %}
+              $(".conversation").hide();
+              $(".defaultText").show();
+              $(".side-conversation").css("display", "none");
+          {% endif %}
+    
+        $(".botao-pause-chatbot").click(function() {
+          var parentConversa = $(this).closest('.conversation');
+          var conversaId = parentConversa.find("#conversa_id").val();
+          
+          $.ajax({
+            url: '{% url "toggle_chatbot" %}',
+            type: 'POST',
+            data: {
+              'conversa_id': conversaId,
+              'csrfmiddlewaretoken': '{{ csrf_token }}'
+            },
+            success: function(response) {
+              if (response.status == 'success') {
+                console.log('Chatbot toggled successfully');
+                // You can add some visual feedback here
+              }
+            }
+          });
+        });
+      });
+    </script>
+    
       
 </html>
