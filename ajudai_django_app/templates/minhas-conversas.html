@@ -156,6 +156,7 @@
 
               var updateUrl = '/update_last_message_shown/' + activeConversaId + '/';
 
+              //avisa o bd sobre a mensagem mostrada
               $.ajax({
                   url: updateUrl,
                   type: 'POST',
@@ -166,7 +167,7 @@
                   success: function(response) {
                       if (response.status == 'success') {
                           console.log('Last message shown updated successfully');
-                          // You can add some visual feedback here
+                          $("#contact-" + activeConversaId).find(".notification-dot").remove();
                       }
                   }
               });
