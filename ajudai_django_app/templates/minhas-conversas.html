@@ -59,7 +59,7 @@
                     />
                   </div>
                   <div class="conteudo-texto-contato">
-                    <p class="texto-contato"><strong>{{ conversa.company_client_number }}</strong></p>
+                    <p class="texto-contato"><strong>{{ conversa.company_client_number }} {% if not conversa.last_message_shown %}&nbsp;&nbsp;<span class="notification-dot"></span>{% endif %}</strong></p>
                     <p class="texto-contato">Status: {{ conversa.status_da_conversa }}</p>
                   </div>  
                 </div>
@@ -153,6 +153,23 @@
               $("#conversation-" + id).show();
               $(".defaultText").hide();
               $(".side-conversation").css("display", "flex");
+
+              var updateUrl = '/update_last_message_shown/' + activeConversaId + '/';
+
+              $.ajax({
+                  url: updateUrl,
+                  type: 'POST',
+                  data: {
+                      'conversa_id': id,
+                      'csrfmiddlewaretoken': '{{ csrf_token }}'
+                  },
+                  success: function(response) {
+                      if (response.status == 'success') {
+                          console.log('Last message shown updated successfully');
+                          // You can add some visual feedback here
+                      }
+                  }
+              });
 
               scrollToBottom(id);
           });

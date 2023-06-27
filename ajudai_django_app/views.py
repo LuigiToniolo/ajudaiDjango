@@ -220,6 +220,18 @@ def minhas_conversas_view(request):
         context,
     )
 
+@csrf_exempt
+def update_last_message_shown(request, conversa_id):
+    if request.method == 'POST':
+        conversa = get_object_or_404(Conversa, id=conversa_id)
+        if request.user != conversa.chatbot.user:
+            return JsonResponse({"error": "Unauthorized access"}, status=401)
+        conversa.last_message_shown = True
+        conversa.save()
+        return JsonResponse({"status": "success"})
+    else:
+        return JsonResponse({"error": "Invalid request method"}, status=400)
+
 def toggle_chatbot(request):
     try:
         user = CustomUser.getUser(request)
@@ -753,7 +765,6 @@ def process_message(data):
                                     )
                                 else:
                                     return
-                            
                             if conversation.chatbot_ativo:
                                 role = ''
                                 try:
@@ -772,18 +783,19 @@ def process_message(data):
                                         resumo_do_pedido = resumo,
                                     )
                                     informar_loja_fechamento_pedido(resumo, company_number)
+                                    
+                                #chama função que responde o cliente da loja via integência artificial
+                                send_response(chatbot.facebook_page_id, chatbot.whats_app_api_auth_token, numero_cliente, gpt_response)
 
                             else: #caso da resposta automatica com chatbot estiver desativada
-                                new_context = conversation.context({"role": "user", "content": incoming_message})
+                                new_context = conversation.context.append({"role": "user", "content": incoming_message})
                                 tokens_used_on_this_request = 0
 
                             conversation.context = new_context
                             tokens_used_before = conversation.total_tokens_used
                             conversation.total_tokens_used = tokens_used_before + tokens_used_on_this_request
+                            conversation.last_message_shown = False
                             conversation.save()
-
-                            #chama função que responde o cliente da loja via integência artificial
-                            send_response(chatbot.facebook_page_id, chatbot.whats_app_api_auth_token, numero_cliente, gpt_response)
                         
                             return
                         else:
