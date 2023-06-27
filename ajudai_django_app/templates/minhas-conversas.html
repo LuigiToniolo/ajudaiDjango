@@ -134,10 +134,17 @@
 
 
     <script>
+
+      function scrollToBottom(conversationId) {
+            var conversationDiv = document.getElementById("conversation-" + conversationId);
+            conversationDiv.scrollTop = conversationDiv.scrollHeight;
+      }
+
       $(document).ready(function() {
           // Initial value for activeConversaId can be null or the id of the first conversa
           var activeConversaId = null;
     
+          //mostra a conversa selecionada na lateral
           $("li[id^='contact-']").click(function() {
               activeConversaId = $(this).attr('id').split('-')[1];
               var id = $(this).attr('id').split('-')[1];
@@ -146,8 +153,11 @@
               $("#conversation-" + id).show();
               $(".defaultText").hide();
               $(".side-conversation").css("display", "flex");
+
+              scrollToBottom(id);
           });
     
+          //envia nova mensagem
           $("#message-form").submit(function(event) {
               event.preventDefault();
               $("#conversa_id").val(activeConversaId);
@@ -162,7 +172,7 @@
                       // Append new message to conversation
                       var newMessage = $("<div>").addClass("dialog-response").html(`
                           <div class="message-response">
-                              <span class="sender">You</span>
+                              <span class="sender">Chatbot ou Você</span>
                               <p>${messageContent}</p>
                               <span class="timestamp">${response.timestamp}</span>
                           </div>
@@ -170,6 +180,7 @@
                       $("#conversation-" + activeConversaId).append(newMessage);
                       // Clear input field
                       $("input[name='message']").val("");
+                      scrollToBottom(activeConversaId);
                   }
               });
           });
