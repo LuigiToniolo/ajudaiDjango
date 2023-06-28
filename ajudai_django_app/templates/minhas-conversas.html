@@ -91,7 +91,7 @@
                           <div class="message-client">
                           <span class="sender">Cliente ({{ conversa.company_client_number }})</span>
                           <p>{{ message.content }}</p>
-                          <span class="timestamp">10:00 AM</span>
+                          <span class="timestamp">{{ message.date }} {{ message.time }}</span>
                           </div>
                       </div>
                   {% elif message.role == "assistant" %}
@@ -99,7 +99,7 @@
                           <div class="message-response">
                           <span class="sender">Chatbot ou Você</span>
                           <p>{{ message.content }}</p>
-                          <span class="timestamp">10:05 AM</span> 
+                          <span class="timestamp">{{ message.date }} {{ message.time }}</span> 
                           </div>
                       </div>
                   {% endif %}

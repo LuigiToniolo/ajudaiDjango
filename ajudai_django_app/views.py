@@ -197,6 +197,23 @@ def minhas_conversas_view(request):
         )
     ).order_by('status_order', 'date', 'time')
 
+    conversas_com_tempo_das_mensagens = []
+    for conversa in conversas:
+        if len(conversa.context) == len(conversa.messages_display_time):
+            merged_context = []
+            for i in range(len(conversa.context)):
+                # Merge dictionaries at the same index
+                merged_item = {**conversa.context[i], **conversa.messages_display_time[i]}
+                merged_context.append(merged_item)
+            # Replace the original context with the merged context
+            conversa.context = merged_context
+            # Append the updated conversa object to the new list
+            conversas_com_tempo_das_mensagens.append(conversa)
+        else:
+            # handle the case when the lengths don't match, e.g., log an error or raise an exception
+            pass
+
+
     if request.method == 'POST':
         form = MessageForm(request.POST)
         if form.is_valid():
@@ -216,7 +233,7 @@ def minhas_conversas_view(request):
         "tab_title" : 'Ajudaí - Minhas Conversas',
         "meta_desciption" : '',
         'user' : user,
-        'conversas' : conversas,
+        'conversas' : conversas_com_tempo_das_mensagens,
         'updated_conversa_id': updated_conversa_id,
         'userIsPremium' : user.userIsPremium(),
     }
