@@ -417,6 +417,7 @@ class Conversa(models.Model):
         )
     chatbot_ativo = models.BooleanField(default=True)
     last_message_shown = models.BooleanField(default=False)
+    need_refresh_view = models.BooleanField(default=False)
     
     @staticmethod
     def conversations_to_payment_due(user):

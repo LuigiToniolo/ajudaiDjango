@@ -221,6 +221,34 @@ def minhas_conversas_view(request):
     )
 
 @csrf_exempt
+def check_for_new_messages_to_refresh(request):
+    if request.method == 'POST':
+        try:
+            user = CustomUser.getUser(request)
+        except: 
+            return JsonResponse({"error": "Unauthorized access"}, status=401)
+        
+        if not request.user.is_authenticated:
+            return JsonResponse({"error": "Unauthorized access"}, status=401)
+
+        chatbots = ChatBot.objects.filter(user=user)
+        conversas = Conversa.objects.filter(chatbot__in=chatbots)
+
+        should_refresh = any(conversa.need_refresh_view for conversa in conversas)
+
+        if should_refresh:
+            for conversa in conversas:
+                conversa.need_refresh_view = False
+                conversa.save()
+
+        # Return a JsonResponse indicating whether to refresh or not
+        return JsonResponse({"should_refresh": should_refresh})
+
+    else:
+        return JsonResponse({"error": "Invalid request method"}, status=400)
+
+
+@csrf_exempt
 def update_last_message_shown(request, conversa_id):
     if request.method == 'POST':
         conversa = get_object_or_404(Conversa, id=conversa_id)
@@ -795,6 +823,7 @@ def process_message(data):
                             tokens_used_before = conversation.total_tokens_used
                             conversation.total_tokens_used = tokens_used_before + tokens_used_on_this_request
                             conversation.last_message_shown = False
+                            conversation.need_refresh_view = True
                             conversation.save()
                         
                             return

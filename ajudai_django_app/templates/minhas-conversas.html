@@ -236,5 +236,24 @@
       });
     </script>
     
-      
+    
+    <script>
+      //make a POST request to the server every 30 seconds to check for new messages
+      setInterval(function() {
+        $.ajax({
+            url: "{% url 'check_for_new_messages_to_refresh' %}",
+            type: 'POST',
+            data: {
+                'csrfmiddlewaretoken': '{{ csrf_token }}'
+            },
+            success: function(response) {
+                // Check the response to see if we need to refresh
+                if (response.should_refresh) {
+                    location.reload();
+                }
+            }
+        });
+    }, 30000); // 30000 milliseconds is equal to 30 seconds
+
+    </script>
 </html>
