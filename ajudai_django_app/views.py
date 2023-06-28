@@ -278,6 +278,20 @@ def toggle_chatbot(request):
 
         conversa.chatbot_ativo = not conversa.chatbot_ativo
         conversa.save()
+
+        mensagem_de_aviso = ''
+        chatbot = conversa.chatbot
+
+        if conversa.chatbot_ativo:
+            mensagem_de_aviso = 'A partir de agora, o chatbot que dá respostas utilizando inteligência artificial foi retomado!'
+        else:
+            mensagem_de_aviso = 'A partir de agora você estará conversando com uma pessoa! O chatbot foi desativado!'
+
+        send_response(chatbot.facebook_page_id, chatbot.whats_app_api_auth_token, conversa.company_client_number, mensagem_de_aviso)   
+        context = conversa.context
+        context.append({"role": "assistant", "content": mensagem_de_aviso})
+        conversa.context = context
+        conversa.save()
         return JsonResponse({'status': 'success'})
 
     return JsonResponse({'status': 'error'})
