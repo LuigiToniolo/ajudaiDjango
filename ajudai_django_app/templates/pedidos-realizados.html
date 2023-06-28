@@ -45,6 +45,11 @@
                                     <span class="card-count">0</span>
                                 </div>
                               <ul id="inProgress" class="dropzone" ondrop="drop(event)" ondragover="allowDrop(event)">
+                                {% for pedido in pedidos %}
+                                    {% if pedido.status_do_pedido == STATUS_PEDIDO_EM_PROCESSO %}
+                                      <li>{{ pedido }} - <a href="{% url 'resumo_pedido' pedido.id %}">{{ texto_link_para_resumo_pedido }}</a></li>
+                                    {% endif %}
+                                {% endfor %}
                               </ul>
                             </div>
                             <div class="column-kanban">
@@ -58,8 +63,6 @@
                                     {% if pedido.status_do_pedido == STATUS_PEDIDO_PENDENTE_DE_ENTREGA %}
                                       <li>{{ pedido }} - <a href="{% url 'resumo_pedido' pedido.id %}">{{ texto_link_para_resumo_pedido }}</a></li>
                                     {% endif %}
-                                  {% empty %}
-                                    <li>{{ sem_pedidos_text }}</li>
                                   {% endfor %}
                                 </ul>
                             </div>
@@ -74,8 +77,6 @@
                                     {% if pedido.status_do_pedido == STATUS_PEDIDO_ENTREGUE %}
                                       <li>{{ pedido }} - <a href="{% url 'resumo_pedido' pedido.id %}">{{ texto_link_para_resumo_pedido }}</a></li>
                                     {% endif %}
-                                  {% empty %}
-                                    <li>{{ sem_pedidos_text }}</li>
                                   {% endfor %}
                               </ul>
                             </div>
