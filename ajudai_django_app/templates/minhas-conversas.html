@@ -60,7 +60,7 @@
                   </div>
                   <div class="conteudo-texto-contato">
                     <p class="texto-contato"><strong>{{ conversa.company_client_number }} {% if not conversa.last_message_shown %}&nbsp;&nbsp;<span class="notification-dot"></span>{% endif %}</strong></p>
-                    <p class="texto-contato">Status: {{ conversa.status_da_conversa }}</p>
+                    <p class="texto-contato">Status: {{ conversa.get_status_da_conversa_display }}</p>
                   </div>  
                 </div>
 
