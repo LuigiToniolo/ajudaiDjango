@@ -49,6 +49,13 @@ CONVERSA_AGUARDANDO_VENCIMENTO = 'aguardando_vencimento'
 WEBHOOK_ADESAO_ID = 'webhook_adesao'
 WEBHOOK_PAYMENT_METHOD_ID = 'webhook_method'
 WEBHOOK_USAGE_PAYMENT_ID = 'webhook_usage_payment'
+#--------------------------------------------------------------------
+#CONVERSA RESSET
+HOURS_TO_RESET_INACTIVE = 2
+HOURS_TO_RESER_ABSOLUTE = 12
+
+MENSAGEM_ENCERRAMENTO_DE_CONVERSA_INATIVIDADE = 'Essa conversa está sendo encerrada por inatividade. Uma nova mensagem gerará uma nova conversa.'
+MENSAGEM_ENCERRAMENTO_DE_CONVERSA_TEMPO_LIMITE = 'Essa conversa ultrapassou seu tempo limite e está sendo encerrada'
 
 #---------------------------------------------------------------------
 #API RELATED
@@ -103,6 +110,7 @@ ADITIONAL_INTRUCTIONS_FIELD_NAME = 'aditional_intructions'
 STATUS_CONVERSA_EM_ANDAMENTO = 'conversa_em_andamento'
 STATUS_CONVERSA_PEDIDO_REALIZADO = 'conversa_pedido_realizado'
 STATUS_CONVERSA_FALHA = 'conversa_falhou'
+STATUS_CONVERSA_ENCERRADA_SEM_PEDIDO = 'conversa_encerra_tempo_sem_pedido'
 
 STATUS_PEDIDO_PENDENTE_DE_ENTREGA = 'pendente_de_entrega'
 STATUS_PEDIDO_ENTREGUE = 'entregue'

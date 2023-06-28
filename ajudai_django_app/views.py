@@ -185,6 +185,8 @@ def minhas_conversas_view(request):
     
     user.finance_check(STANDART_PERIOD)
 
+    Conversa.close_conversa_if_needed(user)
+
     chatbots = ChatBot.objects.filter(user=user)
     conversas = Conversa.objects.filter(chatbot__in=chatbots)
 
@@ -268,7 +270,7 @@ def toggle_chatbot(request):
     
     if not request.user.is_authenticated:
         return redirect('login')
-    
+
     if request.method == 'POST':
         conversa_id = request.POST.get('conversa_id')
         conversa = Conversa.objects.get(id=conversa_id)
@@ -789,6 +791,10 @@ def process_message(data):
                             aditional_instructions = chatbot.aditional_intructions
 
                             user=chatbot.user
+
+                            #antes de verificar se tem uma conversa aberta em andamento, faz o fechamento daquelas que estão inativas ou esgotaram o tempo
+                            Conversa.close_conversa_if_needed(user)
+
                             if not user.usuario_adimplente_ou_tolerancia_de_uso:
                                 return
                             
@@ -804,6 +810,8 @@ def process_message(data):
                                     conversation = Conversa.objects.create(
                                         company_client_number=numero_cliente,
                                         chatbot=chatbot,
+                                        creation_date=timezone.now().date(),
+                                        creation_time=timezone.now().time(),
                                     )
                                 else:
                                     return
@@ -838,6 +846,8 @@ def process_message(data):
                             conversation.total_tokens_used = tokens_used_before + tokens_used_on_this_request
                             conversation.last_message_shown = False
                             conversation.need_refresh_view = True
+                            conversation.date = timezone.now().date()
+                            conversation.time = timezone.now().time()
                             conversation.save()
                         
                             return
