@@ -4,7 +4,7 @@ from ajudai_django_app.ai_chatbot.ai_awnser import generate_gpt_response, pedido
 from ajudai_django_app.ai_chatbot.ai_tools import instructions_over_limit_error_messages, instructions_under_the_limits
 from ajudai_django_app.fechamento_de_pedido.procedimento_de_fechamento import informar_loja_fechamento_pedido
 from ajudai_django_app.forms import CustomUserCreationForm, LoginForm
-from ajudai_django_app.models import Adesao_Purchase, ChatBot, Conversa, CustomUser, Pedido, Premium_User_Payment_Method_Registration, Product, register_adesao_purchase_after_webhook_confirm, register_payment_method_success_after_webhook_confirm
+from ajudai_django_app.models import Adesao_Purchase, ChatBot, Conversa, CustomUser, Pedido, Premium_User_Payment_Method_Registration, Product, register_adesao_purchase_after_webhook_confirm, register_payment_method_success_after_webhook_confirm, update_conversa_objects
 from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
 from ajudai_django_app.payments_process.sign_in import create_stripe_customer, return_adesao_checkout_session, return_checkout_session_id, return_checkout_session_url, return_setup_future_payments_checkout_session
 from ajudai_django_app.payments_process.webhooks import HTTP_PAYMENT_API_SIGNATURE, LABEL_TO_CHECKOUT_SESSION_ID, get_session_data, get_usage_payment_webhook_customer, get_webhook_event, success_payment_checkout_and_section_recovery, success_payment_usage_charge
@@ -204,10 +204,7 @@ def minhas_conversas_view(request):
             conversa_id= form.cleaned_data['conversa_id']
             conversa= get_object_or_404(Conversa, id=conversa_id)
             chatbot= conversa.chatbot
-            context = conversa.context
-            context.append({"role": "assistant", "content": new_message})
-            conversa.context = context
-            conversa.save()
+            conversa.add_message_to_conversa(new_message, "assistant")
             send_response(chatbot.facebook_page_id, chatbot.whats_app_api_auth_token, conversa.company_client_number, new_message)
             updated_conversa_id = conversa_id
         else:
@@ -297,10 +294,7 @@ def toggle_chatbot(request):
             mensagem_de_aviso = 'A partir de agora você estará conversando com uma pessoa! O chatbot foi desativado!'
 
         send_response(chatbot.facebook_page_id, chatbot.whats_app_api_auth_token, conversa.company_client_number, mensagem_de_aviso)   
-        context = conversa.context
-        context.append({"role": "assistant", "content": mensagem_de_aviso})
-        conversa.context = context
-        conversa.save()
+        conversa.add_message_to_conversa(mensagem_de_aviso, "assistant")
         return JsonResponse({'status': 'success'})
 
     return JsonResponse({'status': 'error'})
@@ -848,7 +842,7 @@ def process_message(data):
                                 new_context = conversation.context.append({"role": "user", "content": incoming_message})
                                 tokens_used_on_this_request = 0
 
-                            conversation.context = new_context
+                            conversation.substitute_conversa_context(new_context)
                             tokens_used_before = conversation.total_tokens_used
                             conversation.total_tokens_used = tokens_used_before + tokens_used_on_this_request
                             conversation.last_message_shown = False

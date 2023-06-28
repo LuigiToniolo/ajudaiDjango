@@ -9,6 +9,7 @@ from datetime import timedelta, datetime
 from django.db.models import Q
 from ajudai_django_app.payments_process.charge_usage import charge_usages
 from ajudai_django_app.phone_integration.messages import send_response
+import pytz
 
 from constants import ADESAO_PURCHASE_STATUS_CALCELED, ADESAO_PURCHASE_STATUS_PENDING, ADESAO_PURCHASE_STATUS_PROCESSED, AI_PROVIDER_OPEN_AI, BRL_CURRENCY_SIMBOL, CONVERSA_AGUARDANDO_VENCIMENTO, CONVERSA_PAGA, CONVERSA_PAGAMENTO_PENDENTE, DIAS_TOLERACIA_INADIMPLECIA, GPT3_MODEL_NAME, HOURS_TO_RESER_ABSOLUTE, HOURS_TO_RESET_INACTIVE, MAX_CHAR_INSTRUCTIONS_CHATBOT_FORM, MENSAGEM_ENCERRAMENTO_DE_CONVERSA_INATIVIDADE, MENSAGEM_ENCERRAMENTO_DE_CONVERSA_TEMPO_LIMITE, PAYMENT_METHOD_REGISTRATION_STATUS_FAILING, PAYMENT_METHOD_REGISTRATION_STATUS_PENDING, PAYMENT_METHOD_REGISTRATION_STATUS_SUCCESS, PAYMENT_PERIOD_ANUALY, PAYMENT_PERIOD_DAILY, PAYMENT_PERIOD_MONTHLY, PRUDUCT_TYPE_ADESAO, PRUDUCT_TYPE_CONVERSA_AVULSA, PRUDUCT_TYPE_PLAN, STATUS_CONVERSA_EM_ANDAMENTO, STATUS_CONVERSA_ENCERRADA_SEM_PEDIDO, STATUS_CONVERSA_FALHA, STATUS_CONVERSA_PEDIDO_REALIZADO, STATUS_PEDIDO_CANCELADO, STATUS_PEDIDO_ENTREGUE, STATUS_PEDIDO_PENDENTE_DE_ENTREGA, USER_LEVEL_FREE, USER_LEVEL_PREMIUM, USER_PAYMENT_METHOD_FAILED, USER_PAYMENT_METHOD_NOT_REGISTERED, USER_PAYMENT_METHOD_STATUS_OK
 
@@ -381,9 +382,9 @@ class Conversa(models.Model):
 
     STATUS_CHOICES = (
         (STATUS_CONVERSA_EM_ANDAMENTO , 'Conversa em andamento'),
-        (STATUS_CONVERSA_PEDIDO_REALIZADO , 'Conversa encerrada com pedido realizado'), # CONVERSA DEVE SER COBRADA
-        (STATUS_CONVERSA_ENCERRADA_SEM_PEDIDO , 'Conversa encerrada por tempo maior que limite ou por inatividade'),
-        (STATUS_CONVERSA_FALHA , 'Conversa encerrada por falha'), # CONVERSA NÃO COBRADA
+        (STATUS_CONVERSA_PEDIDO_REALIZADO , 'Conversa encerrada (pedido realizado)'), # CONVERSA DEVE SER COBRADA
+        (STATUS_CONVERSA_ENCERRADA_SEM_PEDIDO , 'Conversa encerrada'),
+        (STATUS_CONVERSA_FALHA , 'Conversa encerrada (falha)'), # CONVERSA NÃO COBRADA
         )
     FINANCEIRO_CHOICES = (
         (CONVERSA_PAGA, 'Conversa Paga'),
@@ -402,6 +403,7 @@ class Conversa(models.Model):
     # o set null abaixo proteje a conversa em caso do cliente deletar o chatbot, dado que a conversa é usada para cobrança
     chatbot = models.ForeignKey(ChatBot, on_delete=models.SET_NULL, null=True)
     context = models.JSONField(default=list) #o default numa conversa recem criado é uma lista vazia
+    messages_display_time = models.JSONField(default=list)
     company_client_number  = models.CharField(max_length=20) #numero de quem está mandando a mensagem para o bot (NÃO O NÚMERO DO DONO DO BOT)
     total_tokens_used = models.PositiveIntegerField(
         default=0,
@@ -426,6 +428,44 @@ class Conversa(models.Model):
     last_message_shown = models.BooleanField(default=False)
     need_refresh_view = models.BooleanField(default=False)
     
+    def add_message_to_conversa(self, message_text, role):
+        context = self.context
+        messages_time = self.messages_display_time
+
+        context.append({"role": role, "content": message_text})
+
+        sao_paulo_tz = pytz.timezone('America/Sao_Paulo')
+        now = timezone.now().astimezone(sao_paulo_tz)
+
+        date_str = now.date().strftime('%d/%m/%Y')
+        time_str = now.time().strftime('%H:%M')
+
+
+        messages_time.append({"date": date_str, "time": time_str})
+
+        self.save()
+
+    def substitute_conversa_context(self, new_context):
+    
+        self.context = new_context
+
+        if len(new_context) > len(self.messages_display_time):
+            num_new_messages = len(new_context) - len(self.messages_display_time)
+
+            # Set the timezone to São Paulo
+            sao_paulo_tz = pytz.timezone('America/Sao_Paulo')
+            now = timezone.now().astimezone(sao_paulo_tz)
+
+            date_str = now.date().strftime('%d/%m/%Y')
+            time_str = now.time().strftime('%H:%M')
+
+            for _ in range(num_new_messages):
+                self.messages_display_time.append({"date": date_str, "time": time_str})
+
+        self.save()
+
+    
+
     @staticmethod
     def conversations_to_payment_due(user):
         user_chatbots = ChatBot.objects.filter(user=user)
@@ -462,9 +502,7 @@ class Conversa(models.Model):
             if (now - last_message_datetime) > timedelta(hours=HOURS_TO_RESET_INACTIVE):
                 conversation.status_da_conversa = STATUS_CONVERSA_ENCERRADA_SEM_PEDIDO
                 send_response(conversation.chatbot.facebook_page_id, conversation.chatbot.whats_app_api_auth_token, conversation.company_client_number, MENSAGEM_ENCERRAMENTO_DE_CONVERSA_INATIVIDADE)
-                context = conversation.context
-                context.append({"role": "assistant", "content": MENSAGEM_ENCERRAMENTO_DE_CONVERSA_INATIVIDADE})
-                conversation.context = context
+                conversation.add_message_to_conversa(MENSAGEM_ENCERRAMENTO_DE_CONVERSA_INATIVIDADE, "assistant")
                 conversation.save()
                 
                 continue
@@ -472,9 +510,7 @@ class Conversa(models.Model):
             if (now - creation_datetime) > timedelta(hours=HOURS_TO_RESER_ABSOLUTE):
                 conversation.status_da_conversa = STATUS_CONVERSA_ENCERRADA_SEM_PEDIDO
                 send_response(conversation.chatbot.facebook_page_id, conversation.chatbot.whats_app_api_auth_token, conversation.company_client_number, MENSAGEM_ENCERRAMENTO_DE_CONVERSA_INATIVIDADE)
-                context = conversation.context
-                context.append({"role": "assistant", "content": MENSAGEM_ENCERRAMENTO_DE_CONVERSA_TEMPO_LIMITE})
-                conversation.context = context
+                conversation.add_message_to_conversa(MENSAGEM_ENCERRAMENTO_DE_CONVERSA_TEMPO_LIMITE, "assistant")
                 conversation.save()
     
     def __str__(self):
@@ -537,3 +573,21 @@ def register_payment_method_success_after_webhook_confirm(checkout_id):
             user.save()
     except Exception as e:
         print(f'Error while processing payment: {e}')
+
+
+#método para corrigir eventual distorção de ausência de informação nohorário de mensgaens
+def update_conversa_objects():
+    sao_paulo_tz = pytz.timezone('America/Sao_Paulo')
+    now = timezone.now().astimezone(sao_paulo_tz)
+
+    date_str = now.date().strftime('%d/%m/%Y')
+    time_str = now.time().strftime('%H:%M')
+
+    for conversa in Conversa.objects.all():
+        if len(conversa.context) > len(conversa.messages_display_time):
+            num_new_messages = len(conversa.context) - len(conversa.messages_display_time)
+
+            for _ in range(num_new_messages):
+                conversa.messages_display_time.append({"date": date_str, "time": time_str})
+
+        conversa.save()
