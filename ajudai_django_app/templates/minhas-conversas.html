@@ -141,9 +141,10 @@
       }
 
       $(document).ready(function() {
-          // Initial value for activeConversaId can be null or the id of the first conversa
-          var activeConversaId = null;
-    
+          var activeConversaId = localStorage.getItem('activeConversaId') || null;
+
+          console.log("Retrieved activeConversaId from localStorage:", activeConversaId);
+
           //mostra a conversa selecionada na lateral
           $("li[id^='contact-']").click(function() {
               activeConversaId = $(this).attr('id').split('-')[1];
@@ -153,6 +154,8 @@
               $("#conversation-" + id).show();
               $(".defaultText").hide();
               $(".side-conversation").css("display", "flex");
+
+              localStorage.setItem('activeConversaId', activeConversaId);
 
               var updateUrl = '/update_last_message_shown/' + activeConversaId + '/';
 
@@ -233,27 +236,39 @@
             }
           });
         });
-      });
-    </script>
-    
-    
-    <script>
+
       //make a POST request to the server every 30 seconds to check for new messages
       setInterval(function() {
-        $.ajax({
-            url: "{% url 'check_for_new_messages_to_refresh' %}",
-            type: 'POST',
-            data: {
-                'csrfmiddlewaretoken': '{{ csrf_token }}'
-            },
-            success: function(response) {
-                // Check the response to see if we need to refresh
-                if (response.should_refresh) {
-                    location.reload();
+            $.ajax({
+                url: "{% url 'check_for_new_messages_to_refresh' %}",
+                type: 'POST',
+                data: {
+                    'csrfmiddlewaretoken': '{{ csrf_token }}'
+                },
+                success: function(response) {
+                    if (response.should_refresh) {
+                        console.log("Setting activeConversaId in localStorage:", activeConversaId);
+                        localStorage.setItem('activeConversaId', activeConversaId);
+                        location.reload();
+                    }
                 }
-            }
-        });
-    }, 30000); // 30000 milliseconds is equal to 30 seconds
+            });
+        }, 30000); 
 
+        //mostra antiga conversa ativa em caso de reload
+        if (activeConversaId !== null) {
+              console.log("Trying to show conversation with ID: ", activeConversaId);
+              $(".conversation").hide();
+              $("#conversation-" + activeConversaId).show();
+              $(".defaultText").hide();
+              $(".side-conversation").css("display", "flex");
+              scrollToBottom(activeConversaId);
+          } else {
+              $(".conversation").hide();
+              $(".defaultText").show();
+              $(".side-conversation").css("display", "none");
+          }
+
+      });
     </script>
 </html>
