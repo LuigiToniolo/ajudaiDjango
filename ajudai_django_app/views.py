@@ -23,6 +23,7 @@ from django.shortcuts import get_object_or_404
 from django_q.tasks import async_task
 import stripe
 from django.utils import timezone
+from django.db.models import Case, When, Value, IntegerField
 
 def welcome_view(request):
     try:
@@ -188,7 +189,13 @@ def minhas_conversas_view(request):
     Conversa.close_conversa_if_needed(user)
 
     chatbots = ChatBot.objects.filter(user=user)
-    conversas = Conversa.objects.filter(chatbot__in=chatbots)
+    conversas = Conversa.objects.filter(chatbot__in=chatbots).annotate(
+        status_order=Case(
+            When(status_da_conversa=STATUS_CONVERSA_EM_ANDAMENTO, then=Value(1)),
+            default=Value(2),
+            output_field=IntegerField(),
+        )
+    ).order_by('status_order', 'date', 'time')
 
     if request.method == 'POST':
         form = MessageForm(request.POST)
