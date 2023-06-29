@@ -835,7 +835,8 @@ def process_message(data):
                                     )
                                 else:
                                     return
-                            if conversation.chatbot_ativo:
+                            new_context = []
+                            if conversation.chatbot_ativo == True:
                                 role = ''
                                 try:
                                     gpt_response, new_context, tokens_used_on_this_request = generate_gpt_response(incoming_message, conversation.context, role,  aditional_instructions, GPT3_MODEL_NAME, GPT3_TOKEK_LIMIT)
@@ -857,10 +858,21 @@ def process_message(data):
                                 #chama função que responde o cliente da loja via integência artificial
                                 send_response(chatbot.facebook_page_id, chatbot.whats_app_api_auth_token, numero_cliente, gpt_response)
 
-                            else: #caso da resposta automatica com chatbot estiver desativada
-                                new_context = conversation.context.append({"role": "user", "content": incoming_message})
-                                tokens_used_on_this_request = 0
-
+                                conversation.substitute_conversa_context(new_context)
+                                tokens_used_before = conversation.total_tokens_used
+                                conversation.total_tokens_used = tokens_used_before + tokens_used_on_this_request
+                                conversation.last_message_shown = False
+                                conversation.need_refresh_view = True
+                                conversation.date = timezone.now().date()
+                                conversation.time = timezone.now().time()
+                                conversation.save()
+                            
+                                return
+                            
+                            #case no response was created by ai, just saves the message in the context
+                            new_context = conversation.context
+                            new_context.append({"role": "user", "content": incoming_message})
+                            tokens_used_on_this_request = 0
                             conversation.substitute_conversa_context(new_context)
                             tokens_used_before = conversation.total_tokens_used
                             conversation.total_tokens_used = tokens_used_before + tokens_used_on_this_request
@@ -869,8 +881,8 @@ def process_message(data):
                             conversation.date = timezone.now().date()
                             conversation.time = timezone.now().time()
                             conversation.save()
-                        
                             return
+
                         else:
                             return
                 except:
