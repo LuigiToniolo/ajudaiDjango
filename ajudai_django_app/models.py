@@ -537,9 +537,11 @@ class Pedido(models.Model):
     resumo_do_pedido = models.CharField(
         default='',
         )
+    date = models.DateField(default=timezone.now)
+    time = models.TimeField(default=timezone.now)
 
     def __str__(self):
-        return f"Pedido número {self.id}. Status: {self.status_do_pedido}"
+        return f"Pedido {self.id}"
 
 
 def register_adesao_purchase_after_webhook_confirm(checkout_id):
