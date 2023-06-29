@@ -21,6 +21,7 @@ urlpatterns = [
     path('deletar-chatbot/<int:chatbot_id>/', views.chatbot_delete_view, name='chatbot_delete'),
     path('pedidos-realizados/', views.pedidos_realizados_view, name="pedidos-realizados"),
     path('resumo-do-pedido/<int:pedido_id>/', views.resumo_pedido, name='resumo_pedido'),
+    path('update-pedido-status/', views.update_pedido_status, name='update_pedido_status'),
     path('login/', views.login_view, name='login'),
     path('logout/', views.logout_view, name='logout'),
     path('registrar/', views.register_view, name='register'),

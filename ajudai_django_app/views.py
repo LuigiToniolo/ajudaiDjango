@@ -457,7 +457,32 @@ def resumo_pedido(request, pedido_id):
         "resumo_pedido.html",  # You need to create this template
         context,
     )
-  
+
+@csrf_exempt
+def update_pedido_status(request):
+    if request.method == 'POST':
+        try:
+            user = CustomUser.getUser(request)
+        except: 
+            return JsonResponse({"error": "Unauthorized access"}, status=401)
+        
+        pedido_id = request.POST.get('pedido_id')
+        new_status = request.POST.get('new_status')
+
+        # Update the status of the Pedido object
+        try:
+            pedido = Pedido.objects.get(id=pedido_id)
+            if request.user != pedido.user:
+                return JsonResponse({"error": "Unauthorized access"}, status=401)
+            pedido.status_do_pedido = new_status
+            pedido.save()
+            #TODO ENVIAR MESAGEM PARA O USUÁRIO
+            return JsonResponse({'status': 'success'})
+        except Pedido.DoesNotExist:
+            return JsonResponse({'status': 'error', 'message': 'Pedido not found'})
+
+    return JsonResponse({'status': 'error', 'message': 'Invalid request'})
+
 def login_view(request):
     login_form = LoginForm()
     context = {
