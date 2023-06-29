@@ -22,6 +22,7 @@ urlpatterns = [
     path('pedidos-realizados/', views.pedidos_realizados_view, name="pedidos-realizados"),
     path('resumo-do-pedido/<int:pedido_id>/', views.resumo_pedido, name='resumo_pedido'),
     path('update-pedido-status/', views.update_pedido_status, name='update_pedido_status'),
+    path('create_pedido_manual/', views.create_pedido_manual, name='create_pedido'),
     path('login/', views.login_view, name='login'),
     path('logout/', views.logout_view, name='logout'),
     path('registrar/', views.register_view, name='register'),

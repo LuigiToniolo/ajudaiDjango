@@ -476,13 +476,38 @@ def update_pedido_status(request):
                 return JsonResponse({"error": "Unauthorized access"}, status=401)
             pedido.status_do_pedido = new_status
             pedido.save()
-            #TODO ENVIAR MESAGEM PARA O USUÁRIO
+            if pedido.criado_manualmente == False:
+                conversa = pedido.conversa
+                chatbot = conversa.chatbot
+                send_response(chatbot.facebook_page_id, chatbot.whats_app_api_auth_token, conversa.company_client_number, pedido.mensagem_novo_status())
             return JsonResponse({'status': 'success'})
         except Pedido.DoesNotExist:
             return JsonResponse({'status': 'error', 'message': 'Pedido not found'})
 
     return JsonResponse({'status': 'error', 'message': 'Invalid request'})
 
+@csrf_exempt
+def create_pedido_manual(request):
+    if request.method == 'POST':
+        try:
+            user = CustomUser.getUser(request)
+        except: 
+            return JsonResponse({"error": "Unauthorized access"}, status=401)
+        
+        if not request.user.is_authenticated:
+            return JsonResponse({"error": "Unauthorized access"}, status=401)
+        
+        nome_pedido_manual = request.POST.get('nome_pedido_manual')
+        pedido = Pedido(
+            user=user, criado_manualmente=True, 
+            nome_pedido_manual=nome_pedido_manual, 
+            status_do_pedido=STATUS_PEDIDO_REALIZADO_MANUAL
+            )
+        pedido.save()
+
+        return JsonResponse({'status': 'success', 'pedido_id': pedido.id})
+    else:
+        return JsonResponse({'status': 'failed'})
 def login_view(request):
     login_form = LoginForm()
     context = {

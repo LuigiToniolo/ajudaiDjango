@@ -194,6 +194,21 @@
               
                   document.getElementById('todo').appendChild(card);
                   updateCardCount(document.getElementById('todo'));
+
+                  var xhr = new XMLHttpRequest();
+                  xhr.open('POST', '{% url "create_pedido" %}', true);
+                  xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+                  xhr.setRequestHeader('X-CSRFToken', '{{ csrf_token }}');
+                  xhr.onreadystatechange = function() {
+                      if (xhr.readyState == 4 && xhr.status == 200) {
+                          var response = JSON.parse(xhr.responseText);
+                          if (response.status === 'success') {
+                              // Use response.pedido_id as data-id for the card
+                              card.setAttribute('data-id', response.pedido_id);
+                          }
+                      }
+                  };
+                  xhr.send('nome_pedido_manual=' + cardText);
                 }
             }
               

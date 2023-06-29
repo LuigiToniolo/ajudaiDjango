@@ -528,6 +528,11 @@ class Pedido(models.Model):
     
 
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    criado_manualmente = models.BooleanField(default=False)
+    nome_pedido_manual = models.CharField(
+        max_length=120,
+        default='',
+        )
     conversa = models.ForeignKey(Conversa, on_delete=models.SET_NULL, null=True)
     status_do_pedido = models.CharField(
         max_length=120,
@@ -540,7 +545,20 @@ class Pedido(models.Model):
     date = models.DateField(default=timezone.now)
     time = models.TimeField(default=timezone.now)
 
+    def mensagem_novo_status(self):
+        mensagem = ' '
+        if self.status_do_pedido == STATUS_PEDIDO_EM_PROCESSO:
+            mensagem = 'Atenção, seu pedido está sendo processado!'
+        if self.status_do_pedido == STATUS_PEDIDO_PENDENTE_DE_ENTREGA:
+            mensagem = 'Atenção, seu pedido já saiu para a entrega!'
+        if self.status_do_pedido == STATUS_PEDIDO_ENTREGUE:
+            mensagem = 'Atenção, seu pedido foi entregue! Aproveite!'
+        return mensagem
+    
     def __str__(self):
+        if self.criado_manualmente == True:
+            return self.nome_pedido_manual
+        
         return f"Pedido {self.id}"
 
 
