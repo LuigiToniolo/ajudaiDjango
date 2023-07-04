@@ -251,6 +251,15 @@ body {
     margin-left: 10px;
     margin-right: 10px;
 }
+.botao-play-chatbot  {
+    padding: 10px 15px;
+    background-color: #ff9696;
+    border-style: none;
+    border-radius: 50px;
+    cursor: pointer;
+    margin-left: 10px;
+    margin-right: 10px;
+}
 
 .botao-send:active {
     background-color: #b5c7fd;
@@ -284,7 +293,7 @@ body {
 }
 
 #icon-pause {
-    color: #000;
+    color: #FFFFFF;
 }
 
 /* Estilização da barra de rolagem no Chrome e Safari */
@@ -329,3 +338,30 @@ background-color: #212D40;
 .scrollbar::-webkit-scrollbar-thumb:hover {
 background-color: #555;
 }
+
+
+
+.dropup {
+  display: none;
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  padding: 10px;
+}
+
+.dropup p {
+  margin: 0;
+}
+
+.dropup button {
+  margin-top: 10px;
+}
+
+.botao-play-chatbot {
+  display: none;
+}
+

@@ -116,7 +116,16 @@
                   <input type="text" name="message" placeholder="Digite sua mensagem...">
                   <input type="hidden" id="conversa_id" name="conversa_id" value="{{ conversa.id }}">
                   <button class="botao-send"><i class="fa-solid fa-paper-plane" id="icon-send"></i></button>
-                  <a class="botao-pause-chatbot"><i class="fa-solid fa-robot" id="icon-pause"></i></a>
+                  <!-- <a class="botao-pause-chatbot"><i class="fa-solid fa-robot" id="icon-pause"></i></a> -->
+                  <!-- <a class="botao-pause-chatbot"><i class="fa-solid fa-pause" id="icon-pause"></i></a>
+                  <a class="botao-play-chatbot"><i class="fa-solid fa-play" id="icon-pause"></i></a> -->
+                  <a class="botao-pause-chatbot" onclick="mostrarDropup()"><i class="fa-solid fa-pause" id="icon-pause"></i></a>
+                  <a class="botao-play-chatbot" onclick="mudarParaPlay()"><i class="fa-solid fa-play" id="icon-play"></i></a>
+
+                  <div id="dropup" class="dropup">
+                    <p>Deseja mesmo pausar o chatbot?</p>
+                    <button onclick="mudarParaPlay()">Sim</button>
+                  </div>
               </div>
            </form>
           </div>
@@ -154,6 +163,21 @@
                   $(".defaultText").show(); // Exibe a mensagem "Escolha uma mensagem"
               {% endif %}
           });
+      </script>
+
+      <script>
+        function mostrarDropup() {
+          document.getElementById("dropup").style.display = "block";
+        }
+        
+        function mudarParaPlay() {
+          document.getElementById("icon-pause").style.display = "none";
+          document.getElementsByClassName("botao-pause-chatbot")[0].style.display = "none";
+          document.getElementById("icon-play").style.display = "inline-block";
+          document.getElementsByClassName("botao-play-chatbot")[0].style.display = "inline-block";
+          document.getElementById("dropup").style.display = "none";
+        }
+        
       </script>
       
 </html>
