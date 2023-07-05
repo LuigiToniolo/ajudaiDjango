@@ -237,42 +237,30 @@ body {
   outline: none;
 }
 
-.botao-send {
+/* .botao-send {
   padding: 10px 15px;
   background-color: #5C7AD3;
   border-style: none;
   border-radius: 50px;
   cursor: pointer;
-}
+  width: 50px;
+  height: auto;
+} */
 
-.botao-pause-chatbot  {
-    padding: 10px 15px;
-    background-color: #ff9696;
-    border-style: none;
-    border-radius: 50px;
+.botao-send {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%; /* Define o formato redondo */
+    background-color: #5C7AD3;
+    display: flex;
+    justify-content: center; /* Centraliza horizontalmente */
+    align-items: center; /* Centraliza verticalmente */
     cursor: pointer;
-    margin-left: 10px;
-    margin-right: 10px;
-}
-.botao-play-chatbot  {
-    padding: 10px 15px;
-    background-color: #ff9696;
-    border-style: none;
-    border-radius: 50px;
-    cursor: pointer;
-    margin-left: 10px;
-    margin-right: 10px;
+    border: none; /* Remove a borda padrão */
 }
 
 .botao-send:active {
     background-color: #b5c7fd;
-    border-style: none;
-    outline: none;
-    box-shadow: none;
-}
-
-.botao-pause-chatbot:active {
-    background-color: #f8b0b0;
     border-style: none;
     outline: none;
     box-shadow: none;
@@ -283,6 +271,40 @@ body {
     outline: none;
     box-shadow: none;
 }
+.botao-pause-chatbot  {
+    background-color: #ff9696;
+    border-style: none;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center; /* Centraliza horizontalmente */
+    align-items: center; /* Centraliza verticalmente */
+    cursor: pointer;
+    margin-left: 10px;
+    margin-right: 10px;
+    width: 50px;
+    height: 50px;
+}
+.botao-play-chatbot  {
+    background-color: #ff9696;
+    border-style: none;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center; /* Centraliza horizontalmente */
+    align-items: center; /* Centraliza verticalmente */
+    cursor: pointer;
+    margin-left: 10px;
+    margin-right: 10px;
+    width: 50px;
+    height: 50px;
+}
+
+.botao-pause-chatbot:active {
+    background-color: #f8b0b0;
+    border-style: none;
+    outline: none;
+    box-shadow: none;
+}
+
 
 .botao-pause-chatbot:focus {
     border-style: none;
@@ -292,12 +314,16 @@ body {
 
 
 #icon-send {
-    color: #F2F2F2;
+    color: #FFFFFF; /* Cor do ícone */
+    font-size: 18px; /* Tamanho do ícone */
 }
 
 #icon-pause {
-    color: #FFFFFF;
+    color: #FFFFFF; /* Cor do ícone */
+    font-size: 18px; /* Tamanho do ícone */
 }
+
+
 
 /* Estilização da barra de rolagem no Chrome e Safari */
 ::-webkit-scrollbar {
