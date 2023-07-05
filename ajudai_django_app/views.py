@@ -4,12 +4,12 @@ from ajudai_django_app.ai_chatbot.ai_awnser import generate_gpt_response, pedido
 from ajudai_django_app.ai_chatbot.ai_tools import instructions_over_limit_error_messages, instructions_under_the_limits
 from ajudai_django_app.fechamento_de_pedido.procedimento_de_fechamento import informar_loja_fechamento_pedido
 from ajudai_django_app.forms import CustomUserCreationForm, LoginForm
-from ajudai_django_app.models import Adesao_Purchase, ChatBot, Conversa, CustomUser, Pedido, Premium_User_Payment_Method_Registration, Product, register_adesao_purchase_after_webhook_confirm, register_payment_method_success_after_webhook_confirm
+from ajudai_django_app.models import Adesao_Purchase, ChatBot, Conversa, CustomUser, Pedido, Premium_User_Payment_Method_Registration, Product, register_adesao_purchase_after_webhook_confirm, register_payment_method_success_after_webhook_confirm, update_conversa_objects
 from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
 from ajudai_django_app.payments_process.sign_in import create_stripe_customer, return_adesao_checkout_session, return_checkout_session_id, return_checkout_session_url, return_setup_future_payments_checkout_session
 from ajudai_django_app.payments_process.webhooks import HTTP_PAYMENT_API_SIGNATURE, LABEL_TO_CHECKOUT_SESSION_ID, get_session_data, get_usage_payment_webhook_customer, get_webhook_event, success_payment_checkout_and_section_recovery, success_payment_usage_charge
 from ajudai_django_app.phone_integration.messages import send_response
-from constants import ADESAO_PURCHASE_STATUS_PENDING, ADITIONAL_INTRUCTIONS_FIELD_ID, ADITIONAL_INTRUCTIONS_FIELD_NAME, DOMAIN, EVENT_INVALID_PAYLOAD, EVENT_INVALID_SIGNATURE, FANTASY_NAME, GPT3_MODEL_NAME, GPT3_TOKEK_LIMIT, PASSWORD_FIELD_ID, PAYMENT_METHOD_REGISTRATION_STATUS_PENDING, PRUDUCT_TYPE_ADESAO, STANDART_PERIOD, STATUS_CONVERSA_EM_ANDAMENTO, STATUS_CONVERSA_PEDIDO_REALIZADO, STATUS_PEDIDO_ENTREGUE, STATUS_PEDIDO_PENDENTE_DE_ENTREGA, SUPPORT_EMAIL, USER_LEVEL_PREMIUM, USER_NAME_FIELD_ID, WEBHOOK_ADESAO_ID, WEBHOOK_PAYMENT_METHOD_ID, WEBHOOK_USAGE_PAYMENT_ID
+from constants import ADESAO_PURCHASE_STATUS_PENDING, ADITIONAL_INTRUCTIONS_FIELD_ID, ADITIONAL_INTRUCTIONS_FIELD_NAME, DOMAIN, EVENT_INVALID_PAYLOAD, EVENT_INVALID_SIGNATURE, FANTASY_NAME, GPT3_MODEL_NAME, GPT3_TOKEK_LIMIT, PASSWORD_FIELD_ID, PAYMENT_METHOD_REGISTRATION_STATUS_PENDING, PRUDUCT_TYPE_ADESAO, STANDART_PERIOD, STATUS_CONVERSA_EM_ANDAMENTO, STATUS_CONVERSA_PEDIDO_REALIZADO, STATUS_PEDIDO_EM_PROCESSO, STATUS_PEDIDO_ENTREGUE, STATUS_PEDIDO_PENDENTE_DE_ENTREGA, STATUS_PEDIDO_REALIZADO_MANUAL, SUPPORT_EMAIL, USER_LEVEL_PREMIUM, USER_NAME_FIELD_ID, WEBHOOK_ADESAO_ID, WEBHOOK_PAYMENT_METHOD_ID, WEBHOOK_USAGE_PAYMENT_ID
 from get_secret_variables import get_secret_var
 from .forms import ChatBotForm, CustomPasswordChangeForm, MessageForm
 from django.contrib import messages
@@ -23,6 +23,7 @@ from django.shortcuts import get_object_or_404
 from django_q.tasks import async_task
 import stripe
 from django.utils import timezone
+from django.db.models import Case, When, Value, IntegerField
 
 def welcome_view(request):
     try:
@@ -185,8 +186,33 @@ def minhas_conversas_view(request):
     
     user.finance_check(STANDART_PERIOD)
 
+    Conversa.close_conversa_if_needed(user)
+
     chatbots = ChatBot.objects.filter(user=user)
-    conversas = Conversa.objects.filter(chatbot__in=chatbots)
+    conversas = Conversa.objects.filter(chatbot__in=chatbots).annotate(
+        status_order=Case(
+            When(status_da_conversa=STATUS_CONVERSA_EM_ANDAMENTO, then=Value(1)),
+            default=Value(2),
+            output_field=IntegerField(),
+        )
+    ).order_by('status_order', 'date', 'time')
+
+    conversas_com_tempo_das_mensagens = []
+    for conversa in conversas:
+        if len(conversa.context) == len(conversa.messages_display_time):
+            merged_context = []
+            for i in range(len(conversa.context)):
+                # Merge dictionaries at the same index
+                merged_item = {**conversa.context[i], **conversa.messages_display_time[i]}
+                merged_context.append(merged_item)
+            # Replace the original context with the merged context
+            conversa.context = merged_context
+            # Append the updated conversa object to the new list
+            conversas_com_tempo_das_mensagens.append(conversa)
+        else:
+            # handle the case when the lengths don't match, e.g., log an error or raise an exception
+            pass
+
 
     if request.method == 'POST':
         form = MessageForm(request.POST)
@@ -195,10 +221,7 @@ def minhas_conversas_view(request):
             conversa_id= form.cleaned_data['conversa_id']
             conversa= get_object_or_404(Conversa, id=conversa_id)
             chatbot= conversa.chatbot
-            context = conversa.context
-            context.append({"role": "assistant", "content": new_message})
-            conversa.context = context
-            conversa.save()
+            conversa.add_message_to_conversa(new_message, "assistant")
             send_response(chatbot.facebook_page_id, chatbot.whats_app_api_auth_token, conversa.company_client_number, new_message)
             updated_conversa_id = conversa_id
         else:
@@ -210,7 +233,7 @@ def minhas_conversas_view(request):
         "tab_title" : 'Ajudaí - Minhas Conversas',
         "meta_desciption" : '',
         'user' : user,
-        'conversas' : conversas,
+        'conversas' : conversas_com_tempo_das_mensagens,
         'updated_conversa_id': updated_conversa_id,
         'userIsPremium' : user.userIsPremium(),
     }
@@ -220,6 +243,46 @@ def minhas_conversas_view(request):
         context,
     )
 
+@csrf_exempt
+def check_for_new_messages_to_refresh(request):
+    if request.method == 'POST':
+        try:
+            user = CustomUser.getUser(request)
+        except: 
+            return JsonResponse({"error": "Unauthorized access"}, status=401)
+        
+        if not request.user.is_authenticated:
+            return JsonResponse({"error": "Unauthorized access"}, status=401)
+
+        chatbots = ChatBot.objects.filter(user=user)
+        conversas = Conversa.objects.filter(chatbot__in=chatbots)
+
+        should_refresh = any(conversa.need_refresh_view for conversa in conversas)
+
+        if should_refresh:
+            for conversa in conversas:
+                conversa.need_refresh_view = False
+                conversa.save()
+
+        # Return a JsonResponse indicating whether to refresh or not
+        return JsonResponse({"should_refresh": should_refresh})
+
+    else:
+        return JsonResponse({"error": "Invalid request method"}, status=400)
+
+
+@csrf_exempt
+def update_last_message_shown(request, conversa_id):
+    if request.method == 'POST':
+        conversa = get_object_or_404(Conversa, id=conversa_id)
+        if request.user != conversa.chatbot.user:
+            return JsonResponse({"error": "Unauthorized access"}, status=401)
+        conversa.last_message_shown = True
+        conversa.save()
+        return JsonResponse({"status": "success"})
+    else:
+        return JsonResponse({"error": "Invalid request method"}, status=400)
+
 def toggle_chatbot(request):
     try:
         user = CustomUser.getUser(request)
@@ -228,7 +291,7 @@ def toggle_chatbot(request):
     
     if not request.user.is_authenticated:
         return redirect('login')
-    
+
     if request.method == 'POST':
         conversa_id = request.POST.get('conversa_id')
         conversa = Conversa.objects.get(id=conversa_id)
@@ -238,6 +301,17 @@ def toggle_chatbot(request):
 
         conversa.chatbot_ativo = not conversa.chatbot_ativo
         conversa.save()
+
+        mensagem_de_aviso = ''
+        chatbot = conversa.chatbot
+
+        if conversa.chatbot_ativo:
+            mensagem_de_aviso = 'A partir de agora, o chatbot que dá respostas utilizando inteligência artificial foi retomado!'
+        else:
+            mensagem_de_aviso = 'A partir de agora você estará conversando com uma pessoa! O chatbot foi desativado!'
+
+        send_response(chatbot.facebook_page_id, chatbot.whats_app_api_auth_token, conversa.company_client_number, mensagem_de_aviso)   
+        conversa.add_message_to_conversa(mensagem_de_aviso, "assistant")
         return JsonResponse({'status': 'success'})
 
     return JsonResponse({'status': 'error'})
@@ -330,6 +404,8 @@ def pedidos_realizados_view(request):
         'texto_link_para_resumo_pedido' : 'Veja o Resumo do Pedido',
         'user' : user,
         'pedidos' : pedidos,
+        'STATUS_PEDIDO_REALIZADO_MANUAL' : STATUS_PEDIDO_REALIZADO_MANUAL,
+        'STATUS_PEDIDO_EM_PROCESSO' : STATUS_PEDIDO_EM_PROCESSO,
         'STATUS_PEDIDO_PENDENTE_DE_ENTREGA' : STATUS_PEDIDO_PENDENTE_DE_ENTREGA,
         'STATUS_PEDIDO_ENTREGUE' : STATUS_PEDIDO_ENTREGUE,
         'userIsPremium' : user.userIsPremium(),
@@ -381,7 +457,57 @@ def resumo_pedido(request, pedido_id):
         "resumo_pedido.html",  # You need to create this template
         context,
     )
-  
+
+@csrf_exempt
+def update_pedido_status(request):
+    if request.method == 'POST':
+        try:
+            user = CustomUser.getUser(request)
+        except: 
+            return JsonResponse({"error": "Unauthorized access"}, status=401)
+        
+        pedido_id = request.POST.get('pedido_id')
+        new_status = request.POST.get('new_status')
+
+        # Update the status of the Pedido object
+        try:
+            pedido = Pedido.objects.get(id=pedido_id)
+            if request.user != pedido.user:
+                return JsonResponse({"error": "Unauthorized access"}, status=401)
+            pedido.status_do_pedido = new_status
+            pedido.save()
+            if pedido.criado_manualmente == False:
+                conversa = pedido.conversa
+                chatbot = conversa.chatbot
+                send_response(chatbot.facebook_page_id, chatbot.whats_app_api_auth_token, conversa.company_client_number, pedido.mensagem_novo_status())
+            return JsonResponse({'status': 'success'})
+        except Pedido.DoesNotExist:
+            return JsonResponse({'status': 'error', 'message': 'Pedido not found'})
+
+    return JsonResponse({'status': 'error', 'message': 'Invalid request'})
+
+@csrf_exempt
+def create_pedido_manual(request):
+    if request.method == 'POST':
+        try:
+            user = CustomUser.getUser(request)
+        except: 
+            return JsonResponse({"error": "Unauthorized access"}, status=401)
+        
+        if not request.user.is_authenticated:
+            return JsonResponse({"error": "Unauthorized access"}, status=401)
+        
+        nome_pedido_manual = request.POST.get('nome_pedido_manual')
+        pedido = Pedido(
+            user=user, criado_manualmente=True, 
+            nome_pedido_manual=nome_pedido_manual, 
+            status_do_pedido=STATUS_PEDIDO_REALIZADO_MANUAL
+            )
+        pedido.save()
+
+        return JsonResponse({'status': 'success', 'pedido_id': pedido.id})
+    else:
+        return JsonResponse({'status': 'failed'})
 def login_view(request):
     login_form = LoginForm()
     context = {
@@ -735,6 +861,10 @@ def process_message(data):
                             aditional_instructions = chatbot.aditional_intructions
 
                             user=chatbot.user
+
+                            #antes de verificar se tem uma conversa aberta em andamento, faz o fechamento daquelas que estão inativas ou esgotaram o tempo
+                            Conversa.close_conversa_if_needed(user)
+
                             if not user.usuario_adimplente_ou_tolerancia_de_uso:
                                 return
                             
@@ -750,11 +880,13 @@ def process_message(data):
                                     conversation = Conversa.objects.create(
                                         company_client_number=numero_cliente,
                                         chatbot=chatbot,
+                                        creation_date=timezone.now().date(),
+                                        creation_time=timezone.now().time(),
                                     )
                                 else:
                                     return
-                            
-                            if conversation.chatbot_ativo:
+                            new_context = []
+                            if conversation.chatbot_ativo == True:
                                 role = ''
                                 try:
                                     gpt_response, new_context, tokens_used_on_this_request = generate_gpt_response(incoming_message, conversation.context, role,  aditional_instructions, GPT3_MODEL_NAME, GPT3_TOKEK_LIMIT)
@@ -772,20 +904,35 @@ def process_message(data):
                                         resumo_do_pedido = resumo,
                                     )
                                     informar_loja_fechamento_pedido(resumo, company_number)
+                                    
+                                #chama função que responde o cliente da loja via integência artificial
+                                send_response(chatbot.facebook_page_id, chatbot.whats_app_api_auth_token, numero_cliente, gpt_response)
 
-                            else: #caso da resposta automatica com chatbot estiver desativada
-                                new_context = conversation.context({"role": "user", "content": incoming_message})
-                                tokens_used_on_this_request = 0
-
-                            conversation.context = new_context
+                                conversation.substitute_conversa_context(new_context)
+                                tokens_used_before = conversation.total_tokens_used
+                                conversation.total_tokens_used = tokens_used_before + tokens_used_on_this_request
+                                conversation.last_message_shown = False
+                                conversation.need_refresh_view = True
+                                conversation.date = timezone.now().date()
+                                conversation.time = timezone.now().time()
+                                conversation.save()
+                            
+                                return
+                            
+                            #case no response was created by ai, just saves the message in the context
+                            new_context = conversation.context
+                            new_context.append({"role": "user", "content": incoming_message})
+                            tokens_used_on_this_request = 0
+                            conversation.substitute_conversa_context(new_context)
                             tokens_used_before = conversation.total_tokens_used
                             conversation.total_tokens_used = tokens_used_before + tokens_used_on_this_request
+                            conversation.last_message_shown = False
+                            conversation.need_refresh_view = True
+                            conversation.date = timezone.now().date()
+                            conversation.time = timezone.now().time()
                             conversation.save()
-
-                            #chama função que responde o cliente da loja via integência artificial
-                            send_response(chatbot.facebook_page_id, chatbot.whats_app_api_auth_token, numero_cliente, gpt_response)
-                        
                             return
+
                         else:
                             return
                 except:

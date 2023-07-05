@@ -5,6 +5,8 @@
     <title>{{ tab_title }}</title>
     {% load static %}
     <link rel="stylesheet" type="text/css" href="{% static 'css/resumo_pedido.css' %}" />
+    <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css'>
+    <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
 </head>
 <body>
     <!-- <div id="menu">
@@ -26,7 +28,7 @@
           <p><strong>{{ label_numero_cliente_pedido }}: </strong>{{ numero_cliente_pedido }}</p>
           <p><strong>{{ label_resumo_pedido }}: </strong></p>
           <p>{{ pedido.resumo_do_pedido }}</p>
-          <a class="botao-voltar" href="{% url 'pedidos-realizados' %}">voltar</a><br>
+          <a class="botao-voltar" href="{% url 'pedidos-realizados' %}"><i style="margin-right: 5px;" class="fa-solid fa-arrow-left"></i>Voltar</a><br>
         </div>
       </div>
 

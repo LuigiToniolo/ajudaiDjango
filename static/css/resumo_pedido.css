@@ -29,13 +29,18 @@ body {
   }
 
   .botao-voltar {
-    border-radius: 5px;
+    border-radius: 15px;
     background-color: #5C7AD3;
     color: #FFFFFF;
-    padding: 5px;
+    padding: 10px;
     border-style: none;
     cursor: pointer;
-    margin-right: 10px;
+    text-decoration: none;
+    margin-top: 3vh;
+  }
+
+  .botao-voltar:hover {
+    transform: scale(1.05);
   }
 
   h1 {
