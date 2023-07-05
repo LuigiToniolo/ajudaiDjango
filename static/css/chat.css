@@ -5,7 +5,8 @@
 body {
   margin: 0;
   padding: 0;
-  font-family: Arial, sans-serif;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", "Liberation Sans", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  
 }
 
 .chat-container {
@@ -65,7 +66,7 @@ body {
 }
 
 .contacts {
-  min-width: 300px;
+  min-width: 390px;
   background-color: #e5e5e5;
   padding: 20px;
   overflow-y: auto;
@@ -134,7 +135,8 @@ body {
   text-align: center; */
 
   /* flex: 4; */
-  width: 68vw;
+  /* width: 68vw; */
+  width: 107%;
   padding-top: 20vh;
   text-align: center;
   background-color: #ffffff;
@@ -167,7 +169,8 @@ body {
 .side-conversation {
   display: none;
   flex-direction: column;
-  width: 68vw;
+  /* width: 68vw; */
+  width: 107%;
 }
 
 .message-client {
@@ -344,12 +347,11 @@ background-color: #555;
 .dropup {
   display: none;
   position: fixed;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
+  bottom: 65px;
+  right: 20px;
   background-color: #f9f9f9;
   border: 1px solid #ddd;
-  border-radius: 5px;
+  border-radius: 10px;
   padding: 10px;
 }
 
@@ -363,5 +365,37 @@ background-color: #555;
 
 .botao-play-chatbot {
   display: none;
+}
+
+.botao-concordar {
+  border-radius: 5px;
+  background-color: #5C7AD3;
+  color: #FFFFFF;
+  padding: 5px;
+  border-style: none;
+  cursor: pointer;
+  margin-right: 10px;
+}
+
+.botao-cancelar {
+  border-radius: 5px;
+  background-color: #ff9696;
+  color: #FFFFFF;
+  padding: 5px;
+  border-style: none;
+  cursor: pointer;
+}
+
+.botao-cancelar:hover  {
+  transform: scale(1.05);
+}
+.botao-concordar:hover  {
+  transform: scale(1.05);
+}
+
+.botoes-acao {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
 }
 

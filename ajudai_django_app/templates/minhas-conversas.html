@@ -123,8 +123,11 @@
                   <a class="botao-play-chatbot" onclick="mudarParaPlay()"><i class="fa-solid fa-play" id="icon-play"></i></a>
 
                   <div id="dropup" class="dropup">
-                    <p>Deseja mesmo pausar o chatbot?</p>
-                    <button onclick="mudarParaPlay()">Sim</button>
+                    <p>Você deseja mesmo <strong>pausar</strong> o chatbot para essa conversa?</p>
+                    <div class="botoes-acao">
+                      <button class="botao-concordar" onclick="mudarParaPlay()">Sim, tenho certeza!</button>
+                      <button class="botao-cancelar" onclick="fecharDropup()">Cancelar</button>
+                    </div>
                   </div>
               </div>
            </form>
@@ -171,12 +174,24 @@
         }
         
         function mudarParaPlay() {
+          fecharDropup();
           document.getElementById("icon-pause").style.display = "none";
           document.getElementsByClassName("botao-pause-chatbot")[0].style.display = "none";
           document.getElementById("icon-play").style.display = "inline-block";
           document.getElementsByClassName("botao-play-chatbot")[0].style.display = "inline-block";
           document.getElementById("dropup").style.display = "none";
         }
+
+        function fecharDropup() {
+          document.getElementById("dropup").style.display = "none";
+        }
+
+        window.onclick = function(event) {
+          var dropup = document.getElementById("dropup");
+          if (event.target === dropup) {
+            fecharDropup();
+          }
+        };
         
       </script>
       
