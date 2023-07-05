@@ -1,0 +1,51 @@
+body {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #FFFFFF;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", "Liberation Sans", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  
+  }
+  
+  .container-center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 60%;
+    height: 100%;
+  }
+  
+  .container-pedido {
+      background-image: url(../image/teste-book.jpg);
+      background-size: cover;
+      /* border: 1px solid #d3c09a; */
+      border-radius: 5px;
+      padding: 20px 8%;
+      /* max-width: 400px; */
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .botao-voltar {
+    border-radius: 5px;
+    background-color: #5C7AD3;
+    color: #FFFFFF;
+    padding: 5px;
+    border-style: none;
+    cursor: pointer;
+    margin-right: 10px;
+  }
+
+  h1 {
+    text-align: center;
+  }
+
+  p {
+    font-size: 18px;
+    color: #000;
+  }
+
+
+  

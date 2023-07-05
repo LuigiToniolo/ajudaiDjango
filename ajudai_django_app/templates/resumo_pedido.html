@@ -4,10 +4,10 @@
     <meta charset="utf-8" />
     <title>{{ tab_title }}</title>
     {% load static %}
-    <link rel="stylesheet" type="text/css" href="{% static 'ajudai_django_app/css/resumo_pedido.css' %}" />
+    <link rel="stylesheet" type="text/css" href="{% static 'css/resumo_pedido.css' %}" />
 </head>
 <body>
-    <div id="menu">
+    <!-- <div id="menu">
         <nav>
           <ul>
             {% if user and user.username %}
@@ -17,12 +17,18 @@
             {% endif %}
           </ul>
         </nav>
-      </div>
+      </div> -->
 
-    <h1>{{ page_title }}</h1>
-    <p>{{ label_status_pedido }}: {{ pedido.status_do_pedido }}</p> 
-    <p>{{ label_numero_cliente_pedido }}: {{ numero_cliente_pedido }}</p>
-    <p>{{ label_resumo_pedido }}: {{ pedido.resumo_do_pedido }}</p>
+      <div class="container-center">
+        <div class="container-pedido">
+          <h1>{{ page_title }} nº {{pedido.id }}</h1>
+          <p><strong>{{ label_status_pedido }}: </strong> {{ pedido.status_do_pedido }}</p>
+          <p><strong>{{ label_numero_cliente_pedido }}: </strong>{{ numero_cliente_pedido }}</p>
+          <p><strong>{{ label_resumo_pedido }}: </strong></p>
+          <p>{{ pedido.resumo_do_pedido }}</p>
+          <a class="botao-voltar" href="{% url 'pedidos-realizados' %}">voltar</a><br>
+        </div>
+      </div>
 
 </body>
 </html>
