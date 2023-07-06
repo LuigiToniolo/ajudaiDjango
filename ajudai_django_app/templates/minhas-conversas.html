@@ -52,7 +52,7 @@
           <h2>Meus clientes</h2>
           <ul>
             {% for conversa in conversas %}
-            <li id="contact-{{ conversa.id }}">
+            <li id="contact-{{ conversa.id }}" onclick="toggleDivBackground(this)">
               <div class="conteudo-contato">
 
                 <div style="display: flex;">
@@ -200,6 +200,22 @@
             fecharDropup();
           }
         };
+        
+      </script>
+
+      <script>
+        function toggleDivBackground(element) {
+          // Obtém todos os elementos da lista
+          var listaContatos = document.querySelectorAll('.conteudo-contato');
+        
+          // Remove a cor de fundo vermelha de todos os contatos
+          listaContatos.forEach(function(contato) {
+            contato.style.backgroundColor = '';
+          });
+        
+          // Define a cor de fundo vermelha para o contato clicado
+          element.querySelector('.conteudo-contato').style.backgroundColor = '#dddddd';
+        }
         
       </script>
       

@@ -66,14 +66,13 @@ body {
 }
 
 .contacts {
-  min-width: 390px;
-  background-color: #e5e5e5;
+  min-width: 330px;
+  background-color: #FFFFFF;
   padding: 20px;
   overflow-y: auto;
   height: 100%;
+  border-right: 1px solid #f2f2f2;
 }
-
-
 
 .contacts ul {
     padding: 0;
@@ -117,16 +116,15 @@ body {
 .conteudo-contato {
     display: flex;
     justify-content: space-between;
-    /* width: 25vw;
-    min-width: 300px; */
     flex-direction: row;
     background-color: #FFFFFF;
     border-radius: 10px;
     cursor: pointer;
 }
 
+
 .conteudo-contato:hover {
-    background-color: #f1f1f1;
+    background-color: #f2f2f2;
 }
 
 .conteudo-texto-contato {
@@ -149,7 +147,7 @@ body {
   width: 107%;
   padding-top: 20vh;
   text-align: center;
-  background-color: #ffffff;
+  background-color: #f1f1f1;
   display: none;
   flex-direction: column;
   position: relative;
@@ -166,7 +164,7 @@ body {
 .conversation {
   /* flex: 4; */
   width: 100%;
-  background-color: #ffffff;
+  background-color: #f1f1f1;
   padding: 20px;
   display: none;
   /* flex-direction: column; */
