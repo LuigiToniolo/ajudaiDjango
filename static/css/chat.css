@@ -87,7 +87,7 @@ body {
     text-align: start;
     /* border: 1px solid black; */
     padding: 10px 0;
-    display: flex;
+    /* display: flex; */
 
 }
 
@@ -96,12 +96,22 @@ body {
     font-size: 14px;
 }
 
+
+
 .texto-tempo {
     /* margin: 0; */
     font-size: 12px;
     margin-right: 5px;
     margin-top: 5px;
     color: #6c757d;
+}
+
+.notification-dot {
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background-color: #00a884;
+
 }
 
 .conteudo-contato {
