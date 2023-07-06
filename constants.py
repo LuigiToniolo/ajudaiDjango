@@ -112,7 +112,7 @@ STATUS_CONVERSA_PEDIDO_REALIZADO = 'conversa_pedido_realizado'
 STATUS_CONVERSA_FALHA = 'conversa_falhou'
 STATUS_CONVERSA_ENCERRADA = 'conversa_encerra_tempo_sem_pedido'
 
-STATUS_PEDIDO_REALIZADO_MANUAL = 'pedido_realizado_manual'
+STATUS_PEDIDO_REALIZADO = 'pedido_realizado_manual'
 STATUS_PEDIDO_EM_PROCESSO = 'pedido_em_processo'
 STATUS_PEDIDO_PENDENTE_DE_ENTREGA = 'pendente_de_entrega'
 STATUS_PEDIDO_ENTREGUE = 'entregue'
