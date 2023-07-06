@@ -13,6 +13,12 @@ import pytz
 
 from constants import ADESAO_PURCHASE_STATUS_CALCELED, ADESAO_PURCHASE_STATUS_PENDING, ADESAO_PURCHASE_STATUS_PROCESSED, AI_PROVIDER_OPEN_AI, BRL_CURRENCY_SIMBOL, CONVERSA_AGUARDANDO_VENCIMENTO, CONVERSA_PAGA, CONVERSA_PAGAMENTO_PENDENTE, DIAS_TOLERACIA_INADIMPLECIA, GPT3_MODEL_NAME, HOURS_TO_RESER_ABSOLUTE, HOURS_TO_RESET_INACTIVE, MAX_CHAR_INSTRUCTIONS_CHATBOT_FORM, MENSAGEM_ENCERRAMENTO_DE_CONVERSA_INATIVIDADE, MENSAGEM_ENCERRAMENTO_DE_CONVERSA_TEMPO_LIMITE, PAYMENT_METHOD_REGISTRATION_STATUS_FAILING, PAYMENT_METHOD_REGISTRATION_STATUS_PENDING, PAYMENT_METHOD_REGISTRATION_STATUS_SUCCESS, PAYMENT_PERIOD_ANUALY, PAYMENT_PERIOD_DAILY, PAYMENT_PERIOD_MONTHLY, PRUDUCT_TYPE_ADESAO, PRUDUCT_TYPE_CONVERSA_AVULSA, PRUDUCT_TYPE_PLAN, STATUS_CONVERSA_EM_ANDAMENTO, STATUS_CONVERSA_ENCERRADA, STATUS_CONVERSA_FALHA, STATUS_PEDIDO_CANCELADO, STATUS_PEDIDO_EM_PROCESSO, STATUS_PEDIDO_ENTREGUE, STATUS_PEDIDO_PENDENTE_DE_ENTREGA, STATUS_PEDIDO_REALIZADO, USER_LEVEL_FREE, USER_LEVEL_PREMIUM, USER_PAYMENT_METHOD_FAILED, USER_PAYMENT_METHOD_NOT_REGISTERED, USER_PAYMENT_METHOD_STATUS_OK
 
+sao_paulo_tz = pytz.timezone('America/Sao_Paulo')
+def current_date_sao_paulo():
+    return datetime.now().astimezone(sao_paulo_tz).date()
+def current_time_sao_paulo():
+    return datetime.now().astimezone(sao_paulo_tz).time()
+
 phone_regex = RegexValidator(
     regex=r'^\d{10,11}$',
     message="Favor digitar seu telefone da seguinte forma: seu DDD seguido do seu número, por exemplo: 11987654321"
@@ -92,7 +98,7 @@ class CustomUser(AbstractUser):
     def usuario_adimplente_ou_tolerancia_de_uso(self):
         if not self.usuario_adimplente:
             if self.last_payment_date is not None:
-                today = timezone.now().date()
+                today = timezone.now().astimezone(sao_paulo_tz).date()
                 max_tolerance_day = self.last_payment_date + timedelta(days=DIAS_TOLERACIA_INADIMPLECIA)
                 if today > max_tolerance_day:
                     return False
@@ -153,7 +159,7 @@ class CustomUser(AbstractUser):
         if self.user_plan == USER_LEVEL_FREE:
             return False
         
-        today = timezone.now().date()
+        today = timezone.now().astimezone(sao_paulo_tz).date()
 
         #usuário recém aderido como premium
         #o caso do last_payment_date ser None é do usuário que acabou de se tornar premium. Neste caso, ele é setado no dia atual, para que o pagamento devido fique para daqui um período
@@ -183,7 +189,7 @@ class CustomUser(AbstractUser):
         return False
         
     def reset_payment_date(self, reset_period):
-        today = timezone.now().date()
+        today = timezone.now().astimezone(sao_paulo_tz).date()
         if reset_period == PAYMENT_PERIOD_DAILY:
             reset_date = self.last_payment_date + timedelta(days=1)
         elif reset_period == PAYMENT_PERIOD_MONTHLY:
@@ -278,8 +284,8 @@ class Premium_User_Payment_Method_Registration(models.Model):
     )
 
     id = models.AutoField(primary_key=True)
-    date = models.DateField()
-    time = models.TimeField(default=timezone.now)
+    date = models.DateField(default=current_date_sao_paulo)
+    time = models.TimeField(default=current_time_sao_paulo)
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, default=1)
     stripe_checkout_id = models.CharField(max_length=255, default='')
     status = models.CharField(
@@ -350,7 +356,7 @@ class Product(models.Model):
 class Adesao_Purchase(models.Model):
     id = models.AutoField(primary_key=True)
     date = models.DateField()
-    time = models.TimeField(default=timezone.now)
+    time = models.TimeField(default=current_time_sao_paulo)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, default=1)
     stripe_checkout_id = models.CharField(max_length=255, default='')
@@ -370,8 +376,8 @@ class ChatBot(models.Model):
     )
     whats_app_api_auth_token = models.CharField(max_length=300)
     facebook_page_id = models.CharField(max_length=120)
-    creation_date = models.DateField(default=timezone.now)
-    creation_time = models.TimeField(default=timezone.now)
+    creation_date = models.DateField(default=current_date_sao_paulo)
+    creation_time = models.TimeField(default=current_time_sao_paulo)
 
     def __str__(self):
         name = self.nome_do_chatbot
@@ -393,12 +399,12 @@ class Conversa(models.Model):
     
     id = models.AutoField(primary_key=True)
 
-    creation_date = models.DateField(default=timezone.now)
-    creation_time = models.TimeField(default=timezone.now)
+    creation_date = models.DateField(default=current_date_sao_paulo)
+    creation_time = models.TimeField(default=current_time_sao_paulo)
 
     #date and time registram momento da ultima mensagem
-    date = models.DateField(default=timezone.now)
-    time = models.TimeField(default=timezone.now)
+    date = models.DateField(default=current_date_sao_paulo)
+    time = models.TimeField(default=current_time_sao_paulo)
     # o set null abaixo proteje a conversa em caso do cliente deletar o chatbot, dado que a conversa é usada para cobrança
     chatbot = models.ForeignKey(ChatBot, on_delete=models.SET_NULL, null=True)
     context = models.JSONField(default=list) #o default numa conversa recem criado é uma lista vazia
@@ -490,7 +496,8 @@ class Conversa(models.Model):
 
     @staticmethod
     def close_conversa_if_needed(user):
-        now = timezone.now()
+        sao_paulo_tz = pytz.timezone('America/Sao_Paulo')
+        now = timezone.now().astimezone(sao_paulo_tz)
 
         conversations = Conversa.objects.filter(chatbot__user=user, status_da_conversa=STATUS_CONVERSA_EM_ANDAMENTO)
 
@@ -549,8 +556,8 @@ class Pedido(models.Model):
     resumo_do_pedido = models.CharField(
         default='',
         )
-    date = models.DateField(default=timezone.now)
-    time = models.TimeField(default=timezone.now)
+    date = models.DateField(default=current_date_sao_paulo)
+    time = models.TimeField(default=current_time_sao_paulo)
 
     def mensagem_novo_status(self):
         mensagem = ' '

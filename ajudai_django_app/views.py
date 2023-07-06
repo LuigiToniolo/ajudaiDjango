@@ -26,6 +26,8 @@ import stripe
 from django.utils import timezone
 from django.db.models import Case, When, Value, IntegerField
 
+sao_paulo_tz = pytz.timezone('America/Sao_Paulo')
+
 def welcome_view(request):
     try:
         user = CustomUser.getUser(request)
@@ -884,8 +886,8 @@ def process_message(data):
                                     conversation = Conversa.objects.create(
                                         company_client_number=numero_cliente,
                                         chatbot=chatbot,
-                                        creation_date=timezone.now().date(),
-                                        creation_time=timezone.now().time(),
+                                        creation_date=timezone.now().astimezone(sao_paulo_tz).date(),
+                                        creation_time=timezone.now().astimezone(sao_paulo_tz).time(),
                                     )
                                 else:
                                     return
@@ -916,7 +918,6 @@ def process_message(data):
                                 conversation.total_tokens_used = tokens_used_before + tokens_used_on_this_request
                                 conversation.last_message_shown = False
                                 conversation.need_refresh_view = True
-                                sao_paulo_tz = pytz.timezone('America/Sao_Paulo')
                                 conversation.date = timezone.now().astimezone(sao_paulo_tz).date()
                                 conversation.time = timezone.now().astimezone(sao_paulo_tz).time()
                                 conversation.save()
@@ -932,7 +933,6 @@ def process_message(data):
                             conversation.total_tokens_used = tokens_used_before + tokens_used_on_this_request
                             conversation.last_message_shown = False
                             conversation.need_refresh_view = True
-                            sao_paulo_tz = pytz.timezone('America/Sao_Paulo')
                             conversation.date = timezone.now().astimezone(sao_paulo_tz).date()
                             conversation.time = timezone.now().astimezone(sao_paulo_tz).time()
                             conversation.save()
