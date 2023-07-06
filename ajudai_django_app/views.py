@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpResponseForbidden, HttpResponseServerError, JsonResponse
+import pytz
 from ajudai_django_app.ai_chatbot.ai_awnser import generate_gpt_response, pedido_confirmado
 from ajudai_django_app.ai_chatbot.ai_tools import instructions_over_limit_error_messages, instructions_under_the_limits
 from ajudai_django_app.fechamento_de_pedido.procedimento_de_fechamento import informar_loja_fechamento_pedido
@@ -223,6 +224,7 @@ def minhas_conversas_view(request):
             chatbot= conversa.chatbot
             conversa.add_message_to_conversa(new_message, "assistant")
             send_response(chatbot.facebook_page_id, chatbot.whats_app_api_auth_token, conversa.company_client_number, new_message)
+            conversa.update_conversa_time_date()
             updated_conversa_id = conversa_id
         else:
             updated_conversa_id = None
@@ -310,7 +312,8 @@ def toggle_chatbot(request):
         else:
             mensagem_de_aviso = 'A partir de agora você estará conversando com uma pessoa! O chatbot foi desativado!'
 
-        send_response(chatbot.facebook_page_id, chatbot.whats_app_api_auth_token, conversa.company_client_number, mensagem_de_aviso)   
+        send_response(chatbot.facebook_page_id, chatbot.whats_app_api_auth_token, conversa.company_client_number, mensagem_de_aviso)  
+        conversa.update_conversa_time_date() 
         conversa.add_message_to_conversa(mensagem_de_aviso, "assistant")
         return JsonResponse({'status': 'success'})
 
@@ -480,6 +483,7 @@ def update_pedido_status(request):
                 conversa = pedido.conversa
                 chatbot = conversa.chatbot
                 send_response(chatbot.facebook_page_id, chatbot.whats_app_api_auth_token, conversa.company_client_number, pedido.mensagem_novo_status())
+                conversa.update_conversa_time_date()
             return JsonResponse({'status': 'success'})
         except Pedido.DoesNotExist:
             return JsonResponse({'status': 'error', 'message': 'Pedido not found'})
@@ -913,8 +917,9 @@ def process_message(data):
                                 conversation.total_tokens_used = tokens_used_before + tokens_used_on_this_request
                                 conversation.last_message_shown = False
                                 conversation.need_refresh_view = True
-                                conversation.date = timezone.now().date()
-                                conversation.time = timezone.now().time()
+                                sao_paulo_tz = pytz.timezone('America/Sao_Paulo')
+                                conversation.date = timezone.now().astimezone(sao_paulo_tz).date()
+                                conversation.time = timezone.now().astimezone(sao_paulo_tz).time()
                                 conversation.save()
                             
                                 return
@@ -928,8 +933,9 @@ def process_message(data):
                             conversation.total_tokens_used = tokens_used_before + tokens_used_on_this_request
                             conversation.last_message_shown = False
                             conversation.need_refresh_view = True
-                            conversation.date = timezone.now().date()
-                            conversation.time = timezone.now().time()
+                            sao_paulo_tz = pytz.timezone('America/Sao_Paulo')
+                            conversation.date = timezone.now().astimezone(sao_paulo_tz).date()
+                            conversation.time = timezone.now().astimezone(sao_paulo_tz).time()
                             conversation.save()
                             return
 

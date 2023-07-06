@@ -502,6 +502,7 @@ class Conversa(models.Model):
             if (now - last_message_datetime) > timedelta(hours=HOURS_TO_RESET_INACTIVE):
                 conversation.status_da_conversa = STATUS_CONVERSA_ENCERRADA_SEM_PEDIDO
                 send_response(conversation.chatbot.facebook_page_id, conversation.chatbot.whats_app_api_auth_token, conversation.company_client_number, MENSAGEM_ENCERRAMENTO_DE_CONVERSA_INATIVIDADE)
+                conversation.update_conversa_time_date()
                 conversation.add_message_to_conversa(MENSAGEM_ENCERRAMENTO_DE_CONVERSA_INATIVIDADE, "assistant")
                 conversation.save()
                 
@@ -510,9 +511,16 @@ class Conversa(models.Model):
             if (now - creation_datetime) > timedelta(hours=HOURS_TO_RESER_ABSOLUTE):
                 conversation.status_da_conversa = STATUS_CONVERSA_ENCERRADA_SEM_PEDIDO
                 send_response(conversation.chatbot.facebook_page_id, conversation.chatbot.whats_app_api_auth_token, conversation.company_client_number, MENSAGEM_ENCERRAMENTO_DE_CONVERSA_INATIVIDADE)
+                conversation.update_conversa_time_date()
                 conversation.add_message_to_conversa(MENSAGEM_ENCERRAMENTO_DE_CONVERSA_TEMPO_LIMITE, "assistant")
                 conversation.save()
     
+    def update_conversa_time_date(self):
+        sao_paulo_tz = pytz.timezone('America/Sao_Paulo')
+        self.date = timezone.now().astimezone(sao_paulo_tz).date()
+        self.time = timezone.now().astimezone(sao_paulo_tz).time()
+        self.save()
+
     def __str__(self):
         conversa_id = self.id
         return f"Conversa n° {conversa_id} - com o número: {self.company_client_number} - status: {self.status_da_conversa}"
