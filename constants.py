@@ -110,7 +110,7 @@ ADITIONAL_INTRUCTIONS_FIELD_NAME = 'aditional_intructions'
 STATUS_CONVERSA_EM_ANDAMENTO = 'conversa_em_andamento'
 STATUS_CONVERSA_PEDIDO_REALIZADO = 'conversa_pedido_realizado'
 STATUS_CONVERSA_FALHA = 'conversa_falhou'
-STATUS_CONVERSA_ENCERRADA_SEM_PEDIDO = 'conversa_encerra_tempo_sem_pedido'
+STATUS_CONVERSA_ENCERRADA = 'conversa_encerra_tempo_sem_pedido'
 
 STATUS_PEDIDO_REALIZADO_MANUAL = 'pedido_realizado_manual'
 STATUS_PEDIDO_EM_PROCESSO = 'pedido_em_processo'
