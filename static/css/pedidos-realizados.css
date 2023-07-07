@@ -85,6 +85,25 @@
       flex-direction: column;
     }
 
+    .fa-clock,
+    .fa-calendar {
+      color: #a8a8a8;
+      margin-right: 3px;
+    }
+
+    .ver-pedido-link {
+      text-decoration: none;
+      background-color: #e6e6e6;
+      border-radius: 5px;
+      text-align: center;
+      color: #000;
+    }
+
+    .ver-pedido-link:hover {
+      color: #000;
+      transform: scale(1.02);
+    }
+
     select {
       padding: 5px;
       background-color: #F2F2F2;

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8" />
@@ -9,18 +9,6 @@
     <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
 </head>
 <body>
-    <!-- <div id="menu">
-        <nav>
-          <ul>
-            {% if user and user.username %}
-              <a href="{% url 'user_accounts' %}">{{ user.username }} (my account)</a><br>
-            {% else %}
-              <a href="{% url 'login' %}">Log In</a><br>
-            {% endif %}
-          </ul>
-        </nav>
-      </div> -->
-
       <div class="container-center">
         <div class="container-pedido">
           <h1>{{ page_title }} nº {{pedido.id }}</h1>
@@ -33,4 +21,54 @@
       </div>
 
 </body>
+</html> -->
+
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>{{ tab_title }}</title>
+        {% load static %}
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="" />
+        <meta name="author" content="" />
+        <link rel="icon" href="{% static 'image/logo-ajudai-circulo.png' %}">
+        <link href="{% static 'css/styles.css' %}" rel="stylesheet" />
+        <link rel="stylesheet" type="text/css" href="{% static 'css/resumo_pedido.css' %}" />
+        <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css'>
+        <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+    </head>
+    <body>
+        {% include 'includes/topMenu.html' %}
+        <div id="layoutSidenav">
+            <div id="layoutSidenav_nav">
+
+                {% include 'includes/sidebar.html' %}
+
+            </div>
+            <div id="layoutSidenav_content">
+                <main>
+                    <div class="container-fluid px-4">
+                      <div class="container-center">
+                        <div class="container-pedido">
+                          <h1>{{ page_title }} nº {{pedido.id }}</h1>
+                          <p><strong>{{ label_status_pedido }}: </strong> {{ pedido.status_do_pedido }}</p>
+                          <p><strong>{{ label_numero_cliente_pedido }}: </strong>{{ numero_cliente_pedido }}</p>
+                          <p><strong>{{ label_resumo_pedido }}: </strong></p>
+                          <p style="margin-bottom: 3vh;">{{ pedido.resumo_do_pedido }}</p>
+                          <a class="botao-voltar" href="{% url 'pedidos-realizados' %}"><i style="margin-right: 5px;" class="fa-solid fa-arrow-left"></i>Voltar</a><br>
+                        </div>
+                      </div>
+                    </div>
+                </main>
+                
+                {% include 'includes/footer.html' %}
+
+            </div>
+        </div>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+        <script src="{% static 'js/scripts.js' %}"></script>
+    </body>
 </html>

@@ -1,4 +1,4 @@
-body {
+/* body {
     margin: 0;
     padding: 0;
     display: flex;
@@ -9,21 +9,33 @@ body {
     font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", "Liberation Sans", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   
   }
-  
+   */
+   /* .container-welcome {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+} */
   .container-center {
-    display: flex;
+    /* display: flex;
     justify-content: center;
     align-items: center;
-    width: 60%;
-    height: 100%;
+    height: 100%; */
+    position: absolute;
+    width: 80%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    /* text-align: center; */
   }
   
   .container-pedido {
-      background-image: url(../image/teste-book.jpg);
-      background-size: cover;
-      border-radius: 5px;
-      padding: 20px 8%;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      background-color: #f2f2f2;
+      padding: 8%;
+      border-radius: 10px;
+      box-shadow: 0 14px 28px rgba(0,0,0,0.25), 
+        0 10px 10px rgba(0,0,0,0.22);
   }
 
   .botao-voltar {
@@ -39,10 +51,12 @@ body {
 
   .botao-voltar:hover {
     transform: scale(1.05);
+    color: #FFFFFF;
   }
 
   h1 {
     text-align: center;
+    margin-bottom: 3vh;
   }
 
   p {

@@ -32,19 +32,21 @@
             </a>
           </div>
           <div class="menu-icons">
-            <a href="{% url 'meus-chatbots' %}">
+            <a href="{% url 'dashboard' %}" title="Home">
               <div class="icons-div">
                 <i class="fas fa-home" id="icones-menu"></i>
               </div>
             </a>
-            <a href="{% url 'pedidos-realizados' %}">
+            <a href="{% url 'pedidos-realizados' %}" title="Pedidos realizados">
               <div class="icons-div">
                 <i class="fas fa-sticky-note" id="icones-menu"></i>
               </div>
             </a>
-            <div class="icons-div">
-              <i class="fas fa-comments" id="icones-menu"></i>
-            </div>
+            <a href="{% url 'meus-chatbots' %}" title="Meus chatbos">
+              <div class="icons-div">
+                <i class="fas fa-robot" id="icones-menu"></i>
+              </div>
+            </a>
           </div>
         </div>
         <div class="contacts">
@@ -203,7 +205,10 @@
         
       </script>
 
+
+      <!-- Função que faz o destaque das conversas selecionadas -->
       <script>
+
         function toggleDivBackground(element) {
           // Obtém todos os elementos da lista
           var listaContatos = document.querySelectorAll('.conteudo-contato');
