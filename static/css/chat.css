@@ -329,3 +329,11 @@ background-color: #212D40;
 .scrollbar::-webkit-scrollbar-thumb:hover {
 background-color: #555;
 }
+
+.notification-dot {
+  height: 10px;
+  width: 10px;
+  background-color: #30129a;
+  border-radius: 50%;
+  display: inline-block;
+}

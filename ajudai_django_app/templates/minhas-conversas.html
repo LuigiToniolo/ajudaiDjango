@@ -59,8 +59,8 @@
                     />
                   </div>
                   <div class="conteudo-texto-contato">
-                    <p class="texto-contato"><strong>{{ conversa.company_client_number }}</strong></p>
-                    <p class="texto-contato">Status: {{ conversa.status_da_conversa }}</p>
+                    <p class="texto-contato"><strong>{{ conversa.company_client_number }} {% if not conversa.last_message_shown %}&nbsp;&nbsp;<span class="notification-dot"></span>{% endif %}</strong></p>
+                    <p class="texto-contato">Status: {{ conversa.get_status_da_conversa_display }}</p>
                   </div>  
                 </div>
 
@@ -91,7 +91,7 @@
                           <div class="message-client">
                           <span class="sender">Cliente ({{ conversa.company_client_number }})</span>
                           <p>{{ message.content }}</p>
-                          <span class="timestamp">10:00 AM</span>
+                          <span class="timestamp">{{ message.date }} {{ message.time }}</span>
                           </div>
                       </div>
                   {% elif message.role == "assistant" %}
@@ -99,7 +99,7 @@
                           <div class="message-response">
                           <span class="sender">Chatbot ou Você</span>
                           <p>{{ message.content }}</p>
-                          <span class="timestamp">10:05 AM</span> 
+                          <span class="timestamp">{{ message.date }} {{ message.time }}</span> 
                           </div>
                       </div>
                   {% endif %}
@@ -133,27 +133,143 @@
     <script src="{% static 'js/scriptsChat.js' %}"></script>
 
 
-        <script>
-          $(document).ready(function() {
-              $("li[id^='contact-']").click(function() {
-                  var id = $(this).attr('id').split('-')[1];
-                  console.log("Clicked contact ID: ", id);
-                  $(".conversation").hide();
-                  $("#conversation-" + id).show();
-                  $(".defaultText").hide(); // Oculta a mensagem "Escolha uma mensagem"
-                  $(".side-conversation").css("display", "flex");
+    <script>
+
+      function scrollToBottom(conversationId) {
+            var conversationDiv = document.getElementById("conversation-" + conversationId);
+            conversationDiv.scrollTop = conversationDiv.scrollHeight;
+      }
+
+      $(document).ready(function() {
+          var activeConversaId = localStorage.getItem('activeConversaId') || null;
+
+          console.log("Retrieved activeConversaId from localStorage:", activeConversaId);
+
+          //mostra a conversa selecionada na lateral
+          $("li[id^='contact-']").click(function() {
+              activeConversaId = $(this).attr('id').split('-')[1];
+              var id = $(this).attr('id').split('-')[1];
+              console.log("Clicked contact ID: ", id);
+              $(".conversation").hide();
+              $("#conversation-" + id).show();
+              $(".defaultText").hide();
+              $(".side-conversation").css("display", "flex");
+
+              localStorage.setItem('activeConversaId', activeConversaId);
+
+              var updateUrl = '/update_last_message_shown/' + activeConversaId + '/';
+
+              //avisa o bd sobre a mensagem mostrada
+              $.ajax({
+                  url: updateUrl,
+                  type: 'POST',
+                  data: {
+                      'conversa_id': id,
+                      'csrfmiddlewaretoken': '{{ csrf_token }}'
+                  },
+                  success: function(response) {
+                      if (response.status == 'success') {
+                          console.log('Last message shown updated successfully');
+                          $("#contact-" + activeConversaId).find(".notification-dot").remove();
+                      }
+                  }
               });
-              // Note for the code in django template: The following are Django template tags
-              // Your IDE might show them as syntax errors, but they will be processed correctly by Django.
-              {% if updated_conversa_id %}
-                  $(".conversation").hide();
-                  $("#conversation-{{ updated_conversa_id }}").show();
-                  $(".defaultText").hide(); // Oculta a mensagem "Escolha uma mensagem"
-              {% else %}
-                  $(".conversation").hide();
-                  $(".defaultText").show(); // Exibe a mensagem "Escolha uma mensagem"
-              {% endif %}
+
+              scrollToBottom(id);
           });
-      </script>
-      
+    
+          //envia nova mensagem
+          $("#message-form").submit(function(event) {
+              event.preventDefault();
+              $("#conversa_id").val(activeConversaId);
+              var messageContent = $("input[name='message']").val(); // get the message content
+              var formData = $(this).serialize();
+
+              $.ajax({
+                  url: $(this).attr('action'),
+                  type: 'POST',
+                  data: formData,
+                  success: function(response) {
+                      // Append new message to conversation
+                      var newMessage = $("<div>").addClass("dialog-response").html(`
+                          <div class="message-response">
+                              <span class="sender">Chatbot ou Você</span>
+                              <p>${messageContent}</p>
+                              <span class="timestamp">${response.timestamp}</span>
+                          </div>
+                      `);
+                      $("#conversation-" + activeConversaId).append(newMessage);
+                      // Clear input field
+                      $("input[name='message']").val("");
+                      scrollToBottom(activeConversaId);
+                      location.reload();
+                  }
+              });
+          });
+
+          {% if updated_conversa_id %}
+              $(".conversation").hide();
+              $("#conversation-{{ updated_conversa_id }}").show();
+              $(".defaultText").hide();
+              $(".side-conversation").css("display", "flex");
+          {% else %}
+              $(".conversation").hide();
+              $(".defaultText").show();
+              $(".side-conversation").css("display", "none");
+          {% endif %}
+    
+        $(".botao-pause-chatbot").click(function() {
+          console.log("Sending AJAX request with id:", activeConversaId);
+
+          $.ajax({
+            url: '{% url "toggle_chatbot" %}',
+            type: 'POST',
+            data: {
+              'conversa_id': activeConversaId,
+              'csrfmiddlewaretoken': '{{ csrf_token }}'
+            },
+            success: function(response) {
+              if (response.status == 'success') {
+                console.log('Chatbot toggled successfully');
+                localStorage.setItem('activeConversaId', activeConversaId);
+                location.reload();
+              }
+            }
+          });
+        });
+
+      //make a POST request to the server every 30 seconds to check for new messages
+      setInterval(function() {
+            $.ajax({
+                url: "{% url 'check_for_new_messages_to_refresh' %}",
+                type: 'POST',
+                data: {
+                    'csrfmiddlewaretoken': '{{ csrf_token }}'
+                },
+                success: function(response) {
+                    if (response.should_refresh) {
+                        console.log("Setting activeConversaId in localStorage:", activeConversaId);
+                        localStorage.setItem('activeConversaId', activeConversaId);
+                        location.reload();
+                    }
+                }
+            });
+        }, 30000); 
+
+        //mostra antiga conversa ativa em caso de reload
+        if (activeConversaId !== null) {
+              console.log("Trying to show conversation with ID: ", activeConversaId);
+              $(".conversation").hide();
+              $("#conversation-" + activeConversaId).show();
+              $(".defaultText").hide();
+              $(".side-conversation").css("display", "flex");
+              scrollToBottom(activeConversaId);
+          } else {
+              $(".conversation").hide();
+              $(".defaultText").show();
+              $(".side-conversation").css("display", "none");
+          }
+
+      });
+    </script>
 </html>

@@ -18,6 +18,10 @@ def generate_gpt_response(prompt, context, role, aditional_instructions, model_n
     #avaliação de cumprimento do limite de requisição do modelo, sem considerar o context:
     if (tokens_prompt_and_instructions*(1+TOKEN_LIMIT_MARGIN)) > token_limit * (1-MIN_TOKEN_LIMIT_RATE_LEFT_TO_AWNSER):
         awnser = AWNSER_WHEN_MESSAGE_IS_OVER_THE_LIMIT
+
+        #garante que o primeiro prompt de system tenha as instruções mais atualizadas
+        context[0] = {"role": "system", "content": instructions}
+        
         context.append({"role": "assistant", "content": awnser})
         tokens_used  = 0
         return awnser, context, tokens_used
@@ -30,6 +34,8 @@ def generate_gpt_response(prompt, context, role, aditional_instructions, model_n
                 {"role": "user", "content": prompt},
                 ]
         else:
+            #garante que o primeiro prompt de system tenha as instruções mais atualizadas
+            context[0] = {"role": "system", "content": instructions}
             #aqui, verifica-se se, com todo o contexto passado existe rompimento de limite. caso sim, será eliminado, até caber no limite, as mensagens da mais antiga a mais nova
             context.append({"role": "user", "content": prompt})
             total_tokens = count_tokens(model_name, messages_to_string(context))*(1+TOKEN_LIMIT_MARGIN)
