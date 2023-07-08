@@ -9,10 +9,9 @@
         <meta name="author" content="" />
         <title>Minhas conversas - Ajudai</title>
         <link rel="icon" href="{% static 'image/logo-ajudai-circulo.png' %}">
-        <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+        <script src="https://use.fontawesome.com/releases/v6.0.0/js/all.js" crossorigin="anonymous"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
-        <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css'>
         <link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Montserrat'>
         <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-alpha.6/css/bootstrap.min.css'><link rel="stylesheet" href="./style.css">
         <link rel="stylesheet" type="text/css" href="{% static 'css/chat.css' %}" />
@@ -129,16 +128,16 @@
                   <!-- <a class="botao-pause-chatbot"><i class="fa-solid fa-robot" id="icon-pause"></i></a> -->
                   <!-- <a class="botao-pause-chatbot"><i class="fa-solid fa-pause" id="icon-pause"></i></a>
                   <a class="botao-play-chatbot"><i class="fa-solid fa-play" id="icon-pause"></i></a> -->
-                  <a class="botao-pause-chatbot" onclick="mostrarDropup()"><i class="fa-solid fa-pause" id="icon-pause"></i></a>
-                  <a class="botao-play-chatbot" onclick="mudarParaPlay()"><i class="fa-solid fa-play" id="icon-play"></i></a>
+                  <a class="botao-pause-chatbot" onclick="mostrarDropup()"><i class="fa-solid fa-play" id="icon-pause"></i></a>
+                  <!-- <a class="botao-play-chatbot" onclick="mudarParaPlay()"><i class="fa-solid fa-play" id="icon-play"></i></a> -->
 
                   <div id="dropup" class="dropup">
-                    <p>Você deseja mesmo <strong>pausar</strong> o chatbot para essa conversa?</p>
+                    <p>Você deseja mesmo <strong>pausar/voltar</strong> o chatbot para essa conversa?</p>
                     <div class="botoes-acao">
                       <button class="botao-concordar" onclick="mudarParaPlay()">Sim, tenho certeza!</button>
                       <button class="botao-cancelar" onclick="fecharDropup()">Cancelar</button>
                     </div>
-                  </div>
+                  </div> 
               </div>
            </form>
           </div>

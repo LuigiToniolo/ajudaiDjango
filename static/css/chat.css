@@ -45,8 +45,8 @@ body {
 }
 
 .logo {
-    width: 50px;
-    height: 50px;
+    width: 40px;
+    height: 40px;
     margin: 10px;
     cursor: pointer;
     
@@ -66,9 +66,9 @@ body {
 }
 
 .contacts {
-  min-width: 330px;
+  min-width: 350px;
   background-color: #FFFFFF;
-  padding: 20px;
+  padding: 10px;
   overflow-y: auto;
   height: 100%;
   border-right: 1px solid #f2f2f2;
