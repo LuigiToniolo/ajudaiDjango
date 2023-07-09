@@ -1,0 +1,68 @@
+/* body {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #FFFFFF;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", "Liberation Sans", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  
+  }
+   */
+   /* .container-welcome {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+} */
+.container-center {
+    /* display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%; */
+    position: absolute;
+    width: 80%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    /* text-align: center; */
+  }
+  
+  .container-pedido {
+      background-color: #f2f2f2;
+      padding: 8%;
+      border-radius: 10px;
+      box-shadow: 0 14px 28px rgba(0,0,0,0.25), 
+        0 10px 10px rgba(0,0,0,0.22);
+  }
+
+  .botao-voltar {
+    border-radius: 15px;
+    background-color: #5C7AD3;
+    color: #FFFFFF;
+    padding: 10px;
+    border-style: none;
+    cursor: pointer;
+    text-decoration: none;
+    margin-top: 3vh;
+  }
+
+  .botao-voltar:hover {
+    transform: scale(1.05);
+    color: #FFFFFF;
+  }
+
+  h1 {
+    text-align: center;
+    margin-bottom: 3vh;
+  }
+
+  p {
+    font-size: 18px;
+    color: #000;
+  }
+
+
+  

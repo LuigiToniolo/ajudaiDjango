@@ -5,7 +5,8 @@
 body {
   margin: 0;
   padding: 0;
-  font-family: Arial, sans-serif;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", "Liberation Sans", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  
 }
 
 .chat-container {
@@ -44,8 +45,8 @@ body {
 }
 
 .logo {
-    width: 50px;
-    height: 50px;
+    width: 40px;
+    height: 40px;
     margin: 10px;
     cursor: pointer;
     
@@ -65,14 +66,13 @@ body {
 }
 
 .contacts {
-  min-width: 300px;
-  background-color: #e5e5e5;
-  padding: 20px;
+  min-width: 350px;
+  background-color: #FFFFFF;
+  padding: 10px;
   overflow-y: auto;
   height: 100%;
+  border-right: 1px solid #f2f2f2;
 }
-
-
 
 .contacts ul {
     padding: 0;
@@ -86,7 +86,7 @@ body {
     text-align: start;
     /* border: 1px solid black; */
     padding: 10px 0;
-    display: flex;
+    /* display: flex; */
 
 }
 
@@ -94,6 +94,8 @@ body {
     margin: 0;
     font-size: 14px;
 }
+
+
 
 .texto-tempo {
     /* margin: 0; */
@@ -103,19 +105,26 @@ body {
     color: #6c757d;
 }
 
+.notification-dot {
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background-color: #00a884;
+
+}
+
 .conteudo-contato {
     display: flex;
     justify-content: space-between;
-    /* width: 25vw;
-    min-width: 300px; */
     flex-direction: row;
     background-color: #FFFFFF;
     border-radius: 10px;
     cursor: pointer;
 }
 
+
 .conteudo-contato:hover {
-    background-color: #f1f1f1;
+    background-color: #f2f2f2;
 }
 
 .conteudo-texto-contato {
@@ -134,10 +143,11 @@ body {
   text-align: center; */
 
   /* flex: 4; */
-  width: 68vw;
+  /* width: 68vw; */
+  width: 107%;
   padding-top: 20vh;
   text-align: center;
-  background-color: #ffffff;
+  background-color: #f1f1f1;
   display: none;
   flex-direction: column;
   position: relative;
@@ -154,7 +164,7 @@ body {
 .conversation {
   /* flex: 4; */
   width: 100%;
-  background-color: #ffffff;
+  background-color: #f1f1f1;
   padding: 20px;
   display: none;
   /* flex-direction: column; */
@@ -167,7 +177,8 @@ body {
 .side-conversation {
   display: none;
   flex-direction: column;
-  width: 68vw;
+  /* width: 68vw; */
+  width: 107%;
 }
 
 .message-client {
@@ -234,33 +245,30 @@ body {
   outline: none;
 }
 
-.botao-send {
+/* .botao-send {
   padding: 10px 15px;
   background-color: #5C7AD3;
   border-style: none;
   border-radius: 50px;
   cursor: pointer;
-}
+  width: 50px;
+  height: auto;
+} */
 
-.botao-pause-chatbot  {
-    padding: 10px 15px;
-    background-color: #ff9696;
-    border-style: none;
-    border-radius: 50px;
+.botao-send {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%; /* Define o formato redondo */
+    background-color: #5C7AD3;
+    display: flex;
+    justify-content: center; /* Centraliza horizontalmente */
+    align-items: center; /* Centraliza verticalmente */
     cursor: pointer;
-    margin-left: 10px;
-    margin-right: 10px;
+    border: none; /* Remove a borda padrão */
 }
 
 .botao-send:active {
     background-color: #b5c7fd;
-    border-style: none;
-    outline: none;
-    box-shadow: none;
-}
-
-.botao-pause-chatbot:active {
-    background-color: #f8b0b0;
     border-style: none;
     outline: none;
     box-shadow: none;
@@ -271,6 +279,40 @@ body {
     outline: none;
     box-shadow: none;
 }
+.botao-pause-chatbot  {
+    background-color: #ff9696;
+    border-style: none;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center; /* Centraliza horizontalmente */
+    align-items: center; /* Centraliza verticalmente */
+    cursor: pointer;
+    margin-left: 10px;
+    margin-right: 10px;
+    width: 50px;
+    height: 50px;
+}
+.botao-play-chatbot  {
+    background-color: #ff9696;
+    border-style: none;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center; /* Centraliza horizontalmente */
+    align-items: center; /* Centraliza verticalmente */
+    cursor: pointer;
+    margin-left: 10px;
+    margin-right: 10px;
+    width: 50px;
+    height: 50px;
+}
+
+.botao-pause-chatbot:active {
+    background-color: #f8b0b0;
+    border-style: none;
+    outline: none;
+    box-shadow: none;
+}
+
 
 .botao-pause-chatbot:focus {
     border-style: none;
@@ -280,12 +322,16 @@ body {
 
 
 #icon-send {
-    color: #F2F2F2;
+    color: #FFFFFF; /* Cor do ícone */
+    font-size: 18px; /* Tamanho do ícone */
 }
 
 #icon-pause {
-    color: #000;
+    color: #FFFFFF; /* Cor do ícone */
+    font-size: 18px; /* Tamanho do ícone */
 }
+
+
 
 /* Estilização da barra de rolagem no Chrome e Safari */
 ::-webkit-scrollbar {
@@ -330,10 +376,59 @@ background-color: #212D40;
 background-color: #555;
 }
 
-.notification-dot {
-  height: 10px;
-  width: 10px;
-  background-color: #30129a;
-  border-radius: 50%;
-  display: inline-block;
+
+
+.dropup {
+  display: none;
+  position: fixed;
+  bottom: 65px;
+  right: 20px;
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 10px;
+}
+
+.dropup p {
+  margin: 0;
+}
+
+.dropup button {
+  margin-top: 10px;
+}
+
+.botao-play-chatbot {
+  display: none;
+}
+
+.botao-concordar {
+  border-radius: 5px;
+  background-color: #5C7AD3;
+  color: #FFFFFF;
+  padding: 5px;
+  border-style: none;
+  cursor: pointer;
+  margin-right: 10px;
+}
+
+.botao-cancelar {
+  border-radius: 5px;
+  background-color: #ff9696;
+  color: #FFFFFF;
+  padding: 5px;
+  border-style: none;
+  cursor: pointer;
+}
+
+.botao-cancelar:hover  {
+  transform: scale(1.05);
+}
+.botao-concordar:hover  {
+  transform: scale(1.05);
+}
+
+.botoes-acao {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
 }

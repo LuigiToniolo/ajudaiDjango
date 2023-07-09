@@ -9,10 +9,9 @@
         <meta name="author" content="" />
         <title>Minhas conversas - Ajudai</title>
         <link rel="icon" href="{% static 'image/logo-ajudai-circulo.png' %}">
-        <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+        <script src="https://use.fontawesome.com/releases/v6.0.0/js/all.js" crossorigin="anonymous"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
-        <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css'>
         <link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Montserrat'>
         <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-alpha.6/css/bootstrap.min.css'><link rel="stylesheet" href="./style.css">
         <link rel="stylesheet" type="text/css" href="{% static 'css/chat.css' %}" />
@@ -32,14 +31,21 @@
             </a>
           </div>
           <div class="menu-icons">
-            <a href="{% url 'meus-chatbots' %}">
+            <a href="{% url 'dashboard' %}" title="Home">
               <div class="icons-div">
                 <i class="fas fa-home" id="icones-menu"></i>
               </div>
             </a>
-            <div class="icons-div">
-              <i class="fas fa-comments" id="icones-menu"></i>
-            </div>
+            <a href="{% url 'pedidos-realizados' %}" title="Pedidos realizados">
+              <div class="icons-div">
+                <i class="fas fa-sticky-note" id="icones-menu"></i>
+              </div>
+            </a>
+            <a href="{% url 'meus-chatbots' %}" title="Meus chatbos">
+              <div class="icons-div">
+                <i class="fas fa-robot" id="icones-menu"></i>
+              </div>
+            </a>
           </div>
         </div>
         <div class="contacts">
@@ -47,7 +53,7 @@
           <h2>Meus clientes</h2>
           <ul>
             {% for conversa in conversas %}
-            <li id="contact-{{ conversa.id }}">
+            <li id="contact-{{ conversa.id }}" onclick="toggleDivBackground(this)">
               <div class="conteudo-contato">
 
                 <div style="display: flex;">
@@ -59,13 +65,16 @@
                     />
                   </div>
                   <div class="conteudo-texto-contato">
-                    <p class="texto-contato"><strong>{{ conversa.company_client_number }} {% if not conversa.last_message_shown %}&nbsp;&nbsp;<span class="notification-dot"></span>{% endif %}</strong></p>
+                    <p class="texto-contato"><strong>{{ conversa.company_client_number }}</strong></p>
                     <p class="texto-contato">Status: {{ conversa.get_status_da_conversa_display }}</p>
                   </div>  
                 </div>
 
                 <div class="texto-tempo-div">
                   <p class="texto-tempo">{{ conversa.time }}</p>
+                  <div style="display: flex; justify-content: center;">
+                    {% if not conversa.last_message_shown %}<div class="notification-dot"></div>{% endif %}
+                  </div>
                 </div>
 
               </div>
@@ -116,7 +125,16 @@
                   <input type="text" name="message" placeholder="Digite sua mensagem...">
                   <input type="hidden" id="conversa_id" name="conversa_id" value="{{ conversa.id }}">
                   <button class="botao-send"><i class="fa-solid fa-paper-plane" id="icon-send"></i></button>
-                  <a class="botao-pause-chatbot"><i class="fa-solid fa-robot" id="icon-pause"></i></a>
+                  <a class="botao-pause-chatbot"><i class="fa-solid fa-play" id="icon-pause"></i></a>
+                  <!-- <a class="botao-play-chatbot" onclick="mudarParaPlay()"><i class="fa-solid fa-play" id="icon-play"></i></a> -->
+
+                  <div id="dropup" class="dropup">
+                    <p>Você deseja mesmo <strong>pausar/voltar</strong> o chatbot para essa conversa?</p>
+                    <div class="botoes-acao">
+                      <button class="botao-concordar">Sim, tenho certeza!</button>
+                      <button class="botao-cancelar" onclick="fecharDropup()">Cancelar</button>
+                    </div>
+                  </div> 
               </div>
            </form>
           </div>
@@ -132,8 +150,54 @@
     
     <script src="{% static 'js/scriptsChat.js' %}"></script>
 
-
     <script>
+
+      function mostrarDropup() {
+        document.getElementById("dropup").style.display = "block";
+      }
+
+      function mudarParaPlay() {
+        fecharDropup();
+        document.getElementById("icon-pause").style.display = "none";
+        document.getElementsByClassName("botao-pause-chatbot")[0].style.display = "none";
+        document.getElementById("icon-play").style.display = "inline-block";
+        document.getElementsByClassName("botao-play-chatbot")[0].style.display = "inline-block";
+        document.getElementById("dropup").style.display = "none";
+      }
+
+      function fecharDropup() {
+        document.getElementById("dropup").style.display = "none";
+      }
+
+      <!-- Função que faz o destaque das conversas selecionadas -->
+      function toggleDivBackground(element) {
+          // Obtém todos os elementos da lista
+          var listaContatos = document.querySelectorAll('.conteudo-contato');
+
+          // Remove a cor de fundo vermelha de todos os contatos
+          listaContatos.forEach(function(contato) {
+            contato.style.backgroundColor = '';
+          });
+
+          // Define a cor de fundo vermelha para o contato clicado
+          element.querySelector('.conteudo-contato').style.backgroundColor = '#dddddd';
+      }
+
+      function toggleDivBackgroundAtRefresh(element) {
+        // Obtém todos os elementos da lista
+        var listaContatos = document.querySelectorAll('.conteudo-contato');
+
+        // Remove a cor de fundo vermelha de todos os contatos
+        listaContatos.forEach(function(contato) {
+          contato.style.backgroundColor = '';
+        });
+
+        // Define a cor de fundo vermelha para o contato clicado
+        var element = document.getElementById(element);
+        if (element !== null) {
+            element.querySelector('.conteudo-contato').style.backgroundColor = '#dddddd';
+        }
+      }
 
       function scrollToBottom(conversationId) {
             var conversationDiv = document.getElementById("conversation-" + conversationId);
@@ -230,7 +294,7 @@
             },
             success: function(response) {
               if (response.status == 'success') {
-                console.log('Chatbot toggled successfully');
+                console.log('XXXXXXXXXXXXXXXXXXXX');
                 localStorage.setItem('activeConversaId', activeConversaId);
                 location.reload();
               }
@@ -263,6 +327,7 @@
               $("#conversation-" + activeConversaId).show();
               $(".defaultText").hide();
               $(".side-conversation").css("display", "flex");
+              toggleDivBackgroundAtRefresh('contact-' + activeConversaId);
               scrollToBottom(activeConversaId);
           } else {
               $(".conversation").hide();
