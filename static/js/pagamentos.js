@@ -36,7 +36,7 @@
   }
   
   // Obter o valor desejado (1 ou 2) de alguma forma (por exemplo, uma variável do Django)
-  var valorDesejado = 2; // Altere o valor aqui conforme necessário
+  var valorDesejado = 1; // Altere o valor aqui conforme necessário
   
   // Chamada da função para alternar a exibição das divs com base no valor fornecido
   toggleDiv(valorDesejado);

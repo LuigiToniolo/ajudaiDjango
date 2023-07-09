@@ -31,11 +31,11 @@
                             <img class="doodle-plans" src="{% static 'image/chatbot-config.svg' %}" alt="doodle contato ajudai">
                         </div>
                         <div class="divider"></div>
-
+                        
                         <h3>Essa área é permitida apenas para usuários master! <i class="fa-solid fa-lock"></i></h3>
                         
                         <div class="msg-alert">
-                            <form method="post">
+                            <form method="post" >
                                 {% csrf_token %}
                                 {{ form.as_p }}
                                 <div class="botao-acao-chatbots">

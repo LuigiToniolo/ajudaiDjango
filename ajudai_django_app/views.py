@@ -273,8 +273,7 @@ def check_for_new_messages_to_refresh(request):
 
     else:
         return JsonResponse({"error": "Invalid request method"}, status=400)
-
-
+    
 @csrf_exempt
 def update_last_message_shown(request, conversa_id):
     if request.method == 'POST':
@@ -439,10 +438,11 @@ def resumo_pedido(request, pedido_id):
     
     pedido = get_object_or_404(Pedido, id=pedido_id)
     conversa = pedido.conversa
-    numero_cliente_pedido = conversa.company_client_number
 
-    if request.user != pedido.user:
-        return redirect('login')
+    if pedido.criado_manualmente == False:
+        numero_cliente_pedido = conversa.company_client_number
+    else:
+        numero_cliente_pedido = '0'
 
     context = {
         "tab_title" : 'Resumo do Pedido',
