@@ -594,6 +594,17 @@ class Pedido(models.Model):
         #TODO
         return metodo_pagamento
     
+    def extrair_endereco_cliente_do_resumo(self):
+        endereco_cliente=''
+        #TODO
+        return endereco_cliente
+    
+    def extrair_nome_cliente_do_resumo(self):
+        nome_cliente=''
+        #TODO
+        return nome_cliente
+
+    
     def __str__(self):
         if self.criado_manualmente == True:
             return self.nome_pedido_manual

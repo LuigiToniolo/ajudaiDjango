@@ -5,7 +5,7 @@ from ajudai_django_app.ai_chatbot.ai_awnser import generate_gpt_response, pedido
 from ajudai_django_app.ai_chatbot.ai_tools import instructions_over_limit_error_messages, instructions_under_the_limits
 from ajudai_django_app.fechamento_de_pedido.procedimento_de_fechamento import informar_loja_fechamento_pedido
 from ajudai_django_app.forms import CustomUserCreationForm, LoginForm
-from ajudai_django_app.models import Adesao_Purchase, ChatBot, Conversa, CustomUser, Pedido, Premium_User_Payment_Method_Registration, Product, register_adesao_purchase_after_webhook_confirm, register_payment_method_success_after_webhook_confirm, update_conversa_objects
+from ajudai_django_app.models import Adesao_Purchase, ChatBot, Conversa, CustomUser, DadosClienteCadatrado, Pedido, Premium_User_Payment_Method_Registration, Product, register_adesao_purchase_after_webhook_confirm, register_payment_method_success_after_webhook_confirm, update_conversa_objects
 from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
 from ajudai_django_app.payments_process.sign_in import create_stripe_customer, return_adesao_checkout_session, return_checkout_session_id, return_checkout_session_url, return_setup_future_payments_checkout_session
 from ajudai_django_app.payments_process.webhooks import HTTP_PAYMENT_API_SIGNATURE, LABEL_TO_CHECKOUT_SESSION_ID, get_session_data, get_usage_payment_webhook_customer, get_webhook_event, success_payment_checkout_and_section_recovery, success_payment_usage_charge
@@ -908,7 +908,23 @@ def process_message(data):
                                         conversa=conversation,
                                         resumo_do_pedido = resumo,
                                     )
-                                    #TODO registrar o cliente do pedido com update or create, colocando o pedido como cliente.ultimo_pedido
+                                    #se os dados do cliente do pedido ja existem, atualiza-os
+                                    try:
+                                        dados_cliente = DadosClienteCadatrado.objects.get(
+                                            ultima_conversa__company_client_number=conversation.company_client_number)
+                                        # If the object is found, update the fields
+                                        dados_cliente.ultima_conversa = conversation
+                                        dados_cliente.nome = pedido.extrair_nome_cliente_do_resumo()
+                                        dados_cliente.endereco = pedido.extrair_endereco_cliente_do_resumo()
+                                        dados_cliente.save()
+                                    #se os dados do cliente ainda nao existem, cria-se novo objeto
+                                    except DadosClienteCadatrado.DoesNotExist:
+                                        # If the object is not found, create a new one
+                                        dados_cliente = DadosClienteCadatrado.objects.create(
+                                            ultima_conversa=conversation,
+                                            nome=pedido.extrair_nome_cliente_do_resumo(),
+                                            endereco=pedido.extrair_endereco_cliente_do_resumo(),
+                                        )
                                     informar_loja_fechamento_pedido(resumo, company_number)
                                     
                                 #chama função que responde o cliente da loja via integência artificial
