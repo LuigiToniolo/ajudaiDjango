@@ -908,6 +908,7 @@ def process_message(data):
                                         conversa=conversation,
                                         resumo_do_pedido = resumo,
                                     )
+                                    #TODO registrar o cliente do pedido com update or create, colocando o pedido como cliente.ultimo_pedido
                                     informar_loja_fechamento_pedido(resumo, company_number)
                                     
                                 #chama função que responde o cliente da loja via integência artificial
