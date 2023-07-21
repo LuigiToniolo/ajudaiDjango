@@ -469,8 +469,6 @@ class Conversa(models.Model):
 
         self.save()
 
-    
-
     @staticmethod
     def conversations_to_payment_due(user):
         user_chatbots = ChatBot.objects.filter(user=user)
@@ -530,7 +528,22 @@ class Conversa(models.Model):
     def __str__(self):
         conversa_id = self.id
         return f"Conversa n° {conversa_id} - com o número: {self.company_client_number} - status: {self.status_da_conversa}"
+
+class DadosClienteCadatrado(models.Model):
+
+    ultima_conversa = models.ForeignKey(Conversa, on_delete=models.SET_NULL, null=True)
+    nome = models.CharField(
+        max_length=60,
+        default='',
+    )
+    endereco = models.CharField(
+        max_length=60,
+        default='',
+    )
     
+    def __str__(self):
+        return self.nome
+
 class Pedido(models.Model):
     STATUS_CHOICES = (
         (STATUS_PEDIDO_REALIZADO , 'Pendido realizado'),
@@ -570,6 +583,16 @@ class Pedido(models.Model):
         if self.status_do_pedido == STATUS_PEDIDO_ENTREGUE:
             mensagem = 'Atenção, seu pedido foi entregue! Aproveite!'
         return mensagem
+    
+    def extrair_valor_total_pedido_do_resumo(self):
+        total_pedido = 0.00
+        #TODO pega o resumo do pedido (string) e calcula o valor total retornando um numero
+        return total_pedido
+    
+    def extrair_metodo_pagamento_do_resumo(self):
+        metodo_pagamento=''
+        #TODO
+        return metodo_pagamento
     
     def __str__(self):
         if self.criado_manualmente == True:
