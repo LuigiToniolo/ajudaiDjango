@@ -540,7 +540,10 @@ class DadosClienteCadatrado(models.Model):
         max_length=60,
         default='',
     )
-    
+    metodo_pagamento = models.CharField(
+        max_length=60,
+        default='',
+    )
     def __str__(self):
         return self.nome
 
@@ -603,6 +606,11 @@ class Pedido(models.Model):
         nome_cliente=''
         #TODO
         return nome_cliente
+    
+    def extrair_itens_do_pedido_do_resumo(self):
+        itens_do_pedido=''
+        #TODO
+        return itens_do_pedido
 
     
     def __str__(self):

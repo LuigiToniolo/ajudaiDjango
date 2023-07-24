@@ -25,6 +25,7 @@ from django_q.tasks import async_task
 import stripe
 from django.utils import timezone
 from django.db.models import Case, When, Value, IntegerField
+from django.core.exceptions import ObjectDoesNotExist
 
 sao_paulo_tz = pytz.timezone('America/Sao_Paulo')
 
@@ -438,21 +439,28 @@ def resumo_pedido(request, pedido_id):
     
     pedido = get_object_or_404(Pedido, id=pedido_id)
     conversa = pedido.conversa
+    try:
+        dados_cliente = DadosClienteCadatrado.objects.get(ultima_conversa=conversa)
+    except ObjectDoesNotExist:
+        dados_cliente = None
 
     if pedido.criado_manualmente == False:
         numero_cliente_pedido = conversa.company_client_number
+        itens_do_pedido = pedido.extrair_itens_do_pedido_do_resumo()
+        valor_total_pedido = pedido.extrair_valor_total_pedido_do_resumo()
     else:
         numero_cliente_pedido = '0'
+        itens_do_pedido  = ''
+        valor_total_pedido = 0
 
     context = {
         "tab_title" : 'Resumo do Pedido',
         'pedido': pedido,
+        'dados_cliente' : dados_cliente,
+        'itens_do_pedido' : itens_do_pedido,
+        'valor_total_pedido' : valor_total_pedido,
         "meta_desciption" : '',
         'user' : user,
-        'page_title' : 'Resumo do Pedido',
-        'label_status_pedido' : 'Status do Pedido',
-        'label_resumo_pedido' : 'Resumo do Pedido',
-        'label_numero_cliente_pedido' : 'Número Whatsapp do Cliente',
         'numero_cliente_pedido' : numero_cliente_pedido,
         'userIsPremium' : user.userIsPremium(),
     }
@@ -916,6 +924,7 @@ def process_message(data):
                                         dados_cliente.ultima_conversa = conversation
                                         dados_cliente.nome = pedido.extrair_nome_cliente_do_resumo()
                                         dados_cliente.endereco = pedido.extrair_endereco_cliente_do_resumo()
+                                        dados_cliente.metodo_pagamento = pedido.extrair_metodo_pagamento_do_resumo()
                                         dados_cliente.save()
                                     #se os dados do cliente ainda nao existem, cria-se novo objeto
                                     except DadosClienteCadatrado.DoesNotExist:
@@ -924,6 +933,7 @@ def process_message(data):
                                             ultima_conversa=conversation,
                                             nome=pedido.extrair_nome_cliente_do_resumo(),
                                             endereco=pedido.extrair_endereco_cliente_do_resumo(),
+                                            metodo_pagamento = pedido.extrair_metodo_pagamento_do_resumo(),
                                         )
                                     informar_loja_fechamento_pedido(resumo, company_number)
                                     
