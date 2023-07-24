@@ -613,9 +613,14 @@ class Pedido(models.Model):
         return SEM_METODO_DE_PAGAMENTO_CLIENTE_LOCALIZADO_NA_CONVERSA
     
     def extrair_endereco_cliente_do_resumo(self):
-        endereco_cliente=''
-        #TODO
-        return endereco_cliente
+        pattern = r"(?i)\*Endereço de entrega:\* *(.+?)(?=\*|$)"
+        match = re.search(pattern, self.resumo_do_pedido)
+
+        if match:
+            endereco_cliente = match.group(1).strip()
+            return endereco_cliente
+
+        return "Não foi possível extrair o endereço do cliente da conversa"
     
     def extrair_nome_cliente_do_resumo(self):
         nome_cliente=''
