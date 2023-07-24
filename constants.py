@@ -120,3 +120,4 @@ STATUS_PEDIDO_CANCELADO = 'cancelado'
 
 #---------------------------------------------------------------------
 #TEXTS
+SEM_METODO_DE_PAGAMENTO_CLIENTE_LOCALIZADO_NA_CONVERSA='Não foi possível extrair o método de pagamento da conversa'
