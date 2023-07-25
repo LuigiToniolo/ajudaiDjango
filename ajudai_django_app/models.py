@@ -628,6 +628,13 @@ class Pedido(models.Model):
             return ai_gpt_extrair_dado_do_resumo('itens do pedido, incluindo o item, quantidade (1x, 2x, 3x...) e preço do item' ,self.resumo_do_pedido)
         except:
             return 'Não foi possível extrair o nome do cliente da conversa'
+        
+    def extrair_taxa_de_entrega_do_pedido_do_resumo(self):
+        try:
+            return ai_gpt_extrair_dado_do_resumo('valor da taxa de entrega (colocar R$ na frente do valor)' ,self.resumo_do_pedido)
+        except:
+            return 'Não foi possível extrair a taxa de entrega da conversa'
+
 
     
     def __str__(self):

@@ -448,10 +448,12 @@ def resumo_pedido(request, pedido_id):
         numero_cliente_pedido = conversa.company_client_number
         itens_do_pedido = pedido.extrair_itens_do_pedido_do_resumo()
         valor_total_pedido = pedido.extrair_valor_total_pedido_do_resumo()
+        taxa_de_entrega = pedido.extrair_taxa_de_entrega_do_pedido_do_resumo()
     else:
         numero_cliente_pedido = '0'
         itens_do_pedido  = ''
         valor_total_pedido = 0
+        taxa_de_entrega = ''
 
     context = {
         "tab_title" : 'Resumo do Pedido',
@@ -462,6 +464,7 @@ def resumo_pedido(request, pedido_id):
         "meta_desciption" : '',
         'user' : user,
         'numero_cliente_pedido' : numero_cliente_pedido,
+        'taxa_de_entrega': taxa_de_entrega,
         'userIsPremium' : user.userIsPremium(),
     }
 
