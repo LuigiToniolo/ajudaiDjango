@@ -545,6 +545,10 @@ class DadosClienteCadatrado(models.Model):
         max_length=60,
         default='',
     )
+    metodo_pagamento = models.CharField(
+        max_length=60,
+        default='',
+    )
     
     def __str__(self):
         return self.nome
