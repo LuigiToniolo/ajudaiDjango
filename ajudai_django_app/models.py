@@ -606,13 +606,16 @@ class Pedido(models.Model):
         return total_pedido
     
     def extrair_metodo_pagamento_do_resumo(self):
-        #TODO utilizar metodo de extracao com o gpt, conforme metodo do nome do cliente abaixa
-        pass
+        try:
+            return ai_gpt_extrair_dado_do_resumo('método de pagamento' ,self.resumo_do_pedido)
+        except:
+            return "Não foi possível extrair o método de pagamento da conversa"
     
     def extrair_endereco_cliente_do_resumo(self):
-        #TODO utilizar metodo de extracao com o gpt, conforme metodo do nome do cliente abaixa
-        pass
-        return "Não foi possível extrair o endereço do cliente da conversa"
+        try:
+            return ai_gpt_extrair_dado_do_resumo('endereço de entrega' ,self.resumo_do_pedido)
+        except:
+            return "Não foi possível extrair o endereço de entrega da conversa"
     
     def extrair_nome_cliente_do_resumo(self):
         try:
@@ -621,9 +624,10 @@ class Pedido(models.Model):
             return 'Não foi possível extrair o nome do cliente da conversa'
     
     def extrair_itens_do_pedido_do_resumo(self):
-        itens_do_pedido=''
-        #TODO
-        return itens_do_pedido
+        try:
+            return ai_gpt_extrair_dado_do_resumo('itens do pedido, incluindo o item, quantidade (1x, 2x, 3x...) e preço do item' ,self.resumo_do_pedido)
+        except:
+            return 'Não foi possível extrair o nome do cliente da conversa'
 
     
     def __str__(self):
