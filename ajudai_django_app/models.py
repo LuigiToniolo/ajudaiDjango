@@ -7,7 +7,7 @@ from django.core.validators import RegexValidator
 from django.utils import timezone
 from datetime import timedelta, datetime
 from django.db.models import Q
-from ajudai_django_app.ai_chatbot.ai_extration import extrair_nome_cliente_com_gpt
+from ajudai_django_app.ai_chatbot.ai_extration import ai_gpt_extrair_dado_do_resumo
 from ajudai_django_app.payments_process.charge_usage import charge_usages
 from ajudai_django_app.phone_integration.messages import send_response
 import pytz
@@ -616,7 +616,7 @@ class Pedido(models.Model):
     
     def extrair_nome_cliente_do_resumo(self):
         try:
-            return extrair_nome_cliente_com_gpt(self.resumo_do_pedido)
+            return ai_gpt_extrair_dado_do_resumo('nome do cliente' ,self.resumo_do_pedido)
         except:
             return 'Não foi possível extrair o nome do cliente da conversa'
     
