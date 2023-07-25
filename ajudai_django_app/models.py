@@ -637,7 +637,7 @@ class Pedido(models.Model):
         
     def extrair_taxa_de_entrega_do_pedido_do_resumo(self):
         try:
-            return ai_gpt_extrair_dado_do_resumo('valor da taxa de entrega (colocar R$ na frente do valor)' ,self.resumo_do_pedido)
+            return ai_gpt_extrair_dado_do_resumo('valor da taxa de entrega' ,self.resumo_do_pedido)
         except:
             return 'Não foi possível extrair a taxa de entrega da conversa'
 

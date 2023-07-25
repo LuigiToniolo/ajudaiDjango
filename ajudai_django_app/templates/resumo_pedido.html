@@ -64,7 +64,7 @@
                             {% endif %}
                             <p><strong>Itens do pedido: </strong>{{ itens_do_pedido }}</p>
                             <p><strong>Taxa de entrega: </strong>{{ taxa_de_entrega }}</p>
-                            <p><strong>Total do pedido: </strong>R$ {{ valor_total_pedido }}</p>
+                            <p><strong>Total do pedido: </strong>{{ valor_total_pedido }}</p>
                             {% if dados_cliente %}
                               <p><strong>Endereço de entrega: </strong>{{ dados_cliente.endereco }}</p>
                               <p><strong>Método de pagamento: </strong>{{ dados_cliente.metodo_pagamento }}</p>
