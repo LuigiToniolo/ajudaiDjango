@@ -594,6 +594,7 @@ class Pedido(models.Model):
         return mensagem
     
     def extrair_valor_total_pedido_do_resumo(self):
+        """
         pattern = r'R\$ *[\d\.]*\,\d\d'
         matches = re.findall(pattern, self.resumo_do_pedido)  # This finds all instances of the pattern
 
@@ -604,7 +605,12 @@ class Pedido(models.Model):
             total_pedido += value
 
         return total_pedido
-    
+        """
+        try:
+            return ai_gpt_extrair_dado_do_resumo('valor da total do pedido (colocar R$ na frente do valor)' ,self.resumo_do_pedido)
+        except:
+            return 'Não foi possível extrair o total do pedido da conversa'
+        
     def extrair_metodo_pagamento_do_resumo(self):
         try:
             return ai_gpt_extrair_dado_do_resumo('método de pagamento' ,self.resumo_do_pedido)
