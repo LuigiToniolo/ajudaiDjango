@@ -7,6 +7,7 @@ from django.core.validators import RegexValidator
 from django.utils import timezone
 from datetime import timedelta, datetime
 from django.db.models import Q
+from ajudai_django_app.ai_chatbot.ai_extration import extrair_nome_cliente_com_gpt
 from ajudai_django_app.payments_process.charge_usage import charge_usages
 from ajudai_django_app.phone_integration.messages import send_response
 import pytz
@@ -601,31 +602,19 @@ class Pedido(models.Model):
         return total_pedido
     
     def extrair_metodo_pagamento_do_resumo(self):
-        normalized_pedido = unidecode.unidecode(self.resumo_do_pedido.lower())
-
-        pattern = r"(?i)\*metodo de pagamento:\*\s*(pix|cartao de credito|cartao de debito)\b"
-        match = re.search(pattern, normalized_pedido)
-
-        if match:
-            metodo_pagamento = match.group(1)
-            return metodo_pagamento
-
-        return SEM_METODO_DE_PAGAMENTO_CLIENTE_LOCALIZADO_NA_CONVERSA
+        #TODO utilizar metodo de extracao com o gpt, conforme metodo do nome do cliente abaixa
+        pass
     
     def extrair_endereco_cliente_do_resumo(self):
-        pattern = r"(?i)\*Endereço de entrega:\* *(.+?)(?=\*|$)"
-        match = re.search(pattern, self.resumo_do_pedido)
-
-        if match:
-            endereco_cliente = match.group(1).strip()
-            return endereco_cliente
-
+        #TODO utilizar metodo de extracao com o gpt, conforme metodo do nome do cliente abaixa
+        pass
         return "Não foi possível extrair o endereço do cliente da conversa"
     
     def extrair_nome_cliente_do_resumo(self):
-        nome_cliente=''
-        #TODO
-        return nome_cliente
+        try:
+            return extrair_nome_cliente_com_gpt(self.resumo_do_pedido)
+        except:
+            return 'Não foi possível extrair o nome do cliente da conversa'
     
     def extrair_itens_do_pedido_do_resumo(self):
         itens_do_pedido=''
