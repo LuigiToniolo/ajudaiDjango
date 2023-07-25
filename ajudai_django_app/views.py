@@ -442,7 +442,12 @@ def resumo_pedido(request, pedido_id):
     try:
         dados_cliente = DadosClienteCadatrado.objects.get(ultima_conversa=conversa)
     except ObjectDoesNotExist:
-        dados_cliente = None
+        dados_cliente = DadosClienteCadatrado.objects.create(
+            ultima_conversa=conversa,
+            nome=pedido.extrair_nome_cliente_do_resumo(),
+            endereco=pedido.extrair_endereco_cliente_do_resumo(),
+            metodo_pagamento = pedido.extrair_metodo_pagamento_do_resumo(),
+        )
 
     if pedido.criado_manualmente == False:
         numero_cliente_pedido = conversa.company_client_number
@@ -930,8 +935,7 @@ def process_message(data):
                                         dados_cliente.metodo_pagamento = pedido.extrair_metodo_pagamento_do_resumo()
                                         dados_cliente.save()
                                     #se os dados do cliente ainda nao existem, cria-se novo objeto
-                                    except DadosClienteCadatrado.DoesNotExist:
-                                        # If the object is not found, create a new one
+                                    except ObjectDoesNotExist:
                                         dados_cliente = DadosClienteCadatrado.objects.create(
                                             ultima_conversa=conversation,
                                             nome=pedido.extrair_nome_cliente_do_resumo(),
