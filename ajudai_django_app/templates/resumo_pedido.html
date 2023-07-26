@@ -56,8 +56,15 @@
                           <h1>{{ page_title }} nº {{pedido.id }}</h1>
                           <p><strong>{{ label_status_pedido }}: </strong> {{ pedido.status_do_pedido }}</p>
                           <p><strong>{{ label_numero_cliente_pedido }}: </strong>{{ numero_cliente_pedido }}</p>
-                          <p><strong>{{ label_resumo_pedido }}: </strong></p>
-                          <p style="margin-bottom: 3vh;">{{ pedido.resumo_do_pedido }}</p>
+
+                          <p><strong>Nome do cliente:</strong> Rubinho</p>
+                          <p><strong>Itens do pedido</strong> 1x X-Egg - R$ 23,00</p>
+                          <p><strong>Total do pedido:</strong> R$ 23,00</p>
+                          <p><strong>Endeteço de entrega:</strong> Rua Campos Sales, 2777, Vila Elizabeth - CEP: 13560-350</p>
+                          <p><strong>Método de pagamento</strong>  Cartão de Débito</p>
+
+                          <!-- <p><strong>{{ label_resumo_pedido }}: </strong></p> -->
+                          <!-- <p style="margin-bottom: 3vh;">{{ pedido.resumo_do_pedido }}</p> -->
                           <a class="botao-voltar" href="{% url 'pedidos-realizados' %}"><i style="margin-right: 5px;" class="fa-solid fa-arrow-left"></i>Voltar</a><br>
                         </div>
                       </div>

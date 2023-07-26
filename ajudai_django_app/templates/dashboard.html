@@ -175,38 +175,38 @@
                                         <tr>
                                             <th>Nome cliente</th>
                                             <th>Endereço</th>
-                                            <th>Cidade</th>
-                                            <th>Estado</th>
+                                            <th>Cidade/Estado</th>
+                                            <!-- <th>Estado</th> -->
                                             <th>Número do celular</th>
-                                            <th>Valor do pedido</th>
+                                            <th>E-mail</th>
                                         </tr>
                                     </thead>
                                     <tfoot>
                                         <tr>
                                             <th>Nome cliente</th>
                                             <th>Endereço</th>
-                                            <th>Cidade</th>
-                                            <th>Estado</th>
+                                            <th>Cidade/Estado</th>
+                                            <!-- <th>Estado</th> -->
                                             <th>Número do celular</th>
-                                            <th>Valor do pedido</th>
+                                            <th>E-mail</th>
                                         </tr>
                                     </tfoot>
                                     <tbody>
                                         <tr>
                                             <td>Fulano</td>
                                             <td>Rua campos Salles, 2174</td>
-                                            <td>São Carlos</td>
-                                            <td>SP</td>
+                                            <td>São Carlos-SP</td>
+                                            <!-- <td>SP</td> -->
                                             <td>5518997761386</td>
-                                            <td>R$35</td>
+                                            <td>fulano.teste@gmail.com</td>
                                         </tr>
                                         <tr>
                                             <td>Ciclano</td>
                                             <td>Av. Dr. carlos botelho 2220</td>
-                                            <td>São Carlos</td>
-                                            <td>SP</td>
+                                            <td>São Carlos-SP</td>
+                                            <!-- <td>SP</td> -->
                                             <td>5518997761386</td>
-                                            <td>R$42</td>
+                                            <td>ciclano@gmail.com</td>
                                         </tr>
                                         
                                     </tbody>
@@ -269,6 +269,17 @@
                                                     data-min-label-id="sizeLabelMin"
                                                     data-max-label-id="sizeLabelMax"
                                                 />
+                                                <button class="botao-limitar">Limitar conversas</button>
+
+                                                <div id="modal" class="modal">
+                                                    <div class="modal-content">
+                                                        <div class="conteudo-check">
+                                                            <p>Suas conversas foram limitadas com sucesso</p>
+                                                            <img class="checkIcon" src="{% static 'image/checkIcon.svg' %}" alt="loading" loop="false">
+                                                        </div>
+                                                    </div>
+                                                </div>
+
                                             </div>
                                         </div>
                                     </div>
@@ -473,6 +484,20 @@
             });
           </script>
 
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                var botaoLimitar = document.querySelector('.botao-limitar');
+                var modal = document.getElementById('modal');
+            
+                botaoLimitar.addEventListener('click', function() {
+                  modal.style.display = 'flex';
+            
+                  setTimeout(function() {
+                    modal.style.display = 'none';
+                  }, 3000);
+                });
+              });
+        </script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
         <script src="{% static 'js/scripts.js' %}"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js" crossorigin="anonymous"></script>
