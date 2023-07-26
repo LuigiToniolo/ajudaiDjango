@@ -372,9 +372,11 @@ class Adesao_Purchase(models.Model):
         self.save()
 
 class ChatBot(models.Model):
+    id = models.AutoField(primary_key=True)
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, default=1)
     nome_do_chatbot = models.CharField(max_length=40, default='sem nome')
     aditional_intructions = models.CharField(max_length=MAX_CHAR_INSTRUCTIONS_CHATBOT_FORM, default='')
+    cardapio = models.CharField(max_length=MAX_CHAR_INSTRUCTIONS_CHATBOT_FORM, default='')
     whatsapp_number=models.CharField(
         validators=[phone_regex],
         default='99999999999',

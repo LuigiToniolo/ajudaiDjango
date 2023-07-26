@@ -119,6 +119,18 @@ class ChatBotForm(forms.ModelForm):
                 }
             )
         )
+    cardapio = forms.CharField(
+        max_length=MAX_CHAR_INSTRUCTIONS_CHATBOT_FORM, 
+        label='Cardápio de restaurante (com nomes dos pratos, ingredientes e preços)',
+        widget=forms.Textarea(
+            attrs={
+                # 'style': 'width: {}px;'.format(ADITIONAL_INTRUCTIONS_FIELD_SIZE_IN_PX),
+                'rows': ADITIONAL_INTRUCTIONS_FIELD_ROWS ,
+                'id' : ADITIONAL_INTRUCTIONS_FIELD_ID,
+                'data-max-height': '350',
+                }
+            )
+        )
     whatsapp_number = forms.CharField(
         label='Número WhatsApp Business',
         widget=forms.TextInput(attrs={
