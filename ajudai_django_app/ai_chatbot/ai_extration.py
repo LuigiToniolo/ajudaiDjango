@@ -27,7 +27,7 @@ def ai_gpt_extrair_informacao_do_cardapio(dado_a_extrair, cardapio):
                         {"role": "system", "content": intructions},
                         {
                             "role": "user", 
-                            "content": f'Do seguinte cardápio: {cardapio}, extraia o seguinte dado: {dado_a_extrair}. Caso não encontre esse dado, retorne o seguinte texto texto como resposta: "Não foi possível encontrar a informação que você busca no cardápio. Por favor, consulte o link com o cardápio na íntegra (se ainda nao te passei o link, peca novamente que eu pe forneço)'
+                            "content": f'Do seguinte cardápio: {cardapio}, extraia o seguinte dado: {dado_a_extrair}. Caso não encontre esse dado, retorne o seguinte texto como resposta: "Não foi possível encontrar a informação {dado_a_extrair} no cardápio.'
                         },
                     ]
                 )
