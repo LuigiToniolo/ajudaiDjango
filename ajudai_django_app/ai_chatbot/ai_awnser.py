@@ -22,7 +22,7 @@ def generate_gpt_response(prompt, context, role, aditional_instructions, model_n
     functions = [
         {
             "name": "obeter_info_produto_cardapio",
-            "description": "obtém uma informação específica contida no cardápio, como nome do produto, ingredientes e preço",
+            "description": "obtém uma informação específica, ou um conjunto de informações específicas contidas no cardápio, como nome do produto, tamanho, ingredientes e preço",
             "parameters": {
                 "type": "object",
                 "properties": {
