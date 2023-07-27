@@ -127,38 +127,16 @@
                                         </tr>
                                     </tfoot>
                                     <tbody>
+                                        {% for pedido in pedidos %}
                                         <tr>
-                                            <td>Luigi</td>
-                                            <td>X-egg, coca-cola 1l</td>
-                                            <td>Retirada balcão</td>
-                                            <td>14/06/2023 às 11:51</td>
-                                            <td>R$30,00</td>
-                                            <td>Entregue</td>
+                                            <td>{{ pedido.nome_do_cliente }}</td>
+                                            <td>{{ pedido.itens_pedido }}</td>
+                                            <td>{{ pedido.endereco_entrega }}</td>
+                                            <td>{{ pedido.date }} às {{ pedido.time }}</td>
+                                            <td>{{ pedido.valor_total }}</td>
+                                            <td>{{ pedido.get_status_do_pedido_display }}</td>
                                         </tr>
-                                        <tr>
-                                            <td>Lucas</td>
-                                            <td>X-bacon, coca-cola 1l</td>
-                                            <td>Rua campos salles, 2174</td>
-                                            <td>14/06/2023 às 12:10</td>
-                                            <td>R$31,00</td>
-                                            <td>Entregue</td>
-                                        </tr>
-                                        <tr>
-                                            <td>Fulano</td>
-                                            <td>X-salada, coca-cola 2l</td>
-                                            <td>Av. Carlos botelho, 2220 apartamento 111</td>
-                                            <td>15/06/2023 às 11:32</td>
-                                            <td>R$33,00</td>
-                                            <td>Em processo</td>
-                                        </tr>
-                                        <tr>
-                                            <td>Ciclano</td>
-                                            <td>X-calabresa, coca-cola 1l</td>
-                                            <td>Retirada balcão</td>
-                                            <td>15/06/2023 às 11:51</td>
-                                            <td>R$29,00</td>
-                                            <td>Aguardando entrega</td>
-                                        </tr>
+                                        {% endfor %}
                                         
                                     </tbody>
                                 </table>

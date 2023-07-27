@@ -54,7 +54,7 @@
                       <div class="container-center">
                         <div class="container-pedido">
                           <h1>Resumo do Pedido nº {{pedido.id }}</h1>
-                          <p><strong>Status do Pedido: </strong> {{ pedido.status_do_pedido }}</p>
+                          <p><strong>Status do Pedido: </strong> {{ pedido.get_status_do_pedido_display }}</p>
                           {% if not pedido.criado_manualmente %}
                             <p><strong>Número Whatsapp do Cliente: </strong>{{ numero_cliente_pedido }}</p>
                             {% if dados_cliente %}

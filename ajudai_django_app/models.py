@@ -7,7 +7,7 @@ from django.core.validators import RegexValidator
 from django.utils import timezone
 from datetime import timedelta, datetime
 from django.db.models import Q
-from ajudai_django_app.ai_chatbot.ai_extration import ai_gpt_extrair_dado_do_resumo
+from ajudai_django_app.ai_chatbot.ai_extration import ai_gpt_extrair_dado_do_resumo, ai_gpt_extrair_endereco_do_resumo
 from ajudai_django_app.payments_process.charge_usage import charge_usages
 from ajudai_django_app.phone_integration.messages import send_response
 import pytz
@@ -620,6 +620,23 @@ class Pedido(models.Model):
         )
     date = models.DateField(default=current_date_sao_paulo)
     time = models.TimeField(default=current_time_sao_paulo)
+    nome_do_cliente = models.CharField(
+        max_length=60,
+        default='',
+        )
+    itens_pedido = models.CharField(
+        max_length=12000,
+        default=''
+        )
+    endereco_entrega=models.CharField(
+        max_length=200,
+        default='',
+        )
+    valor_total = models.CharField(
+        max_length=60,
+        default='',
+        )
+
 
     def mensagem_novo_status(self):
         mensagem = ' '
@@ -659,7 +676,7 @@ class Pedido(models.Model):
     
     def extrair_endereco_cliente_do_resumo(self):
         try:
-            return ai_gpt_extrair_dado_do_resumo('endereço de entrega' ,self.resumo_do_pedido)
+            return ai_gpt_extrair_endereco_do_resumo(self.resumo_do_pedido)
         except:
             return "Não foi possível extrair o endereço de entrega da conversa"
     

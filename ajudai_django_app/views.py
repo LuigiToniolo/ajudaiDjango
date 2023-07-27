@@ -113,7 +113,7 @@ def dashboard_view(request):
     chatbots = ChatBot.objects.filter(user=user)
     conversas = Conversa.objects.filter(chatbot__in=chatbots)
     conversas_do_periodo = Conversa.objects.filter(chatbot__in=chatbots, creation_date__gte=last_payment_date)
-    pedidos = Pedido.objects.filter(user=user)
+    pedidos = Pedido.objects.filter(user=user).order_by('-date', '-time')
     pedidos_do_periodo = Pedido.objects.filter(user=user, date__gte=last_payment_date)
     dados_clientes = DadosClienteCadatrado.objects.filter(ultima_conversa__in=conversas)
 
@@ -966,22 +966,30 @@ def process_message(data):
                                         conversa=conversation,
                                         resumo_do_pedido = resumo,
                                     )
+                                    nome_cliente = pedido.extrair_nome_cliente_do_resumo()
+                                    endereco_cliente = pedido.extrair_endereco_cliente_do_resumo()
+                                    valor_total = pedido.extrair_valor_total_pedido_do_resumo()
+                                    pedido.nome_do_cliente = nome_cliente
+                                    pedido.endereco_entrega=endereco_cliente
+                                    pedido.valor_total=valor_total
+                                    pedido.save()
+                                    
                                     #se os dados do cliente do pedido ja existem, atualiza-os
                                     try:
                                         dados_cliente = DadosClienteCadatrado.objects.get(
                                             ultima_conversa__company_client_number=conversation.company_client_number)
                                         # If the object is found, update the fields
                                         dados_cliente.ultima_conversa = conversation
-                                        dados_cliente.nome = pedido.extrair_nome_cliente_do_resumo()
-                                        dados_cliente.endereco = pedido.extrair_endereco_cliente_do_resumo()
+                                        dados_cliente.nome = nome_cliente
+                                        dados_cliente.endereco = endereco_cliente
                                         dados_cliente.metodo_pagamento = pedido.extrair_metodo_pagamento_do_resumo()
                                         dados_cliente.save()
                                     #se os dados do cliente ainda nao existem, cria-se novo objeto
                                     except ObjectDoesNotExist:
                                         dados_cliente = DadosClienteCadatrado.objects.create(
                                             ultima_conversa=conversation,
-                                            nome=pedido.extrair_nome_cliente_do_resumo(),
-                                            endereco=pedido.extrair_endereco_cliente_do_resumo(),
+                                            nome=nome_cliente,
+                                            endereco=endereco_cliente,
                                             metodo_pagamento = pedido.extrair_metodo_pagamento_do_resumo(),
                                         )
                                     informar_loja_fechamento_pedido(resumo, company_number)

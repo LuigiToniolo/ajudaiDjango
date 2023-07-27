@@ -19,6 +19,21 @@ def ai_gpt_extrair_dado_do_resumo(dado_a_extrair, resumo_do_pedido):
 
     return completions['choices'][0]['message']['content']
 
+def ai_gpt_extrair_endereco_do_resumo(resumo_do_pedido):
+    intructions = 'Você é um assistente prestativo que responde de forma objetiva e apenas o que te foi solicitado'
+    completions = openai.ChatCompletion.create(
+                    model=GPT3_MODEL_NAME,
+                    messages=[
+                        {"role": "system", "content": intructions},
+                        {
+                            "role": "user", 
+                            "content": f'Do seguinte texto: {resumo_do_pedido}, caso haja a menção de retirada no balcão, retorne a resposta "retirada no balcão". Caso contrário, extraia o endereço de entrega e responda apenas com endereço de entrega, e nada mais.'
+                        },
+                    ]
+                )
+
+    return completions['choices'][0]['message']['content']
+
 def ai_gpt_extrair_informacao_do_cardapio(dado_a_extrair, cardapio):
     intructions = 'Você é um assistente prestativo que responde de forma objetiva e apenas o que te foi solicitado'
     completions = openai.ChatCompletion.create(
