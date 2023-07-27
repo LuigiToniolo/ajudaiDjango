@@ -377,6 +377,8 @@ class ChatBot(models.Model):
     nome_do_chatbot = models.CharField(max_length=40, default='sem nome')
     aditional_intructions = models.CharField(max_length=MAX_CHAR_INSTRUCTIONS_CHATBOT_FORM, default='')
     cardapio = models.CharField(max_length=MAX_CHAR_INSTRUCTIONS_CHATBOT_FORM, default='')
+    descricao_funcao_cardapio = models.CharField(max_length=1000, default='Obtém uma informação específica, ou um conjunto de informações específicas contidas no cardápio, como nome do produto, tamanho, ingredientes e preço')
+    descricao_informacao_solicitada_do_cardapio = models.CharField(max_length=1000, default='A informação a ser obtida através do cardápio, por exemplo, ingredientes da pizza de mussarela, preço do refrigerante coca cola lata, preço da pizza de alho')
     whatsapp_number=models.CharField(
         validators=[phone_regex],
         default='99999999999',

@@ -19,16 +19,17 @@ def obeter_info_produto_cardapio(informacao_solicitada, chatbot_id):
 def generate_gpt_response(prompt, context, role, aditional_instructions, model_name, model_token_limit, chatbot_id):
     instructions = instruction_builder(aditional_instructions, role)
     token_limit = model_token_limit
+    chatbot = ChatBot.objects.get(id=chatbot_id)
     functions = [
         {
             "name": "obeter_info_produto_cardapio",
-            "description": "obtém uma informação específica, ou um conjunto de informações específicas contidas no cardápio, como nome do produto, tamanho, ingredientes e preço",
+            "description": chatbot.descricao_funcao_cardapio,
             "parameters": {
                 "type": "object",
                 "properties": {
                     "informacao_solicitada": {
                         "type": "string",
-                        "description": "A informação a ser obtida através do cardápio, por exemplo, ingredientes da pizza de mussarela, preço do refrigerante coca cola",
+                        "description": chatbot.descricao_informacao_solicitada_do_cardapio,
                     },
                 },
                 "required": ["informacao_solicitada"],
