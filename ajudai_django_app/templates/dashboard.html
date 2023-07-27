@@ -153,39 +153,27 @@
                                         <tr>
                                             <th>Nome cliente</th>
                                             <th>Endereço</th>
-                                            <th>Cidade</th>
-                                            <th>Estado</th>
                                             <th>Número do celular</th>
-                                            <th>Valor do pedido</th>
+                                            <th>Meio de Pagamento</th>
                                         </tr>
                                     </thead>
                                     <tfoot>
                                         <tr>
                                             <th>Nome cliente</th>
                                             <th>Endereço</th>
-                                            <th>Cidade</th>
-                                            <th>Estado</th>
                                             <th>Número do celular</th>
-                                            <th>Valor do pedido</th>
+                                            <th>Meio de Pagamento</th>
                                         </tr>
                                     </tfoot>
                                     <tbody>
+                                        {% for dados_cliente in dados_clientes %}
                                         <tr>
-                                            <td>Fulano</td>
-                                            <td>Rua campos Salles, 2174</td>
-                                            <td>São Carlos</td>
-                                            <td>SP</td>
-                                            <td>5518997761386</td>
-                                            <td>R$35</td>
+                                            <td>{{ dados_cliente.nome }}</td>
+                                            <td>{{ dados_cliente.endereco }}</td>
+                                            <td>{{ dados_cliente.telefone }}</td>
+                                            <td>{{ dados_cliente.metodo_pagamento }}</td>
                                         </tr>
-                                        <tr>
-                                            <td>Ciclano</td>
-                                            <td>Av. Dr. carlos botelho 2220</td>
-                                            <td>São Carlos</td>
-                                            <td>SP</td>
-                                            <td>5518997761386</td>
-                                            <td>R$42</td>
-                                        </tr>
+                                        {% endfor %}
                                         
                                     </tbody>
                                 </table>

@@ -973,7 +973,7 @@ def process_message(data):
                                     pedido.endereco_entrega=endereco_cliente
                                     pedido.valor_total=valor_total
                                     pedido.save()
-                                    
+
                                     #se os dados do cliente do pedido ja existem, atualiza-os
                                     try:
                                         dados_cliente = DadosClienteCadatrado.objects.get(
@@ -991,6 +991,7 @@ def process_message(data):
                                             nome=nome_cliente,
                                             endereco=endereco_cliente,
                                             metodo_pagamento = pedido.extrair_metodo_pagamento_do_resumo(),
+                                            telefone = numero_cliente,
                                         )
                                     informar_loja_fechamento_pedido(resumo, company_number)
                                     

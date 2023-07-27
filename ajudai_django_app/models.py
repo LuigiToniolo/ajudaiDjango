@@ -585,6 +585,10 @@ class DadosClienteCadatrado(models.Model):
         max_length=60,
         default='',
     )
+    telefone = models.CharField(
+        max_length=20,
+        default='',
+        )
     metodo_pagamento = models.CharField(
         max_length=60,
         default='',
