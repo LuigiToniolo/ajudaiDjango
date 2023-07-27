@@ -38,7 +38,7 @@
                             <div class="col-xl-3 col-md-6">
                                 <p><strong>Conversas totais</strong> <i class="fa-solid fa-comments" id="icone"></i></p>
                                 <div class="card bg-primary text-white mb-4">
-                                    <div class="card-body">998</div>
+                                    <div class="card-body">{{ numero_de_conversas }}</div>
                                     <div class="card-footer d-flex align-items-center justify-content-between">
                                         <a class="small text-white stretched-link" href="#" data-modal-id="modal1">Ver detalhes</a>
                                         <div class="small text-white"><i class="fas fa-angle-right"></i></div>
@@ -48,7 +48,7 @@
                             <div class="col-xl-3 col-md-6">
                                 <p><strong>Pedidos realizados</strong><i class="fa-solid fa-file-pen" id="icone"></i></p>
                                 <div class="card bg-warning text-white mb-4">
-                                    <div class="card-body">432</div>
+                                    <div class="card-body">{{ numero_de_pedidos }}</div>
                                     <div class="card-footer d-flex align-items-center justify-content-between">
                                         <a class="small text-white stretched-link" href="#tabela-pedidos">Ver detalhes</a>
                                         <div class="small text-white"><i class="fas fa-angle-right"></i></div>
@@ -58,7 +58,7 @@
                             <div class="col-xl-3 col-md-6">
                                 <p><strong>Taxa de conversão</strong><i class="fa-solid fa-arrows-rotate" id="icone"></i></p>
                                 <div class="card bg-success text-white mb-4">
-                                    <div class="card-body">43,3%</div>
+                                    <div class="card-body">{{ taxa_conversao }}%</div>
                                     <div class="card-footer d-flex align-items-center justify-content-between">
                                         <a class="small text-white stretched-link" href="#" data-modal-id="modal2">Ver detalhes</a>
                                         <div class="small text-white"><i class="fas fa-angle-right"></i></div>
@@ -68,7 +68,7 @@
                             <div class="col-xl-3 col-md-6">
                                 <p><strong>Dias até o fechamento</strong><i class="fa-solid fa-file-invoice-dollar" id="icone"></i></p>
                                 <div class="card bg-danger text-white mb-4">
-                                    <div class="card-body">9</div>
+                                    <div class="card-body">{{ dias_para_pagamento }}</div>
                                     <div class="card-footer d-flex align-items-center justify-content-between">
                                         <a class="small text-white stretched-link" href="#" data-modal-id="modal3">Ver detalhes</a>
                                         <div class="small text-white"><i class="fas fa-angle-right"></i></div>

@@ -192,6 +192,33 @@ class CustomUser(AbstractUser):
         if today >= reset_date:
             return True
         return False
+    
+    def days_to_next_payment(self, reset_period):
+        if self.user_plan == USER_LEVEL_FREE:
+            return None
+        
+        today = timezone.now().astimezone(sao_paulo_tz).date()
+
+        if self.last_payment_date is None:
+            self.last_payment_date = today
+        
+        if reset_period == PAYMENT_PERIOD_DAILY:
+            reset_date = self.last_payment_date + timedelta(days=1)
+        elif reset_period == PAYMENT_PERIOD_MONTHLY:
+            year, month = self.last_payment_date.year, self.last_payment_date.month + 1
+            day =self.last_payment_date.day
+            if month > 12:
+                year += 1
+                month = 1
+            reset_date = self.last_payment_date.replace(year=year, month=month, day=day)
+        elif reset_period == PAYMENT_PERIOD_ANUALY:
+            year = self.last_payment_date.year + 1
+            month = self.last_payment_date.month
+            day =self.last_payment_date.day
+            reset_date = self.last_payment_date.replace(year=year, month=month, day=day)
+
+        return (reset_date - today).days
+
         
     def reset_payment_date(self, reset_period):
         today = timezone.now().astimezone(sao_paulo_tz).date()

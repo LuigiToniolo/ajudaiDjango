@@ -103,9 +103,25 @@ def dashboard_view(request):
     
     user.finance_check(STANDART_PERIOD)
     
-    #TODO
+    chatbots = ChatBot.objects.filter(user=user)
+    conversas = Conversa.objects.filter(chatbot__in=chatbots)
+    pedidos = Pedido.objects.filter(user=user)
+    dados_clientes = DadosClienteCadatrado.objects.filter(ultima_conversa__in=conversas)
+
+    numero_de_pedidos = pedidos.count()
+    numero_de_conversas = conversas.count()
+    taxa_conversao = (numero_de_pedidos/numero_de_conversas)*100
+    dias_para_pagamento = user.days_to_next_payment(STANDART_PERIOD)
+
     context = {
-        'userIsPremium' : user.userIsPremium(),
+        'user' : user,
+        'conversas': conversas,
+        'pedidos' : pedidos,
+        'dados_clientes' : dados_clientes,
+        'numero_de_pedidos' : numero_de_pedidos,
+        'numero_de_conversas' : numero_de_conversas,
+        'taxa_conversao' : taxa_conversao,
+        'dias_para_pagamento' : dias_para_pagamento,
     }
 
     return render(request, 'dashboard.html', context)
