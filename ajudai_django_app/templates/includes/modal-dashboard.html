@@ -18,7 +18,7 @@
 
           <tr>
               <td class="strong-text"><strong>Uso do chatbot:</strong></td>
-              <td class="main-content-text">1500/998 (Conversas)</td>
+              <td class="main-content-text">1500/{{ numero_de_conversas }} (Conversas)</td>
           </tr>
           <tr>
               <td class="strong-text"></td>
@@ -99,13 +99,13 @@
 
     <div class="container">
       <div class="circular-progress">
-          <span class="progress-value">43,3%</span>
+          <span class="progress-value">{{ taxa_conversao }}%</span>
       </div>
       <h4>Clientes convertidos</h4>
   </div>
 
-  <p>Parabéns! Das suas <strong>998 conversas</strong>, você conseguiu fazer <strong>432 novos pedidos!</strong>
-      Portanto, de todas as suas conversas, 43.3% realizaram um pedido.
+  <p>Parabéns! Das suas <strong>{{ numero_de_conversas }} conversas</strong>, você conseguiu fazer <strong>{{ numero_de_pedidos }} novos pedidos!</strong>
+      Portanto, de todas as suas conversas, {{ taxa_conversao }}% realizaram um pedido.
   </p>
 
     
