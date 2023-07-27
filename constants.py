@@ -49,6 +49,11 @@ CONVERSA_AGUARDANDO_VENCIMENTO = 'aguardando_vencimento'
 WEBHOOK_ADESAO_ID = 'webhook_adesao'
 WEBHOOK_PAYMENT_METHOD_ID = 'webhook_method'
 WEBHOOK_USAGE_PAYMENT_ID = 'webhook_usage_payment'
+
+LIMITE_CONVERSAS_PLANO_STANDARD = 1500
+LIMITE_CONVERSAS_PLANO_PLUS = 2500
+LIMITE_CONVERSAS_PLANO_PREMIUM = 4500
+
 #--------------------------------------------------------------------
 #CONVERSA RESSET
 HOURS_TO_RESET_INACTIVE = 2

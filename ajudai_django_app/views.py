@@ -26,6 +26,7 @@ import stripe
 from django.utils import timezone
 from django.db.models import Case, When, Value, IntegerField
 from django.core.exceptions import ObjectDoesNotExist
+from datetime import timedelta
 
 sao_paulo_tz = pytz.timezone('America/Sao_Paulo')
 
@@ -102,21 +103,35 @@ def dashboard_view(request):
         return redirect('payment_debt_out_service')
     
     user.finance_check(STANDART_PERIOD)
+
+    last_payment_date = user.last_payment_date
+    today = timezone.now().astimezone(sao_paulo_tz).date()
+
+    if last_payment_date is None:
+        last_payment_date = today
     
     chatbots = ChatBot.objects.filter(user=user)
     conversas = Conversa.objects.filter(chatbot__in=chatbots)
+    conversas_do_periodo = Conversa.objects.filter(chatbot__in=chatbots, creation_date__gte=last_payment_date)
     pedidos = Pedido.objects.filter(user=user)
+    pedidos_do_periodo = Pedido.objects.filter(user=user, date__gte=last_payment_date)
     dados_clientes = DadosClienteCadatrado.objects.filter(ultima_conversa__in=conversas)
-    products = Product.objects.filter(tipo_de_produto=PRUDUCT_TYPE_CONVERSA_AVULSA)
 
-    numero_de_pedidos = pedidos.count()
-    numero_de_conversas = conversas.count()
+    plano_atual_usuario, preco_atual, conversas_a_pagar = user.current_user_plan_price_and_conversas_a_pagar(STANDART_PERIOD)
+
+    numero_de_pedidos = pedidos_do_periodo.count() 
+    numero_de_conversas = conversas_do_periodo.count()
     taxa_conversao = (numero_de_pedidos/numero_de_conversas)*100
     dias_para_pagamento = user.days_to_next_payment(STANDART_PERIOD)
+    data_proximo_pagamento = today + timedelta(days=dias_para_pagamento)
+    nome_do_plano = plano_atual_usuario.name
+    minimo_conversas_plano_atual = plano_atual_usuario.minimo_conversas
+    limite_conversas_plano_atual = plano_atual_usuario.maximo_conversas
+    valor_por_conversa_do_plano_atual = preco_atual
+    gasto_atual_do_periodo = conversas_a_pagar * valor_por_conversa_do_plano_atual
 
     context = {
         'user' : user,
-        'products' : products,
         'conversas': conversas,
         'pedidos' : pedidos,
         'dados_clientes' : dados_clientes,
@@ -124,6 +139,13 @@ def dashboard_view(request):
         'numero_de_conversas' : numero_de_conversas,
         'taxa_conversao' : taxa_conversao,
         'dias_para_pagamento' : dias_para_pagamento,
+        'nome_do_plano' : nome_do_plano,
+        'gasto_atual_do_periodo' : gasto_atual_do_periodo,
+        'valor_por_conversa_do_plano_atual' : valor_por_conversa_do_plano_atual,
+        'minimo_conversas_plano_atual' : minimo_conversas_plano_atual,
+        'limite_conversas_plano_atual' : limite_conversas_plano_atual,
+        'data_proximo_pagamento' : data_proximo_pagamento,
+        'conversas_a_pagar' : conversas_a_pagar,
     }
 
     return render(request, 'dashboard.html', context)
