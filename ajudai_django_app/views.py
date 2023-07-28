@@ -35,10 +35,10 @@ def welcome_view(request):
         user = CustomUser.getUser(request)
     except:
         return redirect('database_error')
-    
+
     if not request.user.is_authenticated:
         return redirect('login')
-    
+
     context = {
         "tab_title" : 'Bem Vindo ao Ajudaí',
         'user' : user,
@@ -54,10 +54,10 @@ def user_accounts_view(request):
         user = CustomUser.getUser(request)
     except:
         return redirect('database_error')
-    
+
     if not request.user.is_authenticated:
         return redirect('login')
-    
+
     user.finance_check(STANDART_PERIOD)
 
     context = {
@@ -92,16 +92,16 @@ def dashboard_view(request):
         user = CustomUser.getUser(request)
     except:
         return redirect('database_error')
-    
+
     if not request.user.is_authenticated:
         return redirect('login')
-    
+
     if not user.userIsPremium():
         return redirect('planos_disponiveis')
-    
+
     if not user.usuario_adimplente_ou_tolerancia_de_uso():
         return redirect('payment_debt_out_service')
-    
+
     user.finance_check(STANDART_PERIOD)
 
     last_payment_date = user.last_payment_date
@@ -109,7 +109,7 @@ def dashboard_view(request):
 
     if last_payment_date is None:
         last_payment_date = today
-    
+
     chatbots = ChatBot.objects.filter(user=user)
     conversas = Conversa.objects.filter(chatbot__in=chatbots)
     conversas_do_periodo = Conversa.objects.filter(chatbot__in=chatbots, creation_date__gte=last_payment_date)
@@ -119,7 +119,7 @@ def dashboard_view(request):
 
     plano_atual_usuario, preco_atual, conversas_a_pagar = user.current_user_plan_price_and_conversas_a_pagar(STANDART_PERIOD)
 
-    numero_de_pedidos = pedidos_do_periodo.count() 
+    numero_de_pedidos = pedidos_do_periodo.count()
     numero_de_conversas = conversas_do_periodo.count()
     taxa_conversao = (numero_de_pedidos/numero_de_conversas)*100
     dias_para_pagamento = user.days_to_next_payment(STANDART_PERIOD)
@@ -146,6 +146,7 @@ def dashboard_view(request):
         'limite_conversas_plano_atual' : limite_conversas_plano_atual,
         'data_proximo_pagamento' : data_proximo_pagamento,
         'conversas_a_pagar' : conversas_a_pagar,
+        'userIsPremium' : user.userIsPremium(),
     }
 
     return render(request, 'dashboard.html', context)
@@ -155,18 +156,18 @@ def meus_chatbots_view(request):
         user = CustomUser.getUser(request)
     except:
         return redirect('database_error')
-    
+
     if not request.user.is_authenticated:
         return redirect('login')
-    
+
     if not user.userIsPremium():
         return redirect('planos_disponiveis')
-    
+
     if not user.usuario_adimplente_ou_tolerancia_de_uso():
         return redirect('payment_debt_out_service')
-    
+
     user.finance_check(STANDART_PERIOD)
-    
+
     chatbots = ChatBot.objects.filter(user=user)
 
     context = {
@@ -194,16 +195,16 @@ def meu_plano_view(request):
         user = CustomUser.getUser(request)
     except:
         return redirect('database_error')
-    
+
     if not request.user.is_authenticated:
         return redirect('login')
-    
+
     if not user.userIsPremium():
         return redirect('planos_disponiveis')
-    
+
     if not user.usuario_adimplente_ou_tolerancia_de_uso():
         return redirect('payment_debt_out_service')
-    
+
     user.finance_check(STANDART_PERIOD)
 
     context = {
@@ -218,16 +219,16 @@ def minhas_conversas_view(request):
         user = CustomUser.getUser(request)
     except:
         return redirect('database_error')
-    
+
     if not request.user.is_authenticated:
         return redirect('login')
-    
+
     if not user.userIsPremium():
         return redirect('planos_disponiveis')
-    
+
     if not user.usuario_adimplente_ou_tolerancia_de_uso():
         return redirect('payment_debt_out_service')
-    
+
     user.finance_check(STANDART_PERIOD)
 
     Conversa.close_conversa_if_needed(user)
@@ -293,9 +294,9 @@ def check_for_new_messages_to_refresh(request):
     if request.method == 'POST':
         try:
             user = CustomUser.getUser(request)
-        except: 
+        except:
             return JsonResponse({"error": "Unauthorized access"}, status=401)
-        
+
         if not request.user.is_authenticated:
             return JsonResponse({"error": "Unauthorized access"}, status=401)
 
@@ -314,7 +315,7 @@ def check_for_new_messages_to_refresh(request):
 
     else:
         return JsonResponse({"error": "Invalid request method"}, status=400)
-    
+
 @csrf_exempt
 def update_last_message_shown(request, conversa_id):
     if request.method == 'POST':
@@ -332,7 +333,7 @@ def toggle_chatbot(request):
         user = CustomUser.getUser(request)
     except:
         return redirect('database_error')
-    
+
     if not request.user.is_authenticated:
         return redirect('login')
 
@@ -354,8 +355,8 @@ def toggle_chatbot(request):
         else:
             mensagem_de_aviso = 'A partir de agora você estará conversando com uma pessoa! O chatbot foi desativado!'
 
-        send_response(chatbot.facebook_page_id, chatbot.whats_app_api_auth_token, conversa.company_client_number, mensagem_de_aviso)  
-        conversa.update_conversa_time_date() 
+        send_response(chatbot.facebook_page_id, chatbot.whats_app_api_auth_token, conversa.company_client_number, mensagem_de_aviso)
+        conversa.update_conversa_time_date()
         conversa.add_message_to_conversa(mensagem_de_aviso, "assistant")
         return JsonResponse({'status': 'success'})
 
@@ -366,13 +367,13 @@ def editar_chatbot_view(request, chatbot_id):
         user = CustomUser.getUser(request)
     except:
         return redirect('database_error')
-    
+
     if not request.user.is_authenticated:
         return redirect('login')
-    
+
     if not user.userIsPremium():
         return redirect('planos_disponiveis')
-    
+
     if not user.usuario_adimplente_ou_tolerancia_de_uso():
         return redirect('payment_debt_out_service')
 
@@ -406,12 +407,12 @@ def editar_chatbot_view(request, chatbot_id):
 
     return render(
         request,
-        "editar-chatbot.html", 
+        "editar-chatbot.html",
         context,
     )
 
 def chatbot_delete_view(request, chatbot_id):
-    
+
     chatbot = get_object_or_404(ChatBot, id=chatbot_id)
 
     if request.user != chatbot.user:
@@ -420,7 +421,7 @@ def chatbot_delete_view(request, chatbot_id):
     if request.method == 'POST':
         chatbot.delete()
         return redirect('user_accounts')
-    
+
     return redirect('user_accounts')
 
 def pedidos_realizados_view(request):
@@ -428,13 +429,13 @@ def pedidos_realizados_view(request):
         user = CustomUser.getUser(request)
     except:
         return redirect('database_error')
-    
+
     if not request.user.is_authenticated:
         return redirect('login')
-    
+
     if not user.userIsPremium():
         return redirect('planos_disponiveis')
-    
+
     user.finance_check(STANDART_PERIOD)
 
     pedidos = Pedido.objects.filter(user=user)
@@ -467,16 +468,16 @@ def resumo_pedido(request, pedido_id):
         user = CustomUser.getUser(request)
     except:
         return redirect('database_error')
-    
+
     if not request.user.is_authenticated:
         return redirect('login')
-    
+
     if not user.userIsPremium():
         return redirect('planos_disponiveis')
-    
+
     if not user.usuario_adimplente_ou_tolerancia_de_uso():
         return redirect('payment_debt_out_service')
-    
+
     pedido = get_object_or_404(Pedido, id=pedido_id)
     conversa = pedido.conversa
 
@@ -526,9 +527,9 @@ def update_pedido_status(request):
     if request.method == 'POST':
         try:
             user = CustomUser.getUser(request)
-        except: 
+        except:
             return JsonResponse({"error": "Unauthorized access"}, status=401)
-        
+
         pedido_id = request.POST.get('pedido_id')
         new_status = request.POST.get('new_status')
 
@@ -555,16 +556,16 @@ def create_pedido_manual(request):
     if request.method == 'POST':
         try:
             user = CustomUser.getUser(request)
-        except: 
+        except:
             return JsonResponse({"error": "Unauthorized access"}, status=401)
-        
+
         if not request.user.is_authenticated:
             return JsonResponse({"error": "Unauthorized access"}, status=401)
-        
+
         nome_pedido_manual = request.POST.get('nome_pedido_manual')
         pedido = Pedido(
-            user=user, criado_manualmente=True, 
-            nome_pedido_manual=nome_pedido_manual, 
+            user=user, criado_manualmente=True,
+            nome_pedido_manual=nome_pedido_manual,
             status_do_pedido=STATUS_PEDIDO_REALIZADO
             )
         pedido.save()
@@ -587,7 +588,7 @@ def login_view(request):
         # obtenha os dados do formulário de login aqui
         username = request.POST[USER_NAME_FIELD_ID]
         password = request.POST[PASSWORD_FIELD_ID]
-            
+
         # verifique se os dados de login são válidos usando o método de autenticação do Django
         user = authenticate(request, username=username, password=password)
         if user is not None:
@@ -602,13 +603,13 @@ def login_view(request):
     else:
         # exiba o formulário de login
         return render(request, 'login.html', context)
-    
+
 def logout_view(request):
     logout(request)
     return redirect('user_accounts')
 
 def register_view(request):
-    
+
     if request.method == 'POST':
         # obtenha os dados do formulário de registro aqui
         form = CustomUserCreationForm(request.POST)
@@ -640,7 +641,7 @@ def register_view(request):
             'userIsPremium' : False,
         }
         return render(request, 'register.html', context)
-    
+
 def send_confirmation_email(request):
     try:
         user = CustomUser.getUser(request)
@@ -679,10 +680,10 @@ def email_confirmed(request, token):
             'userIsPremium' : False,
         }
         return render(request, 'email_confirmed.html', context)
-    
+
     except:
         return redirect('email_confirm_link_error')
-    
+
 def email_confirm_link_error(request):
     try:
         user = CustomUser.getUser(request)
@@ -719,10 +720,10 @@ def change_password_view(request):
         user = CustomUser.getUser(request)
     except:
         return redirect('database_error')
-    
+
     if not request.user.is_authenticated:
         return redirect('login')
-    
+
     if request.method == 'POST':
         form = CustomPasswordChangeForm(request.user, request.POST)
         if form.is_valid():
@@ -734,7 +735,7 @@ def change_password_view(request):
             messages.error(request, 'Por favor, corrija os erros a seguir:')
     else:
         form = CustomPasswordChangeForm(request.user)
-    
+
     return render(request, 'change_password.html', {
         'title' : "Alteração de Senha",
         'form': form,
@@ -796,16 +797,16 @@ def chatbot_creation_form(request):
         user = CustomUser.getUser(request)
     except:
         return redirect('database_error')
-    
+
     if not request.user.is_authenticated:
         return redirect('login')
-    
+
     if not user.userIsPremium():
         return redirect('planos_disponiveis')
-    
+
     if not user.usuario_adimplente_ou_tolerancia_de_uso():
         return redirect('payment_debt_out_service')
-    
+
     if request.method == 'POST':
         form = ChatBotForm(request.POST)
         if form.is_valid():
@@ -847,7 +848,7 @@ def contato_view(request):
         user = CustomUser.getUser(request)
     except:
         return redirect('database_error')
-    
+
     context = {
         "tab_title" : 'Contato',
         'user' : user,
@@ -861,7 +862,7 @@ def instrucoes_view(request):
         user = CustomUser.getUser(request)
     except:
         return redirect('database_error')
-    
+
     context = {
         "tab_title" : 'Instruções',
         'user' : user,
@@ -876,7 +877,7 @@ def solicitacao_view(request):
         user = CustomUser.getUser(request)
     except:
         return redirect('database_error')
-    
+
     context = {
         "tab_title" : 'Solicitação',
         'user' : user,
@@ -890,7 +891,7 @@ def solicitacao_view(request):
 WEBHOOK_TOKEN = get_secret_var('WHATAPP_WEBHOOK_TOKEN')
 @csrf_exempt
 def whatsapp_message_webhook(request):
-    if request.method == 'GET':    
+    if request.method == 'GET':
         VERIFY_TOKEN = WEBHOOK_TOKEN
         mode = request.GET['hub.mode']
         token = request.GET['hub.verify_token']
@@ -901,13 +902,13 @@ def whatsapp_message_webhook(request):
         else:
             return HttpResponse('error', status=403)
         # Get the incoming message
-    
-    if request.method == 'POST':   
+
+    if request.method == 'POST':
         data = json.loads(request.body)
         async_task(process_message, data)
         return HttpResponse('Message received and will be processed', status=200)
-        
-        
+
+
     return HttpResponse('Received invalid request', status=200)
 
 def process_message(data):
@@ -931,7 +932,7 @@ def process_message(data):
 
                             if not user.usuario_adimplente_ou_tolerancia_de_uso:
                                 return
-                            
+
                             # Get or create a conversation for the phone number
                             try:
                                 conversation = Conversa.objects.get(
@@ -994,7 +995,7 @@ def process_message(data):
                                             telefone = numero_cliente,
                                         )
                                     informar_loja_fechamento_pedido(resumo, company_number)
-                                    
+
                                 #chama função que responde o cliente da loja via integência artificial
                                 send_response(chatbot.facebook_page_id, chatbot.whats_app_api_auth_token, numero_cliente, gpt_response)
 
@@ -1006,9 +1007,9 @@ def process_message(data):
                                 conversation.date = timezone.now().astimezone(sao_paulo_tz).date()
                                 conversation.time = timezone.now().astimezone(sao_paulo_tz).time()
                                 conversation.save()
-                            
+
                                 return
-                            
+
                             #case no response was created by ai, just saves the message in the context
                             new_context = conversation.context
                             new_context.append({"role": "user", "content": incoming_message})
@@ -1027,7 +1028,7 @@ def process_message(data):
                             return
                 except:
                     return
-            else: 
+            else:
                 return
 
     return
@@ -1040,20 +1041,20 @@ def payment_method_checkout(request):
 
     if not request.user.is_authenticated:
         return redirect('login')
-    
+
     stripe.api_key = get_secret_var("STRIPE_SECRET_KEY")
-    
+
     try:
         create_stripe_customer(user)
         checkout_session = return_setup_future_payments_checkout_session(DOMAIN + '/metodo-pagamento-registrado', DOMAIN + '/metodo-pagamento-falhou', user)
     except Exception as e:
         return redirect('pricing')
-    
-    user_payment_method_setup_attempt_registered = False 
+
+    user_payment_method_setup_attempt_registered = False
 
     try:
         register_payment_setup_attempt, created = Premium_User_Payment_Method_Registration.objects.update_or_create(
-            user=user, 
+            user=user,
             defaults={
                 'date': timezone.datetime.now().date(),
                 'time': timezone.datetime.now().time(),
@@ -1064,7 +1065,7 @@ def payment_method_checkout(request):
         user_payment_method_setup_attempt_registered = True
     except:
         return redirect('database_error')
-    
+
     if user_payment_method_setup_attempt_registered:
         return redirect(return_checkout_session_url(checkout_session), code=303)
     else:
@@ -1075,7 +1076,7 @@ def payment_method_success(request):
         user = CustomUser.getUser(request)
     except:
         pass
-    
+
     context = {
         "tab_title" : 'Processado com Sucesso',
         'user' : user,
@@ -1116,17 +1117,17 @@ def adesao_payment_checkout(request):
 
     if not request.user.is_authenticated:
         return redirect('login')
-    
+
     try:
         product = Product.objects.get(tipo_de_produto=PRUDUCT_TYPE_ADESAO)
     except:
         return redirect('database_error')
-    
+
     try:
         checkout_session = return_adesao_checkout_session(product.priceID, DOMAIN + '/adesao-realizada', DOMAIN + '/adesao-falhou')
     except:
         return redirect('planos_disponiveis')
-    
+
     purchase_database_register_success = False
     try:
         purchase = Adesao_Purchase.objects.create(
@@ -1140,14 +1141,14 @@ def adesao_payment_checkout(request):
         purchase_database_register_success = True
     except:
         return redirect('database_error')
-    
+
     #redundância proposital para garantir que o sessão se checkout venha apenas após o registro da tentativa de compra no banco de dados
     if purchase_database_register_success:
         #dessa forma, leva o usuário à própria página de procesamentento de pagameto / checkout da stripe
         return redirect(return_checkout_session_url(checkout_session), code=303)
     else:
         return redirect('database_error')
-    
+
 def adesao_payment_success(request):
     try:
         user = CustomUser.getUser(request)
@@ -1156,7 +1157,7 @@ def adesao_payment_success(request):
 
     if not request.user.is_authenticated:
         return redirect('login')
-    
+
     return redirect('checkout_metodo_pagamento')
 
 def adesao_payment_failiure(request):
@@ -1180,7 +1181,7 @@ def adesao_payment_webhook(request):
     payload = request.body
     sig_header = request.META[HTTP_PAYMENT_API_SIGNATURE]
     event = None
-    
+
     event = get_webhook_event(payload, sig_header, WEBHOOK_ADESAO_ID)
 
     if event == EVENT_INVALID_PAYLOAD:
@@ -1190,10 +1191,10 @@ def adesao_payment_webhook(request):
         return HttpResponse(status=400)
 
     if success_payment_checkout_and_section_recovery(event):
-        
+
         session = get_session_data(event)
         checkout_id = session[LABEL_TO_CHECKOUT_SESSION_ID]
-        
+
         register_adesao_purchase_after_webhook_confirm(checkout_id)
 
     # Passed signature verification
@@ -1204,7 +1205,7 @@ def payment_method_webhook(request):
     payload = request.body
     sig_header = request.META[HTTP_PAYMENT_API_SIGNATURE]
     event = None
-    
+
     event = get_webhook_event(payload, sig_header, WEBHOOK_PAYMENT_METHOD_ID)
 
     if event == EVENT_INVALID_PAYLOAD:
@@ -1214,10 +1215,10 @@ def payment_method_webhook(request):
         return HttpResponse(status=400)
 
     if success_payment_checkout_and_section_recovery(event):
-        
+
         session = get_session_data(event)
         checkout_id = session[LABEL_TO_CHECKOUT_SESSION_ID]
-        
+
         register_payment_method_success_after_webhook_confirm(checkout_id)
 
     # Passed signature verification
@@ -1257,7 +1258,7 @@ def user_in_debt_and_out_of_service_view(request):
         user = CustomUser.getUser(request)
     except:
         return redirect('database_error')
-    
+
     if not request.user.is_authenticated:
         return redirect('login')
 
@@ -1279,10 +1280,10 @@ def pay_debit(request):
         user = CustomUser.getUser(request)
     except:
         return redirect('database_error')
-    
+
     if not request.user.is_authenticated:
         return redirect('login')
-        
+
     user.charge_all_user_debt()
 
     return render(
