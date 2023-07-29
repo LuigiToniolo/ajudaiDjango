@@ -84,11 +84,12 @@ class CustomUser(AbstractUser):
 
     last_payment_date = models.DateField(null=True, blank=True)
     stripe_id = models.CharField(max_length=50, blank=True, null=True)
-    moneatry_limit_set_by_user = models.DecimalField(
+    conversation_limit_set_by_user = models.DecimalField(
         max_digits=7, 
         decimal_places=2, 
         default=5000.00
         )
+    limit_on=models.BooleanField(default=False)
     valor_em_debito = models.DecimalField(
         max_digits=12, 
         decimal_places=2, 
@@ -245,24 +246,15 @@ class CustomUser(AbstractUser):
             self.last_payment_date = today
             self.save()
 
-    def atualiza_valor_em_debito(self, reset_period):
-        if self.is_payment_time(reset_period):
-            self.reset_payment_date(reset_period)
-            Conversa.conversations_to_payment_due(self)
-            conversas_a_pagar = Conversa.count_pending_payment_conversations(self)
-            product = Product.objects.filter(Q(minimo_conversas__lte=conversas_a_pagar) & Q(maximo_conversas__gte=conversas_a_pagar)).first()
-            if product:
-                price = product.price_shown
-                valor_devido_anterior = self.valor_em_debito
-                valor_a_adicionar = price * conversas_a_pagar
-                self.valor_em_debito = valor_devido_anterior + valor_a_adicionar
-                self.save()
+    def atualiza_valor_em_debito(self, valor_a_adicionar):
+        valor_devido_anterior = self.valor_em_debito
+        self.valor_em_debito = valor_devido_anterior + valor_a_adicionar
+        self.save()
 
     
     def current_user_plan_price_and_conversas_a_pagar(self, reset_period):
         self.reset_payment_date(reset_period)
-        Conversa.conversations_to_payment_due(self)
-        conversas_a_pagar = Conversa.count_pending_payment_conversations(self)
+        conversas_a_pagar = Conversa.count_conversations_in_current_billing_period(self)
         product = Product.objects.filter(Q(minimo_conversas__lte=conversas_a_pagar) & Q(maximo_conversas__gte=conversas_a_pagar)).first()
         if product:
             price = product.price_shown
@@ -270,13 +262,10 @@ class CustomUser(AbstractUser):
         return product, price, conversas_a_pagar
 
     def charge_new_conversations_first_attempt(self, reset_period):
-        if self.is_payment_time(reset_period):
-            self.reset_payment_date(reset_period)
-            product, price, conversas_a_pagar = self.current_user_plan_and_price(reset_period)
-            if product:
-                price = product.price_shown
-                total_cost = price * conversas_a_pagar
-                charge_usages(total_cost, self)
+        product, price, conversas_a_pagar = self.current_user_plan_price_and_conversas_a_pagar(reset_period)
+        total_cost = price * conversas_a_pagar
+        charge_usages(total_cost, self)
+        self.atualiza_valor_em_debito(total_cost)
 
     def inform_all_user_debt(self):
         return self.valor_em_debito
@@ -286,10 +275,19 @@ class CustomUser(AbstractUser):
         charge_usages(total_cost, self)
 
     def finance_check(self, reset_period):
-        self.charge_new_conversations_first_attempt(reset_period)
-        self.atualiza_valor_em_debito(reset_period)
+        if self.is_payment_time(reset_period):
+            self.reset_payment_date(reset_period)
+            #cobra cnversas aguardando vencimento
+            self.charge_new_conversations_first_attempt(reset_period)
+            #transforma as conversas que aguardam vencimento em conversas em divida (elas serao transformadas em regulares apos o webhook)
+            Conversa.conversations_to_payment_due(self)
 
     def reduce_debt_amount(self, amount_payed):
+        self.valor_em_debito = 0
+        self.save()
+
+        #TODO VARIFICAR NECESSIDADE DE REFINAR MÉTODO DESCONTANDO SO O AMOUNT_PAYED
+        '''
         valor_devido_anterior = self.valor_em_debito
         valor_devido_atual = valor_devido_anterior - amount_payed
         if valor_devido_atual >=0:
@@ -297,18 +295,24 @@ class CustomUser(AbstractUser):
         else:
             self.valor_em_debito = 0
         self.save()
+        '''
 
     def can_create_new_messages(self, reset_period):
         if self.is_payment_time(reset_period):
             self.reset_payment_date(reset_period)
             Conversa.conversations_to_payment_due(self)
             conversas_a_pagar = Conversa.count_pending_payment_conversations(self)
-            product = Product.objects.filter(Q(minimo_conversas__lte=conversas_a_pagar) & Q(maximo_conversas__gte=conversas_a_pagar)).first()
-            if product:
-                price = product.price_shown
-                total_cost = price * conversas_a_pagar
-                if total_cost >= self.moneatry_limit_set_by_user:
+            if self.limit_on:
+                if conversas_a_pagar>self.conversation_limit_set_by_user:
                     return False
+                ''' DESATIVADO POR LIMITE AGORA EH DE CONVERSAS
+                product = Product.objects.filter(Q(minimo_conversas__lte=conversas_a_pagar) & Q(maximo_conversas__gte=conversas_a_pagar)).first()
+                if product:
+                    price = product.price_shown
+                    total_cost = price * conversas_a_pagar
+                    if total_cost >= self.moneatry_limit_set_by_user:
+                        return False
+                '''
 
         return True        
 
@@ -527,6 +531,13 @@ class Conversa(models.Model):
         user_chatbots = ChatBot.objects.filter(user=user)
         pending_conversations = Conversa.objects.filter(Q(chatbot__in=user_chatbots) & Q(financial_status=CONVERSA_PAGAMENTO_PENDENTE))
         return pending_conversations.count()
+    
+    @staticmethod
+    def count_conversations_in_current_billing_period(user):
+        user_chatbots = ChatBot.objects.filter(user=user)
+        current_conversations = Conversa.objects.filter(Q(chatbot__in=user_chatbots) & Q(financial_status=CONVERSA_AGUARDANDO_VENCIMENTO))
+        return current_conversations.count()
+
 
     @staticmethod
     def register_payed_conversations(user, amount_payed):
