@@ -169,3 +169,7 @@ class ChatBotForm(forms.ModelForm):
 class MessageForm(forms.Form):
     message = forms.CharField(widget=forms.Textarea)
     conversa_id = forms.IntegerField()
+
+class ConversationLimitForm(forms.Form):
+    conversation_limit = forms.IntegerField(min_value=0, max_value=20000)
+    limit_on = forms.BooleanField(required=False)

@@ -180,9 +180,6 @@
                             </div>
                         </div>
 
-                        
-    
-
                         <div class="controle-chatbot">
 
                             <div class="limitador-container">
@@ -191,19 +188,56 @@
                                     Limitador de conversas
                                 </div>
                                 <div class="limitador-chatbot">
-                                    <h4>Limite a quantidade de conversas do seu chatbot</h4>
-                                    <p>Insira a quantidade máxima de conversas que você deseja que 
-                                        seu chatbot responda. Nossa objetivo com isso é dar a total liberdade 
-                                        para nosso cliente poder escolher até quando o chatbot deve responder e até quanto deseja gastar.
-                                    </p>
-                                    <div class="switch-div">
-                                        <p><strong>Deseja limitar suas conversas?</strong></p>
-                                        <label class="switch-toggle">
-                                            <input type="checkbox">
-                                            <span class="slider-toggle"></span>
-                                        </label>
-                                    </div>
-        
+                                    <form method="post" action="{% url 'update_conversation_limit' %}">
+                                        {% csrf_token %}
+                                        <h4>Limite a quantidade de conversas do seu chatbot</h4>
+                                        <p>Insira a quantidade máxima de conversas que você deseja que 
+                                            seu chatbot responda. Nossa objetivo com isso é dar a total liberdade 
+                                            para nosso cliente poder escolher até quando o chatbot deve responder e até quanto deseja gastar.
+                                        </p>
+                                        <div class="switch-div">
+                                            <p><strong>Deseja limitar suas conversas?</strong></p>
+                                            <label class="switch-toggle">
+                                                <input type="checkbox" name="limit_on" {% if user.limit_on %} checked {% endif %}>
+                                                <span class="slider-toggle"></span>
+                                            </label>
+                                        </div>
+                                        <div id="wrapper">
+                                            <div id="sliderContainer">
+                                                <div class="tick-slider">
+                                                    <div class="tick-slider-header">
+                                                        <p><label for="sizeSlider">Limitador de conversas</label></p>
+                                                        <p>Conversas</p>
+                                                    </div>
+                                                    <div class="tick-slider-value-container">
+                                                        <div id="sizeLabelMin" class="tick-slider-label">0</div>
+                                                        <div id="sizeLabelMax" class="tick-slider-label">20.000</div>
+                                                        <div id="sizeValue" class="tick-slider-value"></div>
+                                                    </div>
+                                                    <input
+                                                        id="sizeSlider"
+                                                        class="tick-slider-input"
+                                                        type="range"
+                                                        min="0"
+                                                        max="20000"
+                                                        step="500"
+                                                        name="conversation_limit"
+                                                        value="{{ limite_atual_conversas }}"
+                                                        data-tick-step="25"
+                                                        data-tick-id="sizeTicks"
+                                                        data-value-id="sizeValue"
+                                                        data-progress-id="sizeProgress"
+                                                        data-handle-size="18"
+                                                        data-min-label-id="sizeLabelMin"
+                                                        data-max-label-id="sizeLabelMax"
+                                                    />
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <button type="submit">Atualizar</button>
+                                    </form>
+                                    
+                                    <!--
                                     <div id="wrapper">
                                         <div id="sliderContainer">
                                             <div class="tick-slider">
@@ -216,9 +250,6 @@
                                                     <div id="sizeLabelMax" class="tick-slider-label">20.000</div>
                                                     <div id="sizeValue" class="tick-slider-value"></div>
                                                 </div>
-                                                <!-- <div class="tick-slider-background"></div> -->
-                                                <!-- <div id="sizeProgress" class="tick-slider-progress"></div> -->
-                                                <!-- <div id="sizeTicks" class="tick-slider-tick-container"></div> -->
                                                 <input
                                                     id="sizeSlider"
                                                     class="tick-slider-input"
@@ -238,6 +269,7 @@
                                             </div>
                                         </div>
                                     </div>
+                                    -->
                                 </div>
                             </div>
                             <div class="pausar-container">

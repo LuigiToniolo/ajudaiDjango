@@ -12,7 +12,7 @@ from ajudai_django_app.payments_process.webhooks import HTTP_PAYMENT_API_SIGNATU
 from ajudai_django_app.phone_integration.messages import send_response
 from constants import ADESAO_PURCHASE_STATUS_PENDING, ADITIONAL_INTRUCTIONS_FIELD_ID, ADITIONAL_INTRUCTIONS_FIELD_NAME, DOMAIN, EVENT_INVALID_PAYLOAD, EVENT_INVALID_SIGNATURE, FANTASY_NAME, GPT3_MODEL_NAME, GPT3_TOKEK_LIMIT, PASSWORD_FIELD_ID, PAYMENT_METHOD_REGISTRATION_STATUS_PENDING, PRUDUCT_TYPE_ADESAO, PRUDUCT_TYPE_CONVERSA_AVULSA, STANDART_PERIOD, STATUS_CONVERSA_EM_ANDAMENTO, STATUS_PEDIDO_EM_PROCESSO, STATUS_PEDIDO_ENTREGUE, STATUS_PEDIDO_PENDENTE_DE_ENTREGA, STATUS_PEDIDO_REALIZADO, SUPPORT_EMAIL, USER_LEVEL_PREMIUM, USER_NAME_FIELD_ID, WEBHOOK_ADESAO_ID, WEBHOOK_PAYMENT_METHOD_ID, WEBHOOK_USAGE_PAYMENT_ID
 from get_secret_variables import get_secret_var
-from .forms import ChatBotForm, CustomPasswordChangeForm, MessageForm
+from .forms import ChatBotForm, ConversationLimitForm, CustomPasswordChangeForm, MessageForm
 from django.contrib import messages
 from django.urls import reverse
 from django.core.mail import send_mail
@@ -88,13 +88,13 @@ def user_accounts_view(request):
     )
 
 def dashboard_view(request):
+    if not request.user.is_authenticated:
+        return redirect('login')
+    
     try:
         user = CustomUser.getUser(request)
     except:
         return redirect('database_error')
-
-    if not request.user.is_authenticated:
-        return redirect('login')
 
     if not user.userIsPremium():
         return redirect('planos_disponiveis')
@@ -130,6 +130,8 @@ def dashboard_view(request):
     valor_por_conversa_do_plano_atual = preco_atual
     gasto_atual_do_periodo = conversas_a_pagar * valor_por_conversa_do_plano_atual
 
+    limite_atual_conversas = int(user.conversation_limit_set_by_user)
+
     context = {
         'user' : user,
         'conversas': conversas,
@@ -147,9 +149,29 @@ def dashboard_view(request):
         'data_proximo_pagamento' : data_proximo_pagamento,
         'conversas_a_pagar' : conversas_a_pagar,
         'userIsPremium' : user.userIsPremium(),
+        'limite_atual_conversas': limite_atual_conversas,
     }
 
     return render(request, 'dashboard.html', context)
+
+def update_conversation_limit(request):
+    if not request.user.is_authenticated:
+        return redirect('login')
+    
+    try:
+        user = CustomUser.getUser(request)
+    except:
+        return redirect('database_error')
+    
+    if request.method == "POST":
+        form = ConversationLimitForm(request.POST)
+        if form.is_valid():
+            conversation_limit = form.cleaned_data['conversation_limit']
+            limit_on = form.cleaned_data['limit_on'] 
+            user.conversation_limit_set_by_user = conversation_limit
+            user.limit_on = limit_on
+            user.save()
+            return redirect('dashboard')
 
 def meus_chatbots_view(request):
     try:
