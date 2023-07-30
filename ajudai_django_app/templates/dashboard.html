@@ -437,10 +437,13 @@
             var checkboxLimit = document.querySelector('.switch-toggle input');
             var wrapper = document.getElementById('wrapper');
             
-            // Nao mais desabilitar no carregamento
-            //checkboxLimit.checked = false;
-            wrapper.style.pointerEvents = 'none';
-            wrapper.style.opacity = 0.5;
+            if (!checkboxLimit.checked) {
+                wrapper.style.pointerEvents = 'none';
+                wrapper.style.opacity = 0.5;
+            } else{
+                wrapper.style.pointerEvents = 'auto';
+                wrapper.style.opacity = 1;
+            }
             
             checkboxLimit.addEventListener('change', function() {
               if (checkboxLimit.checked) {
