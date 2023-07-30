@@ -185,8 +185,9 @@ def update_chatbots_on_off(request):
     if request.method == "POST":
         form = LigarDesligarTodosChatbotsForm(request.POST)
         if form.is_valid():
-            chatbot_on = form.cleaned_data['chatbots_on']
+            chatbot_on = form.cleaned_data.get('chatbots_on', False)
             user.chatbots_on = chatbot_on
+            user.save()
         return redirect('dashboard')
 
 def meus_chatbots_view(request):
