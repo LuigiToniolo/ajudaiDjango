@@ -284,7 +284,7 @@
                                         automaticamente voltará a funcionar. Se o botão estiver <strong>Verde</strong>
                                         quer dizer que o chatbot está em funcionamento
                                     </p>
-                                    <form method="post" action="{% url 'update_chatbots_on_off' %}">
+                                    <form id="chatbotForm" method="post" action="{% url 'update_chatbots_on_off' %}">
                                         {% csrf_token %}
                                         <div class="botao-pausar">
                                             <input type="checkbox" id="checkbox" name="chatbots_on" {% if user.chatbots_on %}checked{% endif %}>
