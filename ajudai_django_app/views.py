@@ -964,9 +964,6 @@ def process_message(data):
                             chatbot= get_object_or_404(ChatBot, whatsapp_number=company_number)
                             user=chatbot.user
 
-                            if user.chatbots_on == False:
-                                return
-
                             aditional_instructions = chatbot.aditional_intructions
                             #antes de verificar se tem uma conversa aberta em andamento, faz o fechamento daquelas que estão inativas ou esgotaram o tempo
                             Conversa.close_conversa_if_needed(user)
@@ -992,7 +989,7 @@ def process_message(data):
                                 else:
                                     return
                             new_context = []
-                            if conversation.chatbot_ativo == True:
+                            if conversation.chatbot_ativo == True and user.chatbots_on == True:
                                 role = ''
                                 try:
                                     gpt_response, new_context, tokens_used_on_this_request = generate_gpt_response(incoming_message, conversation.context, role,  aditional_instructions, GPT3_MODEL_NAME, GPT3_TOKEK_LIMIT, chatbot.id)
