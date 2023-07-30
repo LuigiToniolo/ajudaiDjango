@@ -95,6 +95,8 @@ class CustomUser(AbstractUser):
         decimal_places=2, 
         default=0.00
         )
+    
+    chatbots_on = models.BooleanField(default=True)
 
     def usuario_adimplente(self):
         if self.valor_em_debito > 0:

@@ -173,3 +173,6 @@ class MessageForm(forms.Form):
 class ConversationLimitForm(forms.Form):
     conversation_limit = forms.IntegerField(min_value=0, max_value=20000)
     limit_on = forms.BooleanField(required=False)
+
+class LigarDesligarTodosChatbotsForm(forms.Form):
+    chatbots_on = forms.BooleanField()

@@ -52,4 +52,5 @@ urlpatterns = [
     path('processando-pagamento-debito/', views.pay_debit, name = 'processando_pagamento_debito'),
     path('toggle_chatbot/', views.toggle_chatbot, name='toggle_chatbot'),
     path('update_conversation_limit/', views.update_conversation_limit, name='update_conversation_limit'),
+    path('update_chatbots_on_off/', views.update_chatbots_on_off, name='update_chatbots_on_off'),
 ]

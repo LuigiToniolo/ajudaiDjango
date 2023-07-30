@@ -12,7 +12,7 @@ from ajudai_django_app.payments_process.webhooks import HTTP_PAYMENT_API_SIGNATU
 from ajudai_django_app.phone_integration.messages import send_response
 from constants import ADESAO_PURCHASE_STATUS_PENDING, ADITIONAL_INTRUCTIONS_FIELD_ID, ADITIONAL_INTRUCTIONS_FIELD_NAME, DOMAIN, EVENT_INVALID_PAYLOAD, EVENT_INVALID_SIGNATURE, FANTASY_NAME, GPT3_MODEL_NAME, GPT3_TOKEK_LIMIT, PASSWORD_FIELD_ID, PAYMENT_METHOD_REGISTRATION_STATUS_PENDING, PRUDUCT_TYPE_ADESAO, PRUDUCT_TYPE_CONVERSA_AVULSA, STANDART_PERIOD, STATUS_CONVERSA_EM_ANDAMENTO, STATUS_PEDIDO_EM_PROCESSO, STATUS_PEDIDO_ENTREGUE, STATUS_PEDIDO_PENDENTE_DE_ENTREGA, STATUS_PEDIDO_REALIZADO, SUPPORT_EMAIL, USER_LEVEL_PREMIUM, USER_NAME_FIELD_ID, WEBHOOK_ADESAO_ID, WEBHOOK_PAYMENT_METHOD_ID, WEBHOOK_USAGE_PAYMENT_ID
 from get_secret_variables import get_secret_var
-from .forms import ChatBotForm, ConversationLimitForm, CustomPasswordChangeForm, MessageForm
+from .forms import ChatBotForm, ConversationLimitForm, CustomPasswordChangeForm, LigarDesligarTodosChatbotsForm, MessageForm
 from django.contrib import messages
 from django.urls import reverse
 from django.core.mail import send_mail
@@ -171,7 +171,23 @@ def update_conversation_limit(request):
             user.conversation_limit_set_by_user = conversation_limit
             user.limit_on = limit_on
             user.save()
-            return redirect('dashboard')
+        return redirect('dashboard')
+        
+def update_chatbots_on_off(request):
+    if not request.user.is_authenticated:
+        return redirect('login')
+    
+    try:
+        user = CustomUser.getUser(request)
+    except:
+        return redirect('database_error')
+
+    if request.method == "POST":
+        form = LigarDesligarTodosChatbotsForm(request.POST)
+        if form.is_valid():
+            chatbot_on = form.cleaned_data['chatbots_on']
+            user.chatbots_on = chatbot_on
+        return redirect('dashboard')
 
 def meus_chatbots_view(request):
     try:
@@ -945,10 +961,12 @@ def process_message(data):
                             #AQUI, COMO NO BANCO DE DADOS, O WHATSAPP EMPRESARIAL DO CLIENTE É REGISTRADO SEM O DDI (55 PARA BRASIL), ELE É PARA LOCALIZAÇÃO DO CLIENTE NO BANCO DE DADOS
                             company_number = company_number_with_DDI[2:]
                             chatbot= get_object_or_404(ChatBot, whatsapp_number=company_number)
-                            aditional_instructions = chatbot.aditional_intructions
-
                             user=chatbot.user
 
+                            if user.chatbots_on == False:
+                                return
+
+                            aditional_instructions = chatbot.aditional_intructions
                             #antes de verificar se tem uma conversa aberta em andamento, faz o fechamento daquelas que estão inativas ou esgotaram o tempo
                             Conversa.close_conversa_if_needed(user)
 
