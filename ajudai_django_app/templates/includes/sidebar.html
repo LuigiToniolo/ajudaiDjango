@@ -14,16 +14,19 @@
             </a>
             {% endif %}
 
-            <a class="nav-link" href="{% url 'planos_disponiveis' %}">
-                <div class="sb-nav-link-icon"><i class="fa-solid fa-file-signature"></i></div>
-                Planos disponíveis
-            </a>
-
             {% if userIsPremium %}
             <a class="nav-link" href="{% url 'meu-plano' %}">
                 <div class="sb-nav-link-icon"><i class='fa fa-refresh'></i></div>
                 Meu plano
             </a>
+            {% else %}
+            <a class="nav-link" href="{% url 'planos_disponiveis' %}">
+                <div class="sb-nav-link-icon"><i class="fa-solid fa-file-signature"></i></div>
+                Planos disponíveis
+            </a>
+            {% endif %}
+
+            {% if userIsPremium %}
 
             <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseLayouts" aria-expanded="false" aria-controls="collapseLayouts">
                 <div class="sb-nav-link-icon"><i class="fa-solid fa-robot"></i></div>
