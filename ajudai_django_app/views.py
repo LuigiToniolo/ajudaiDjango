@@ -134,7 +134,6 @@ def dashboard_view(request):
     limite_atual_conversas = int(user.conversation_limit_set_by_user)
 
     conversas_per_months = []
-
     for i in range(6, 0, -1):
         year, month = (today.year, today.month - i + 1)
 
@@ -151,6 +150,15 @@ def dashboard_view(request):
         conversas_month_count = Conversa.objects.filter(chatbot__in=chatbots, 
                                                         creation_date__range=[start_date, end_date]).count()
         conversas_per_months.append((start_date.strftime('%B'), conversas_month_count))
+
+    conversas_per_days = []
+    for i in range(30, 0, -1):
+        date = today - timedelta(days=i)
+        conversas_day_count = Conversa.objects.filter(chatbot__in=chatbots, 
+                                                    creation_date=date).count()
+        conversas_per_days.append((date.strftime('%d-%b'), conversas_day_count))
+
+
 
     context = {
         'user' : user,
@@ -171,6 +179,7 @@ def dashboard_view(request):
         'userIsPremium' : user.userIsPremium(),
         'limite_atual_conversas': limite_atual_conversas,
         'conversas_per_months': json.dumps(conversas_per_months),
+        'conversas_per_days': json.dumps(conversas_per_days),
     }
 
     return render(request, 'dashboard.html', context)
