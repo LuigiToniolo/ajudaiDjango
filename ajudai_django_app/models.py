@@ -16,7 +16,7 @@ from decimal import Decimal
 import re
 from unidecode import unidecode
 
-from constants import ADESAO_PURCHASE_STATUS_CALCELED, ADESAO_PURCHASE_STATUS_PENDING, ADESAO_PURCHASE_STATUS_PROCESSED, AI_PROVIDER_OPEN_AI, BRL_CURRENCY_SIMBOL, CONVERSA_AGUARDANDO_VENCIMENTO, CONVERSA_PAGA, CONVERSA_PAGAMENTO_PENDENTE, DIAS_TOLERACIA_INADIMPLECIA, GPT3_MODEL_NAME, HOURS_TO_RESER_ABSOLUTE, HOURS_TO_RESET_INACTIVE, LIMITE_CONVERSAS_PLANO_PLUS, LIMITE_CONVERSAS_PLANO_PREMIUM, LIMITE_CONVERSAS_PLANO_STANDARD, MAX_CHAR_INSTRUCTIONS_CHATBOT_FORM, MENSAGEM_ENCERRAMENTO_DE_CONVERSA_INATIVIDADE, MENSAGEM_ENCERRAMENTO_DE_CONVERSA_TEMPO_LIMITE, PAYMENT_METHOD_REGISTRATION_STATUS_FAILING, PAYMENT_METHOD_REGISTRATION_STATUS_PENDING, PAYMENT_METHOD_REGISTRATION_STATUS_SUCCESS, PAYMENT_PERIOD_ANUALY, PAYMENT_PERIOD_DAILY, PAYMENT_PERIOD_MONTHLY, PRUDUCT_TYPE_ADESAO, PRUDUCT_TYPE_CONVERSA_AVULSA, PRUDUCT_TYPE_PLAN, SEM_METODO_DE_PAGAMENTO_CLIENTE_LOCALIZADO_NA_CONVERSA, STATUS_CONVERSA_EM_ANDAMENTO, STATUS_CONVERSA_ENCERRADA, STATUS_CONVERSA_FALHA, STATUS_PEDIDO_CANCELADO, STATUS_PEDIDO_EM_PROCESSO, STATUS_PEDIDO_ENTREGUE, STATUS_PEDIDO_PENDENTE_DE_ENTREGA, STATUS_PEDIDO_REALIZADO, USER_LEVEL_FREE, USER_LEVEL_PREMIUM, USER_PAYMENT_METHOD_FAILED, USER_PAYMENT_METHOD_NOT_REGISTERED, USER_PAYMENT_METHOD_STATUS_OK
+from constants import ADESAO_PURCHASE_STATUS_CALCELED, ADESAO_PURCHASE_STATUS_PENDING, ADESAO_PURCHASE_STATUS_PROCESSED, AI_PROVIDER_OPEN_AI, BRL_CURRENCY_SIMBOL, CONVERSA_AGUARDANDO_VENCIMENTO, CONVERSA_PAGA, CONVERSA_PAGAMENTO_PENDENTE, DIAS_TOLERACIA_INADIMPLECIA, FATURA_PAGA, FATURA_PENDENTE, GPT3_MODEL_NAME, HOURS_TO_RESER_ABSOLUTE, HOURS_TO_RESET_INACTIVE, LIMITE_CONVERSAS_PLANO_PLUS, LIMITE_CONVERSAS_PLANO_PREMIUM, LIMITE_CONVERSAS_PLANO_STANDARD, MAX_CHAR_INSTRUCTIONS_CHATBOT_FORM, MENSAGEM_ENCERRAMENTO_DE_CONVERSA_INATIVIDADE, MENSAGEM_ENCERRAMENTO_DE_CONVERSA_TEMPO_LIMITE, PAYMENT_METHOD_BOLETO, PAYMENT_METHOD_CREDIT_CARD, PAYMENT_METHOD_OTHER, PAYMENT_METHOD_PIX, PAYMENT_METHOD_REGISTRATION_STATUS_FAILING, PAYMENT_METHOD_REGISTRATION_STATUS_PENDING, PAYMENT_METHOD_REGISTRATION_STATUS_SUCCESS, PAYMENT_PERIOD_ANUALY, PAYMENT_PERIOD_DAILY, PAYMENT_PERIOD_MONTHLY, PRODUCT_NAME_BASIC, PRODUCT_NAME_COORPORATE, PRODUCT_NAME_PLUS, PRODUCT_NAME_PREMIUM, PRUDUCT_TYPE_ADESAO, PRUDUCT_TYPE_CONVERSA_AVULSA, PRUDUCT_TYPE_PLAN, SEM_METODO_DE_PAGAMENTO_CLIENTE_LOCALIZADO_NA_CONVERSA, STATUS_CONVERSA_EM_ANDAMENTO, STATUS_CONVERSA_ENCERRADA, STATUS_CONVERSA_FALHA, STATUS_PEDIDO_CANCELADO, STATUS_PEDIDO_EM_PROCESSO, STATUS_PEDIDO_ENTREGUE, STATUS_PEDIDO_PENDENTE_DE_ENTREGA, STATUS_PEDIDO_REALIZADO, USER_LEVEL_FREE, USER_LEVEL_PREMIUM, USER_PAYMENT_METHOD_FAILED, USER_PAYMENT_METHOD_NOT_REGISTERED, USER_PAYMENT_METHOD_STATUS_OK
 
 sao_paulo_tz = pytz.timezone('America/Sao_Paulo')
 def current_date_sao_paulo():
@@ -267,6 +267,16 @@ class CustomUser(AbstractUser):
         product, price, conversas_a_pagar = self.current_user_plan_price_and_conversas_a_pagar(reset_period)
         total_cost = price * conversas_a_pagar
         charge_usages(total_cost, self)
+        #TODO VER SE ABAIXO ESTA CORRETO E TESTAR
+        nova_fatura = PaymentsForUseMadde.objects.create(
+            user = self,
+            numero_conversas = conversas_a_pagar,
+            product_name = product.name,
+            product_price = product.price_shown,
+            valor_total='R$'+str(total_cost),
+            date=current_date_sao_paulo,
+            time=current_time_sao_paulo,
+            )
         self.atualiza_valor_em_debito(total_cost)
 
     def inform_all_user_debt(self):
@@ -363,10 +373,17 @@ class Product(models.Model):
         (PRUDUCT_TYPE_ADESAO , 'Adesão'),
         (PRUDUCT_TYPE_CONVERSA_AVULSA , 'Conversa Aulsa'),
     )
+    PRODUCT_NAME_CHOICES = (
+        (PRODUCT_NAME_BASIC, 'Basic'),
+        (PRODUCT_NAME_PLUS, 'Plus'),
+        (PRODUCT_NAME_PREMIUM, 'Premium'),
+        (PRODUCT_NAME_COORPORATE, 'Corporativo VIP'),
+    )
 
     name = models.CharField(
         max_length=32,
-        default='Conversa Finalizada',
+        default=PRODUCT_NAME_BASIC,
+        choices=PRODUCT_NAME_CHOICES,
         )
     tipo_de_produto = models.CharField(
         max_length=30,
@@ -401,6 +418,14 @@ class Product(models.Model):
     
 
 class Adesao_Purchase(models.Model):
+    PAYMENT_METHOD_CHOICES = (
+        (PAYMENT_METHOD_CREDIT_CARD, 'Cartão de Crédito'),
+        (PAYMENT_METHOD_BOLETO, 'Boleto'),
+        (PAYMENT_METHOD_PIX, 'Pix'),
+        (PAYMENT_METHOD_OTHER, 'Outro'),
+    )
+
+
     id = models.AutoField(primary_key=True)
     date = models.DateField()
     time = models.TimeField(default=current_time_sao_paulo)
@@ -408,6 +433,11 @@ class Adesao_Purchase(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, default=1)
     stripe_checkout_id = models.CharField(max_length=255, default='')
     status = models.CharField(max_length=50, default=ADESAO_PURCHASE_STATUS_PENDING)
+    payment_method = models.CharField(
+        max_length=30, 
+        choices=PAYMENT_METHOD_CHOICES,
+        default=PAYMENT_METHOD_CREDIT_CARD,
+        )
 
     def cancel_purchase(self):
         self.status = ADESAO_PURCHASE_STATUS_CALCELED
@@ -723,6 +753,42 @@ class Pedido(models.Model):
         
         return f"Pedido {self.id}"
 
+
+class PaymentsForUseMadde(models.Model):
+    FINANCEIRO_CHOICES = (
+        (FATURA_PAGA, 'Pagamnento confirmado'),
+        (FATURA_PENDENTE, 'Aguardando confirmação'), #conversas já vencidas mas não pagas
+    )
+
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    date = models.DateField(default=current_date_sao_paulo)
+    time = models.TimeField(default=current_time_sao_paulo)
+    product_name = models.CharField(
+        max_length=120,
+        default=PRODUCT_NAME_BASIC,
+        )
+    product_price = models.DecimalField(max_digits=7, decimal_places=2, default=0.00)
+    status = models.CharField(
+        max_length=120,
+        default=FATURA_PENDENTE,
+        choices=FINANCEIRO_CHOICES,
+        )
+    numero_conversas = models.PositiveIntegerField(
+        default=0,
+        )
+    valor_total = models.CharField(
+        max_length=20,
+        default='R$0,00',
+        )
+    
+    @staticmethod
+    def registrar_fatura_paga(user):
+        user_payments = PaymentsForUseMadde.objects.filter(user=user)
+        for payment in user_payments:
+            payment.status = FATURA_PAGA
+            FATURA_PAGA.save()
+        #TODO AVALIAR REFINAMENTO PARA SÓ SER PAGO O VALOR RECEBIDO NO WEBHOOK
+        #TODO FALTA TESTE
 
 def register_adesao_purchase_after_webhook_confirm(checkout_id):
     try:

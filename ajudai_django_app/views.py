@@ -5,12 +5,12 @@ from ajudai_django_app.ai_chatbot.ai_awnser import generate_gpt_response, pedido
 from ajudai_django_app.ai_chatbot.ai_tools import instructions_over_limit_error_messages, instructions_under_the_limits
 from ajudai_django_app.fechamento_de_pedido.procedimento_de_fechamento import informar_loja_fechamento_pedido
 from ajudai_django_app.forms import CustomUserCreationForm, LoginForm
-from ajudai_django_app.models import Adesao_Purchase, ChatBot, Conversa, CustomUser, DadosClienteCadatrado, Pedido, Premium_User_Payment_Method_Registration, Product, register_adesao_purchase_after_webhook_confirm, register_payment_method_success_after_webhook_confirm, update_conversa_objects
+from ajudai_django_app.models import Adesao_Purchase, ChatBot, Conversa, CustomUser, DadosClienteCadatrado, PaymentsForUseMadde, Pedido, Premium_User_Payment_Method_Registration, Product, register_adesao_purchase_after_webhook_confirm, register_payment_method_success_after_webhook_confirm, update_conversa_objects
 from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
 from ajudai_django_app.payments_process.sign_in import create_stripe_customer, return_adesao_checkout_session, return_checkout_session_id, return_checkout_session_url, return_setup_future_payments_checkout_session
 from ajudai_django_app.payments_process.webhooks import HTTP_PAYMENT_API_SIGNATURE, LABEL_TO_CHECKOUT_SESSION_ID, get_session_data, get_usage_payment_webhook_customer, get_webhook_event, success_payment_checkout_and_section_recovery, success_payment_usage_charge
 from ajudai_django_app.phone_integration.messages import send_response
-from constants import ADESAO_PURCHASE_STATUS_PENDING, ADITIONAL_INTRUCTIONS_FIELD_ID, ADITIONAL_INTRUCTIONS_FIELD_NAME, DOMAIN, EVENT_INVALID_PAYLOAD, EVENT_INVALID_SIGNATURE, FANTASY_NAME, GPT3_MODEL_NAME, GPT3_TOKEK_LIMIT, PASSWORD_FIELD_ID, PAYMENT_METHOD_REGISTRATION_STATUS_PENDING, PRUDUCT_TYPE_ADESAO, PRUDUCT_TYPE_CONVERSA_AVULSA, STANDART_PERIOD, STATUS_CONVERSA_EM_ANDAMENTO, STATUS_PEDIDO_EM_PROCESSO, STATUS_PEDIDO_ENTREGUE, STATUS_PEDIDO_PENDENTE_DE_ENTREGA, STATUS_PEDIDO_REALIZADO, SUPPORT_EMAIL, USER_LEVEL_PREMIUM, USER_NAME_FIELD_ID, WEBHOOK_ADESAO_ID, WEBHOOK_PAYMENT_METHOD_ID, WEBHOOK_USAGE_PAYMENT_ID
+from constants import ADESAO_PURCHASE_STATUS_PENDING, ADESAO_PURCHASE_STATUS_PROCESSED, ADITIONAL_INTRUCTIONS_FIELD_ID, ADITIONAL_INTRUCTIONS_FIELD_NAME, DOMAIN, EVENT_INVALID_PAYLOAD, EVENT_INVALID_SIGNATURE, FANTASY_NAME, GPT3_MODEL_NAME, GPT3_TOKEK_LIMIT, PASSWORD_FIELD_ID, PAYMENT_METHOD_REGISTRATION_STATUS_PENDING, PRODUCT_NAME_COORPORATE, PRODUCT_NAME_PLUS, PRODUCT_NAME_PREMIUM, PRUDUCT_TYPE_ADESAO, PRUDUCT_TYPE_CONVERSA_AVULSA, STANDART_PERIOD, STATUS_CONVERSA_EM_ANDAMENTO, STATUS_PEDIDO_EM_PROCESSO, STATUS_PEDIDO_ENTREGUE, STATUS_PEDIDO_PENDENTE_DE_ENTREGA, STATUS_PEDIDO_REALIZADO, SUPPORT_EMAIL, USER_LEVEL_PREMIUM, USER_NAME_FIELD_ID, WEBHOOK_ADESAO_ID, WEBHOOK_PAYMENT_METHOD_ID, WEBHOOK_USAGE_PAYMENT_ID
 from get_secret_variables import get_secret_var
 from .forms import ChatBotForm, ConversationLimitForm, CustomPasswordChangeForm, LigarDesligarTodosChatbotsForm, MessageForm
 from django.contrib import messages
@@ -276,11 +276,39 @@ def meu_plano_view(request):
 
     user.finance_check(STANDART_PERIOD)
 
+    faturas_pagas = PaymentsForUseMadde.objects.filter(user=user).order_by('-date', '-time')
+    adesao = Adesao_Purchase.objects.get(user=user, status=ADESAO_PURCHASE_STATUS_PROCESSED)
+    preco_adesao = 'R$' + str(adesao.product.price_shown)
+    plano_atual, preco_atual, conversas_a_pagar_atual = user.current_user_plan_price_and_conversas_a_pagar(STANDART_PERIOD)
+
+    is_Cooporate_Plan = False
+    is_Premium_Plan = False
+    is_Plus_Plan = False
+    is_Basic_Plan = False
+
+    if plano_atual.name == PRODUCT_NAME_COORPORATE:
+        is_Cooporate_Plan = True
+    elif plano_atual.name == PRODUCT_NAME_PREMIUM:
+        is_Premium_Plan = True
+    elif plano_atual.name == PRODUCT_NAME_PLUS:
+        is_Plus_Plan = True
+    else:
+        is_Basic_Plan = True
+
     context = {
         'user' : user,
         'userIsPremium' : user.userIsPremium(),
+        'faturas_pagas' : faturas_pagas,
+        'adesao' : adesao,
+        'plano_atual' : plano_atual,
+        'preco_atual' : preco_atual,
+        'conversas_a_pagar_atual' : conversas_a_pagar_atual,
+        'is_Cooporate_Plan' : is_Cooporate_Plan,
+        'is_Premium_Plan' : is_Premium_Plan,
+        'is_Plus_Plan' : is_Plus_Plan,
+        'is_Basic_Plan' :is_Basic_Plan,
+        'preco_adesao' : preco_adesao,
     }
-    #TODO APÓS INTEGRAÇÃO COM PAGAMENTOD
     return render(request, 'meu-plano.html', context)
 
 def minhas_conversas_view(request):
@@ -1312,6 +1340,7 @@ def usage_payment_webhook(request):
             user = CustomUser.objects.get(stripe_id=customer_id)
             Conversa.register_payed_conversations(user, amount_payed)
             user.reduce_debt_amount(amount_payed)
+            PaymentsForUseMadde.registrar_fatura_paga(user)
             return HttpResponse(status=200)
         except Exception as e:
             print(f'Erro processando o sucesso de pagamento de uso: {str(e)}')
