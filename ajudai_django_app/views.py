@@ -26,7 +26,8 @@ import stripe
 from django.utils import timezone
 from django.db.models import Case, When, Value, IntegerField
 from django.core.exceptions import ObjectDoesNotExist
-from datetime import timedelta
+from datetime import datetime, timedelta
+from django.db.models.functions import ExtractYear, ExtractMonth
 
 sao_paulo_tz = pytz.timezone('America/Sao_Paulo')
 
@@ -132,6 +133,25 @@ def dashboard_view(request):
 
     limite_atual_conversas = int(user.conversation_limit_set_by_user)
 
+    conversas_per_months = []
+
+    for i in range(6, 0, -1):
+        year, month = (today.year, today.month - i + 1)
+
+        if month <= 0:    # Handle changing years
+            year -= 1
+            month += 12
+
+        start_date = datetime(year, month, 1).date()
+        if month == 12:
+            end_date = datetime(year + 1, 1, 1).date() - timedelta(days=1)
+        else:
+            end_date = datetime(year, month + 1, 1).date() - timedelta(days=1)
+
+        conversas_month_count = Conversa.objects.filter(chatbot__in=chatbots, 
+                                                        creation_date__range=[start_date, end_date]).count()
+        conversas_per_months.append((start_date.strftime('%B'), conversas_month_count))
+
     context = {
         'user' : user,
         'conversas': conversas,
@@ -150,6 +170,7 @@ def dashboard_view(request):
         'conversas_a_pagar' : conversas_a_pagar,
         'userIsPremium' : user.userIsPremium(),
         'limite_atual_conversas': limite_atual_conversas,
+        'conversas_per_months': json.dumps(conversas_per_months),
     }
 
     return render(request, 'dashboard.html', context)

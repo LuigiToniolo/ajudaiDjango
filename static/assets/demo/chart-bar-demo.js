@@ -1,28 +1,18 @@
-// Set new default font family and font color to mimic Bootstrap's default styling
-Chart.defaults.global.defaultFontFamily = '-apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif';
-Chart.defaults.global.defaultFontColor = '#292b2c';
-
 // Bar Chart Example
 var ctx = document.getElementById("myBarChart");
 
-// Obter a data atual
-var currentDate = new Date();
+// Parse the JSON from the Django context
+console.log('{{ conversas_per_months | safe }}')
+var months = JSON.parse('{{ conversas_per_months | safe }}');
+console.log(months); 
 
-// Array para armazenar as labels
-var labels = [];
+var labels = months.map(function(month) {
+  return month[0];
+});
 
-// Loop para obter os seis meses anteriores, incluindo o mês atual
-for (var i = 5; i >= 0; i--) {
-  var date = new Date(currentDate);
-  date.setMonth(date.getMonth() - i);
-  labels.push(date.toLocaleDateString("pt-BR", { month: 'long' }));
-}
-
-var data = [];
-for (var j = 0; j < 6; j++) {
-  var randomValue = Math.floor(Math.random() * 20000);
-  data.push(randomValue);
-}
+var data = months.map(function(month) {
+  return month[1];
+});
 
 var myLineChart = new Chart(ctx, {
   type: 'bar',
@@ -30,7 +20,6 @@ var myLineChart = new Chart(ctx, {
     labels: labels,
     datasets: [{
       label: "Revenue",
-      // backgroundColor: "rgba(2,117,216,1)",
       backgroundColor: "#5C7AD3",
       borderColor: "#5C7AD3",
       data: data,
