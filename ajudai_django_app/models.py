@@ -224,40 +224,43 @@ class CustomUser(AbstractUser):
 
         
     def reset_payment_date(self, reset_period):
-        today = timezone.now().astimezone(sao_paulo_tz).date()
-        if reset_period == PAYMENT_PERIOD_DAILY:
-            reset_date = self.last_payment_date + timedelta(days=1)
-        elif reset_period == PAYMENT_PERIOD_MONTHLY:
-            # Get the next month
-            year, month = self.last_payment_date.year, self.last_payment_date.month + 1
-            day =self.last_payment_date.day
-            if month > 12:
-                year += 1
-                month = 1
-            reset_date = self.last_payment_date.replace(year=year, month=month, day=day)
-        elif reset_period == PAYMENT_PERIOD_ANUALY:
-            # Get the next month
-            year = self.last_payment_date.year + 1
-            month = self.last_payment_date.month
-            day =self.last_payment_date.day
-            reset_date = self.last_payment_date.replace(year=year, month=month, day=day)
-        else:
-            raise ValueError('Invalid reset period')
+        if self.userIsPremium == True:
+            today = timezone.now().astimezone(sao_paulo_tz).date()
+            if reset_period == PAYMENT_PERIOD_DAILY:
+                reset_date = self.last_payment_date + timedelta(days=1)
+            elif reset_period == PAYMENT_PERIOD_MONTHLY:
+                # Get the next month
+                year, month = self.last_payment_date.year, self.last_payment_date.month + 1
+                day =self.last_payment_date.day
+                if month > 12:
+                    year += 1
+                    month = 1
+                reset_date = self.last_payment_date.replace(year=year, month=month, day=day)
+            elif reset_period == PAYMENT_PERIOD_ANUALY:
+                # Get the next month
+                year = self.last_payment_date.year + 1
+                month = self.last_payment_date.month
+                day =self.last_payment_date.day
+                reset_date = self.last_payment_date.replace(year=year, month=month, day=day)
+            else:
+                raise ValueError('Invalid reset period')
 
-        if today >= reset_date:
-            self.last_payment_date = today
-            self.save()
+            if today >= reset_date:
+                self.last_payment_date = today
+                self.save()
 
     def atualiza_valor_em_debito(self, valor_a_adicionar):
         valor_devido_anterior = self.valor_em_debito
         self.valor_em_debito = valor_devido_anterior + valor_a_adicionar
         self.save()
-
     
     def current_user_plan_price_and_conversas_a_pagar(self, reset_period):
+        if self.userIsPremium == False:
+            return None, None, None
         self.reset_payment_date(reset_period)
         conversas_a_pagar = Conversa.count_conversations_in_current_billing_period(self)
         product = Product.objects.filter(Q(minimo_conversas__lte=conversas_a_pagar) & Q(maximo_conversas__gte=conversas_a_pagar)).first()
+        price = None
         if product:
             price = product.price_shown
 
@@ -326,7 +329,12 @@ class CustomUser(AbstractUser):
                         return False
                 '''
 
-        return True        
+        return True      
+    
+    def total_conversas(self):
+        chatbots = ChatBot.objects.filter(user=self)
+        total_conversas = Conversa.objects.filter(chatbot__in=chatbots).count()
+        return total_conversas  
 
 class Premium_User_Payment_Method_Registration(models.Model):
     PREMIUM_USER_REGISTER_STATUS_CHOICES = (
