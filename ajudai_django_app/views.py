@@ -580,8 +580,8 @@ def resumo_pedido(request, pedido_id):
 
     if pedido.criado_manualmente == False:
         numero_cliente_pedido = conversa.company_client_number
-        itens_do_pedido = pedido.extrair_itens_do_pedido_do_resumo()
-        valor_total_pedido = pedido.extrair_valor_total_pedido_do_resumo()
+        itens_do_pedido = pedido.itens_pedido
+        valor_total_pedido = pedido.valor_total
         taxa_de_entrega = pedido.extrair_taxa_de_entrega_do_pedido_do_resumo()
 
         try:
