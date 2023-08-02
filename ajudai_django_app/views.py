@@ -1050,7 +1050,14 @@ def process_message(data):
                             if conversation.chatbot_ativo == True and user.chatbots_on == True:
                                 role = ''
                                 try:
-                                    gpt_response, new_context, tokens_used_on_this_request = generate_gpt_response(incoming_message, conversation.context, role,  aditional_instructions, GPT3_MODEL_NAME, GPT3_TOKEK_LIMIT, chatbot.id)
+                                    gpt_response, new_context, tokens_used_on_this_request = generate_gpt_response(
+                                        incoming_message, 
+                                        conversation.context, 
+                                        role,  
+                                        aditional_instructions, 
+                                        GPT3_MODEL_NAME, 
+                                        GPT3_TOKEK_LIMIT, chatbot.id
+                                    )
                                 except Exception as e:
                                     raise Exception('Erro ao chamar função de resposta IA') from e
 
