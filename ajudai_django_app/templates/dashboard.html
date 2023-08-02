@@ -111,7 +111,8 @@
                                     <thead>
                                         <tr>
                                             <th>Nome cliente</th>
-                                            <th>Pedido</th>
+                                            <th>Número do Pedido</th>
+                                            <th>Itens</th>
                                             <th>Entrega/retirada</th>
                                             <th>Data pedido</th>
                                             <th>Valor pedido</th>
@@ -121,7 +122,8 @@
                                     <tfoot>
                                         <tr>
                                             <th>Nome cliente</th>
-                                            <th>Pedido</th>
+                                            <th>Número do Pedido</th>
+                                            <th>Itens</th>
                                             <th>Entrega/retirada</th>
                                             <th>Data pedido</th>
                                             <th>valor total</th>
@@ -132,6 +134,7 @@
                                         {% for pedido in pedidos %}
                                         <tr>
                                             <td>{{ pedido.nome_do_cliente }}</td>
+                                            <td>{{ pedido.id }}</td>
                                             <td>{{ pedido.itens_pedido }}</td>
                                             <td>{{ pedido.endereco_entrega }}</td>
                                             <td>{{ pedido.date }} às {{ pedido.time }}</td>

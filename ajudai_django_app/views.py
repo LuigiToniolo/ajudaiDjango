@@ -122,7 +122,7 @@ def dashboard_view(request):
 
     numero_de_pedidos = pedidos_do_periodo.count()
     numero_de_conversas = conversas_do_periodo.count()
-    taxa_conversao = (numero_de_pedidos/numero_de_conversas)*100
+    taxa_conversao = round((numero_de_pedidos / numero_de_conversas) * 100, 2)
     dias_para_pagamento = user.days_to_next_payment(STANDART_PERIOD)
     data_proximo_pagamento = today + timedelta(days=dias_para_pagamento)
     nome_do_plano = plano_atual_usuario.name
@@ -1066,9 +1066,11 @@ def process_message(data):
                                     nome_cliente = pedido.extrair_nome_cliente_do_resumo()
                                     endereco_cliente = pedido.extrair_endereco_cliente_do_resumo()
                                     valor_total = pedido.extrair_valor_total_pedido_do_resumo()
+                                    itens_pedido = pedido.extrair_itens_do_pedido_do_resumo()
                                     pedido.nome_do_cliente = nome_cliente
                                     pedido.endereco_entrega=endereco_cliente
                                     pedido.valor_total=valor_total
+                                    pedido.itens_pedido = itens_pedido
                                     pedido.save()
 
                                     #se os dados do cliente do pedido ja existem, atualiza-os
