@@ -1027,7 +1027,7 @@ def process_message(data):
                             Conversa.close_conversa_if_needed(user)
 
                             if not user.usuario_adimplente_ou_tolerancia_de_uso:
-                                return
+                                raise Exception(f'Usuário inadimplente:{user}')
 
                             # Get or create a conversation for the phone number
                             try:
@@ -1045,15 +1045,14 @@ def process_message(data):
                                         creation_time=timezone.now().astimezone(sao_paulo_tz).time(),
                                     )
                                 else:
-                                    return
+                                    raise Exception(f'Usuário{user} não pode criar mensagens')
                             new_context = []
                             if conversation.chatbot_ativo == True and user.chatbots_on == True:
                                 role = ''
                                 try:
                                     gpt_response, new_context, tokens_used_on_this_request = generate_gpt_response(incoming_message, conversation.context, role,  aditional_instructions, GPT3_MODEL_NAME, GPT3_TOKEK_LIMIT, chatbot.id)
                                 except Exception as e:
-                                    print ('Erro ao chamar função de resposta IA: ', e)
-                                    return
+                                    raise Exception('Erro ao chamar função de resposta IA') from e
 
                                 conversa_finalizada_com_pedido, resumo = pedido_confirmado(gpt_response)
                                 if conversa_finalizada_com_pedido:
@@ -1124,8 +1123,8 @@ def process_message(data):
 
                         else:
                             return
-                except:
-                    return
+                except Exception as e:
+                    raise Exception('Erro geral no processo') from e
             else:
                 return
 
