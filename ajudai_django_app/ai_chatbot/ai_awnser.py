@@ -83,6 +83,7 @@ def generate_gpt_response(prompt, context, role, aditional_instructions, model_n
             try:    
                 completions = openai.ChatCompletion.create(
                     model=model_name,
+                    temperature=0,
                     messages=context,
                     functions=functions,
                     function_call="auto",
@@ -108,6 +109,7 @@ def generate_gpt_response(prompt, context, role, aditional_instructions, model_n
 
                     completions_after_function_response = openai.ChatCompletion.create(
                         model=model_name,
+                        temperature=0,
                         messages=context
                     )
 
