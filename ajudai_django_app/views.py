@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpResponseForbidden, HttpResponseServerError, JsonResponse
 import pytz
+import stripe
 from ajudai_django_app.ai_chatbot.ai_awnser import generate_gpt_response, pedido_confirmado
 from ajudai_django_app.ai_chatbot.ai_tools import instructions_over_limit_error_messages, instructions_under_the_limits
 from ajudai_django_app.fechamento_de_pedido.procedimento_de_fechamento import informar_loja_fechamento_pedido
@@ -10,7 +11,7 @@ from django.contrib.auth import authenticate, login, logout, update_session_auth
 from ajudai_django_app.payments_process.sign_in import create_stripe_customer, return_adesao_checkout_session, return_checkout_session_id, return_checkout_session_url, return_setup_future_payments_checkout_session
 from ajudai_django_app.payments_process.webhooks import HTTP_PAYMENT_API_SIGNATURE, LABEL_TO_CHECKOUT_SESSION_ID, get_session_data, get_usage_payment_webhook_customer, get_webhook_event, success_payment_checkout_and_section_recovery, success_payment_usage_charge
 from ajudai_django_app.phone_integration.messages import send_response
-from constants import ADESAO_PURCHASE_STATUS_PENDING, ADESAO_PURCHASE_STATUS_PROCESSED, ADITIONAL_INTRUCTIONS_FIELD_ID, ADITIONAL_INTRUCTIONS_FIELD_NAME, DOMAIN, EVENT_INVALID_PAYLOAD, EVENT_INVALID_SIGNATURE, FANTASY_NAME, GPT3_MODEL_NAME, GPT3_TOKEK_LIMIT, PASSWORD_FIELD_ID, PAYMENT_METHOD_REGISTRATION_STATUS_PENDING, PRODUCT_NAME_COORPORATE, PRODUCT_NAME_PLUS, PRODUCT_NAME_PREMIUM, PRUDUCT_TYPE_ADESAO, PRUDUCT_TYPE_CONVERSA_AVULSA, STANDART_PERIOD, STATUS_CONVERSA_EM_ANDAMENTO, STATUS_PEDIDO_EM_PROCESSO, STATUS_PEDIDO_ENTREGUE, STATUS_PEDIDO_PENDENTE_DE_ENTREGA, STATUS_PEDIDO_REALIZADO, SUPPORT_EMAIL, USER_LEVEL_PREMIUM, USER_NAME_FIELD_ID, WEBHOOK_ADESAO_ID, WEBHOOK_PAYMENT_METHOD_ID, WEBHOOK_USAGE_PAYMENT_ID
+from constants import ADESAO_PURCHASE_STATUS_PENDING, ADESAO_PURCHASE_STATUS_PROCESSED, API_MAX_ATTEMP, ADESAO_PURCHASE_STATUS_PROCESSED, ADITIONAL_INTRUCTIONS_FIELD_ID, ADITIONAL_INTRUCTIONS_FIELD_NAME, DOMAIN, EVENT_INVALID_PAYLOAD, EVENT_INVALID_SIGNATURE, FANTASY_NAME, GPT3_MODEL_NAME, GPT3_TOKEK_LIMIT, PASSWORD_FIELD_ID, PAYMENT_METHOD_REGISTRATION_STATUS_PENDING, PRODUCT_NAME_COORPORATE, PRODUCT_NAME_PLUS, PRODUCT_NAME_PREMIUM, PRUDUCT_TYPE_ADESAO, PRUDUCT_TYPE_CONVERSA_AVULSA, SLEEP_SECONDS_INTER_AI_API_CALL, STANDART_PERIOD, STATUS_CONVERSA_EM_ANDAMENTO, STATUS_PEDIDO_EM_PROCESSO, STATUS_PEDIDO_ENTREGUE, STATUS_PEDIDO_PENDENTE_DE_ENTREGA, STATUS_PEDIDO_REALIZADO, SUPPORT_EMAIL, USER_LEVEL_PREMIUM, USER_NAME_FIELD_ID, WEBHOOK_ADESAO_ID, WEBHOOK_PAYMENT_METHOD_ID, WEBHOOK_USAGE_PAYMENT_ID
 from get_secret_variables import get_secret_var
 from .forms import ChatBotForm, ConversationLimitForm, CustomPasswordChangeForm, LigarDesligarTodosChatbotsForm, MessageForm
 from django.contrib import messages
@@ -22,7 +23,6 @@ from django.views.decorators.csrf import csrf_exempt
 import json
 from django.shortcuts import get_object_or_404
 from django_q.tasks import async_task
-import stripe
 from django.utils import timezone
 from django.db.models import Case, When, Value, IntegerField
 from django.core.exceptions import ObjectDoesNotExist
@@ -1063,41 +1063,7 @@ def process_message(data):
 
                                 conversa_finalizada_com_pedido, resumo = pedido_confirmado(gpt_response)
                                 if conversa_finalizada_com_pedido:
-                                    user=chatbot.user
-                                    pedido = Pedido.objects.create(
-                                        user=user,
-                                        conversa=conversation,
-                                        resumo_do_pedido = resumo,
-                                    )
-                                    nome_cliente = pedido.extrair_nome_cliente_do_resumo()
-                                    endereco_cliente = pedido.extrair_endereco_cliente_do_resumo()
-                                    valor_total = pedido.extrair_valor_total_pedido_do_resumo()
-                                    itens_pedido = pedido.extrair_itens_do_pedido_do_resumo()
-                                    pedido.nome_do_cliente = nome_cliente
-                                    pedido.endereco_entrega=endereco_cliente
-                                    pedido.valor_total=valor_total
-                                    pedido.itens_pedido = itens_pedido
-                                    pedido.save()
-
-                                    #se os dados do cliente do pedido ja existem, atualiza-os
-                                    try:
-                                        dados_cliente = DadosClienteCadatrado.objects.get(
-                                            ultima_conversa__company_client_number=conversation.company_client_number)
-                                        # If the object is found, update the fields
-                                        dados_cliente.ultima_conversa = conversation
-                                        dados_cliente.nome = nome_cliente
-                                        dados_cliente.endereco = endereco_cliente
-                                        dados_cliente.metodo_pagamento = pedido.extrair_metodo_pagamento_do_resumo()
-                                        dados_cliente.save()
-                                    #se os dados do cliente ainda nao existem, cria-se novo objeto
-                                    except ObjectDoesNotExist:
-                                        dados_cliente = DadosClienteCadatrado.objects.create(
-                                            ultima_conversa=conversation,
-                                            nome=nome_cliente,
-                                            endereco=endereco_cliente,
-                                            metodo_pagamento = pedido.extrair_metodo_pagamento_do_resumo(),
-                                            telefone = numero_cliente,
-                                        )
+                                    Pedido.criar_novo_pedido(user,conversation,resumo,numero_cliente) 
                                     informar_loja_fechamento_pedido(resumo, company_number)
 
                                 #chama função que responde o cliente da loja via integência artificial

@@ -1,3 +1,4 @@
+import time
 from django.db import models, transaction
 from django.contrib.auth.models import AbstractUser
 from django.contrib.auth import authenticate, login, logout
@@ -15,8 +16,8 @@ import re
 from decimal import Decimal
 import re
 from unidecode import unidecode
-
-from constants import ADESAO_PURCHASE_STATUS_CALCELED, ADESAO_PURCHASE_STATUS_PENDING, ADESAO_PURCHASE_STATUS_PROCESSED, AI_PROVIDER_OPEN_AI, BRL_CURRENCY_SIMBOL, CONVERSA_AGUARDANDO_VENCIMENTO, CONVERSA_PAGA, CONVERSA_PAGAMENTO_PENDENTE, DIAS_TOLERACIA_INADIMPLECIA, FATURA_PAGA, FATURA_PENDENTE, GPT3_MODEL_NAME, HOURS_TO_RESER_ABSOLUTE, HOURS_TO_RESET_INACTIVE, LIMITE_CONVERSAS_PLANO_PLUS, LIMITE_CONVERSAS_PLANO_PREMIUM, LIMITE_CONVERSAS_PLANO_STANDARD, MAX_CHAR_INSTRUCTIONS_CHATBOT_FORM, MENSAGEM_ENCERRAMENTO_DE_CONVERSA_INATIVIDADE, MENSAGEM_ENCERRAMENTO_DE_CONVERSA_TEMPO_LIMITE, PAYMENT_METHOD_BOLETO, PAYMENT_METHOD_CREDIT_CARD, PAYMENT_METHOD_OTHER, PAYMENT_METHOD_PIX, PAYMENT_METHOD_REGISTRATION_STATUS_FAILING, PAYMENT_METHOD_REGISTRATION_STATUS_PENDING, PAYMENT_METHOD_REGISTRATION_STATUS_SUCCESS, PAYMENT_PERIOD_ANUALY, PAYMENT_PERIOD_DAILY, PAYMENT_PERIOD_MONTHLY, PRODUCT_NAME_BASIC, PRODUCT_NAME_COORPORATE, PRODUCT_NAME_PLUS, PRODUCT_NAME_PREMIUM, PRUDUCT_TYPE_ADESAO, PRUDUCT_TYPE_CONVERSA_AVULSA, PRUDUCT_TYPE_PLAN, SEM_METODO_DE_PAGAMENTO_CLIENTE_LOCALIZADO_NA_CONVERSA, STATUS_CONVERSA_EM_ANDAMENTO, STATUS_CONVERSA_ENCERRADA, STATUS_CONVERSA_FALHA, STATUS_PEDIDO_CANCELADO, STATUS_PEDIDO_EM_PROCESSO, STATUS_PEDIDO_ENTREGUE, STATUS_PEDIDO_PENDENTE_DE_ENTREGA, STATUS_PEDIDO_REALIZADO, USER_LEVEL_FREE, USER_LEVEL_PREMIUM, USER_PAYMENT_METHOD_FAILED, USER_PAYMENT_METHOD_NOT_REGISTERED, USER_PAYMENT_METHOD_STATUS_OK
+from django.core.exceptions import ObjectDoesNotExist
+from constants import ADESAO_PURCHASE_STATUS_CALCELED, ADESAO_PURCHASE_STATUS_PENDING, ADESAO_PURCHASE_STATUS_PROCESSED, AI_PROVIDER_OPEN_AI, API_MAX_ATTEMP, BRL_CURRENCY_SIMBOL, CONVERSA_AGUARDANDO_VENCIMENTO, CONVERSA_PAGA, CONVERSA_PAGAMENTO_PENDENTE, DIAS_TOLERACIA_INADIMPLECIA, FATURA_PAGA, FATURA_PENDENTE, GPT3_MODEL_NAME, HOURS_TO_RESER_ABSOLUTE, HOURS_TO_RESET_INACTIVE, LIMITE_CONVERSAS_PLANO_PLUS, LIMITE_CONVERSAS_PLANO_PREMIUM, LIMITE_CONVERSAS_PLANO_STANDARD, MAX_CHAR_INSTRUCTIONS_CHATBOT_FORM, MENSAGEM_ENCERRAMENTO_DE_CONVERSA_INATIVIDADE, MENSAGEM_ENCERRAMENTO_DE_CONVERSA_TEMPO_LIMITE, PAYMENT_METHOD_BOLETO, PAYMENT_METHOD_CREDIT_CARD, PAYMENT_METHOD_OTHER, PAYMENT_METHOD_PIX, PAYMENT_METHOD_REGISTRATION_STATUS_FAILING, PAYMENT_METHOD_REGISTRATION_STATUS_PENDING, PAYMENT_METHOD_REGISTRATION_STATUS_SUCCESS, PAYMENT_PERIOD_ANUALY, PAYMENT_PERIOD_DAILY, PAYMENT_PERIOD_MONTHLY, PRODUCT_NAME_BASIC, PRODUCT_NAME_COORPORATE, PRODUCT_NAME_PLUS, PRODUCT_NAME_PREMIUM, PRUDUCT_TYPE_ADESAO, PRUDUCT_TYPE_CONVERSA_AVULSA, PRUDUCT_TYPE_PLAN, SEM_METODO_DE_PAGAMENTO_CLIENTE_LOCALIZADO_NA_CONVERSA, SLEEP_SECONDS_INTER_AI_API_CALL, STATUS_CONVERSA_EM_ANDAMENTO, STATUS_CONVERSA_ENCERRADA, STATUS_CONVERSA_FALHA, STATUS_PEDIDO_CANCELADO, STATUS_PEDIDO_EM_PROCESSO, STATUS_PEDIDO_ENTREGUE, STATUS_PEDIDO_PENDENTE_DE_ENTREGA, STATUS_PEDIDO_REALIZADO, USER_LEVEL_FREE, USER_LEVEL_PREMIUM, USER_PAYMENT_METHOD_FAILED, USER_PAYMENT_METHOD_NOT_REGISTERED, USER_PAYMENT_METHOD_STATUS_OK
 
 sao_paulo_tz = pytz.timezone('America/Sao_Paulo')
 def current_date_sao_paulo():
@@ -753,7 +754,53 @@ class Pedido(models.Model):
         except:
             return 'Não foi possível extrair a taxa de entrega da conversa'
 
+    @staticmethod
+    def criar_novo_pedido(user, conversation, resumo, numero_cliente):
+        pedido = Pedido.objects.create(
+            user=user,
+            conversa=conversation,
+            resumo_do_pedido = resumo,
+        )
+        attempt_count = 0
+        success_pedido_register = False
+        while attempt_count < API_MAX_ATTEMP and success_pedido_register == False:
+            try:
+                time.sleep(SLEEP_SECONDS_INTER_AI_API_CALL)
+                nome_cliente = pedido.extrair_nome_cliente_do_resumo()
+                time.sleep(SLEEP_SECONDS_INTER_AI_API_CALL)
+                endereco_cliente = pedido.extrair_endereco_cliente_do_resumo()
+                time.sleep(SLEEP_SECONDS_INTER_AI_API_CALL)
+                valor_total = pedido.extrair_valor_total_pedido_do_resumo()
+                time.sleep(SLEEP_SECONDS_INTER_AI_API_CALL)
+                itens_pedido = pedido.extrair_itens_do_pedido_do_resumo()
+                pedido.nome_do_cliente = nome_cliente
+                pedido.endereco_entrega=endereco_cliente
+                pedido.valor_total=valor_total
+                pedido.itens_pedido = itens_pedido
+                pedido.save()
+                success_pedido_register = True
+            except:
+                 time.sleep(SLEEP_SECONDS_INTER_AI_API_CALL)
 
+                                    #se os dados do cliente do pedido ja existem, atualiza-os
+        try:
+            dados_cliente = DadosClienteCadatrado.objects.get(
+                 ultima_conversa__company_client_number=conversation.company_client_number)
+            # If the object is found, update the fields
+            dados_cliente.ultima_conversa = conversation
+            dados_cliente.nome = nome_cliente
+            dados_cliente.endereco = endereco_cliente
+            dados_cliente.metodo_pagamento = pedido.extrair_metodo_pagamento_do_resumo()
+            dados_cliente.save()
+        #se os dados do cliente ainda nao existem, cria-se novo objeto
+        except ObjectDoesNotExist:
+            dados_cliente = DadosClienteCadatrado.objects.create(
+                ultima_conversa=conversation,
+                nome=nome_cliente,
+                endereco=endereco_cliente,
+                metodo_pagamento = pedido.extrair_metodo_pagamento_do_resumo(),
+                telefone = numero_cliente,
+            )
     
     def __str__(self):
         if self.criado_manualmente == True:

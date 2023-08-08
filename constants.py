@@ -86,6 +86,8 @@ GPT3_TOKEK_LIMIT = 4096
 MAX_INSTRUCTIONS_RATE_SIZE = 0.95
 #o limite deixado para a pergunta/prompt é, então 0,05 menos o limite de reserva para a resposta abaixo
 
+SLEEP_SECONDS_INTER_AI_API_CALL = 0.5
+API_MAX_ATTEMP = 5
 
 MAX_PROMPT_IN_CHARS = int(GPT3_TOKEK_LIMIT * 4)
 MAX_CHAR_INSTRUCTIONS_CHATBOT_FORM = int(GPT3_TOKEK_LIMIT *MAX_INSTRUCTIONS_RATE_SIZE * 4)
