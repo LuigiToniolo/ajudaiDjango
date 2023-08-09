@@ -1056,16 +1056,20 @@ def process_message(data):
                                         role,  
                                         aditional_instructions, 
                                         GPT3_MODEL_NAME, 
-                                        GPT3_TOKEK_LIMIT, chatbot.id
+                                        GPT3_TOKEK_LIMIT, 
+                                        chatbot.id,
+                                        user,
+                                        conversation
                                     )
                                 except Exception as e:
                                     raise Exception('Erro ao chamar função de resposta IA') from e
 
+                                """" finalização de conversa por chamada de função
                                 conversa_finalizada_com_pedido, resumo = pedido_confirmado(gpt_response)
                                 if conversa_finalizada_com_pedido:
                                     Pedido.criar_novo_pedido(user,conversation,resumo,numero_cliente) 
                                     informar_loja_fechamento_pedido(resumo, company_number)
-
+                                """
                                 #chama função que responde o cliente da loja via integência artificial
                                 send_response(chatbot.facebook_page_id, chatbot.whats_app_api_auth_token, numero_cliente, gpt_response)
 

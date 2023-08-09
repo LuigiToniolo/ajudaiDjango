@@ -754,6 +754,7 @@ class Pedido(models.Model):
         except:
             return 'Não foi possível extrair a taxa de entrega da conversa'
 
+    # ciração de pedido a ser chamada quando não se tem os parâmetros do pedido (a serem extraidos do reumo)
     @staticmethod
     def criar_novo_pedido(user, conversation, resumo, numero_cliente):
         pedido = Pedido.objects.create(
@@ -800,6 +801,38 @@ class Pedido(models.Model):
                 endereco=endereco_cliente,
                 metodo_pagamento = pedido.extrair_metodo_pagamento_do_resumo(),
                 telefone = numero_cliente,
+            )
+
+    def criar_novo_pedido_ja_com_parametros(nome_cliente, endereco_cliente, itens_pedido, valor_total, metodo_de_pagamento, resumo_do_pedido, user, conversation):
+        pedido = Pedido.objects.create(
+            user=user,
+            conversa=conversation,
+            resumo_do_pedido = resumo_do_pedido,
+        )
+
+        pedido.nome_do_cliente = nome_cliente
+        pedido.endereco_entrega=endereco_cliente
+        pedido.valor_total=valor_total
+        pedido.itens_pedido = itens_pedido
+        pedido.save()
+
+        try:
+            dados_cliente = DadosClienteCadatrado.objects.get(
+                 ultima_conversa__company_client_number=conversation.company_client_number)
+            # If the object is found, update the fields
+            dados_cliente.ultima_conversa = conversation
+            dados_cliente.nome = nome_cliente
+            dados_cliente.endereco = endereco_cliente
+            dados_cliente.metodo_pagamento = metodo_de_pagamento
+            dados_cliente.save()
+        #se os dados do cliente ainda nao existem, cria-se novo objeto
+        except ObjectDoesNotExist:
+            dados_cliente = DadosClienteCadatrado.objects.create(
+                ultima_conversa=conversation,
+                nome=nome_cliente,
+                endereco=endereco_cliente,
+                metodo_pagamento = pedido.extrair_metodo_pagamento_do_resumo(),
+                telefone = conversation.company_client_number,
             )
     
     def __str__(self):
