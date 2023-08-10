@@ -146,6 +146,7 @@ def generate_gpt_response(prompt, context, role, aditional_instructions, model_n
                 if response_message.get("function_call"):
                     available_functions = {
                         "obeter_info_produto_cardapio": obeter_info_produto_cardapio,
+                         "criar_pedido_e_retornar_resumo": criar_pedido_e_retornar_resumo,
                     } 
                     function_name = response_message["function_call"]["name"]
                     fuction_to_call = available_functions[function_name]
