@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpResponseForbidden, HttpResponseServerError, JsonResponse
 import pytz
 import stripe
-from ajudai_django_app.ai_chatbot.ai_awnser import generate_gpt_response, pedido_confirmado
+from ajudai_django_app.ai_chatbot.ai_awnser import generate_gpt_response
 from ajudai_django_app.ai_chatbot.ai_tools import instructions_over_limit_error_messages, instructions_under_the_limits
 from ajudai_django_app.fechamento_de_pedido.procedimento_de_fechamento import informar_loja_fechamento_pedido
 from ajudai_django_app.forms import CustomUserCreationForm, LoginForm
