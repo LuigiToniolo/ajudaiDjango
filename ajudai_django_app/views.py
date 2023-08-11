@@ -579,20 +579,16 @@ def resumo_pedido(request, pedido_id):
     conversa = pedido.conversa
 
     if pedido.criado_manualmente == False:
+        
         numero_cliente_pedido = conversa.company_client_number
         itens_do_pedido = pedido.itens_pedido
         valor_total_pedido = pedido.valor_total
-        taxa_de_entrega = pedido.extrair_taxa_de_entrega_do_pedido_do_resumo()
+        taxa_de_entrega = pedido.taxa_de_entrega
 
         try:
             dados_cliente = DadosClienteCadatrado.objects.get(ultima_conversa=conversa)
-        except ObjectDoesNotExist:
-            dados_cliente = DadosClienteCadatrado.objects.create(
-                ultima_conversa=conversa,
-                nome=pedido.extrair_nome_cliente_do_resumo(),
-                endereco=pedido.extrair_endereco_cliente_do_resumo(),
-                metodo_pagamento = pedido.extrair_metodo_pagamento_do_resumo(),
-            )
+        except:
+            dados_cliente = None
     else:
         numero_cliente_pedido = '0'
         itens_do_pedido  = ''

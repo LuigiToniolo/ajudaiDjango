@@ -688,6 +688,10 @@ class Pedido(models.Model):
         max_length=200,
         default='',
         )
+    taxa_de_entrega = models.CharField(
+        max_length=60,
+        default='',
+        )
     valor_total = models.CharField(
         max_length=60,
         default='',
@@ -803,7 +807,7 @@ class Pedido(models.Model):
                 telefone = numero_cliente,
             )
 
-    def criar_novo_pedido_ja_com_parametros(nome_cliente, endereco_cliente, itens_pedido, valor_total, metodo_de_pagamento, resumo_do_pedido, user, conversation):
+    def criar_novo_pedido_ja_com_parametros(nome_cliente, endereco_cliente, itens_pedido, taxa_de_entrega, valor_total, metodo_de_pagamento, resumo_do_pedido, user, conversation):
         pedido = Pedido.objects.create(
             user=user,
             conversa=conversation,
@@ -814,6 +818,7 @@ class Pedido(models.Model):
         pedido.endereco_entrega=endereco_cliente
         pedido.valor_total=valor_total
         pedido.itens_pedido = itens_pedido
+        pedido.taxa_de_entrega = taxa_de_entrega
         pedido.save()
 
         try:
@@ -831,7 +836,7 @@ class Pedido(models.Model):
                 ultima_conversa=conversation,
                 nome=nome_cliente,
                 endereco=endereco_cliente,
-                metodo_pagamento = pedido.extrair_metodo_pagamento_do_resumo(),
+                metodo_pagamento = metodo_de_pagamento,
                 telefone = conversation.company_client_number,
             )
     

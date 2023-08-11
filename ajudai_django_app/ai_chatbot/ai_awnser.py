@@ -23,6 +23,7 @@ def criar_pedido_e_retornar_resumo(
         nome_cliente, 
         endereco_cliente,
         itens_pedido,
+        taxa_de_entrega,
         valor_total,
         metodo_de_pagamento,
         user, 
@@ -30,7 +31,7 @@ def criar_pedido_e_retornar_resumo(
     ):
     resumo_do_pedido = f"Seu pedido foi confirmado! \nResumo do Pedido:\n - Nome do Cliente: {nome_cliente} \n - Itens do pedido: {itens_pedido} \n - Total do pedido: {valor_total} \n - Método de Pagamento: {metodo_de_pagamento} - Endereço: {endereco_cliente}"
     try:
-        Pedido.criar_novo_pedido_ja_com_parametros(nome_cliente, endereco_cliente, itens_pedido, valor_total, metodo_de_pagamento, resumo_do_pedido, user, conversation)
+        Pedido.criar_novo_pedido_ja_com_parametros(nome_cliente, endereco_cliente, itens_pedido, taxa_de_entrega, valor_total, metodo_de_pagamento, resumo_do_pedido, user, conversation)
         return resumo_do_pedido
     except:
         #TODO aqui, caso necessário, pode executar outras funções, como, desativar automaticamnte o chatbot
@@ -74,6 +75,10 @@ def generate_gpt_response(prompt, context, role, aditional_instructions, model_n
                     "itens_pedido": {
                         "type": "string",
                         "description": 'Itens do pedido do cliente, cada qual o respectivo preço. Inserir a taxa de entrega como um item caso a opção seja de entrega (e não retirada no balcão) (exemplo: Pizza de Mussarela Grande - R$ 45,00; Cola Cola lata - R$ 5,00; Taxa de Entrega R$ 5,00;)',
+                    },
+                    "taxa_de_entrega": {
+                        "type": "string",
+                        "description": 'Taxa de Entrega. Caso o cliente tenha optado por retirar no balcão, o valor é R$0,00 (retirar no balcão)',
                     },
                     "valor_total": {
                         "type": "string",
@@ -161,6 +166,7 @@ def generate_gpt_response(prompt, context, role, aditional_instructions, model_n
                             nome_cliente = function_args.get("nome_cliente"),
                             endereco_cliente = function_args.get("endereco_cliente"),
                             itens_pedido = function_args.get("itens_pedido"),
+                            taxa_de_entrega = function_args.get("taxa_de_entrega"),
                             valor_total = function_args.get("valor_total"),
                             metodo_de_pagamento = function_args.get("metodo_de_pagamento"),
                             user = user, 
