@@ -27,14 +27,33 @@
                             <div class="texto-cabecalho">
                                 <h2>Planos disponíveis</h2>
                                 <h4>Você ainda não assinou nenhum plano.</h4>
-                                <p>Escolha o melhor plano para Ajudar a alavancar seu negócio e aumentar suas vendas!</p>
+                                <p>Escolha o melhor plano para <strong>Ajudar</strong> a alavancar seu negócio e aumentar suas vendas!</p>
                             </div>
                             <img class="doodle-plans" src="{% static 'image/doodle-plans.svg' %}" alt="doodle plans ajudai">
                         </div>
                         <div class="divider"></div>
+
+                        <div class="titulo-plan">
+                          <h3 style="margin-right: 3vw;">Fique por dentro dos nossos valores!</h3>
+                          <button id="progress-prev" class="btn-planos" disabled><i class="fa-solid fa-arrow-left"></i></button>
+                          <button id="progress-next" class="btn-planos"><i class="fa-solid fa-arrow-right"></i></button>
+                        </div>
+
+                        <p style="width: 70%;">Aqui quanto <strong>mais</strong> você usa, <strong>menos</strong> você paga! Veja como funciona os valores por conversa do plano <strong>pós pago</strong> do Ajudai.</p>
+
+                        <div id="progressx">
+                          <div id="progress-barx"></div>
+                          <ul id="progress-numx">
+                            <li class="stepx activex">Standard</li>
+                            <li class="stepx">Plus</li>
+                            <li class="stepx">Premium</li>
+                            <li class="stepx">VIP</li>
+                          </ul>
+                        </div>
                         
                         <div class="plan-container">
-                            <div class="plan">
+
+                            <!-- <div class="plan">
                                 <img class="standard-img" src="{% static 'image/coin.png' %}" alt="standard plans ajudai">
                                 <h3 class="title">Standard</h3>
                                 <p class="price"><span class="moeda">R$</span>0,20</p>
@@ -49,9 +68,16 @@
                                     <li>Gestor de pedidos</li>
                             </ul>
                             <a href="#" class="select-plan">Assine já</a>
+                        </div> -->
+
+                            <div class="plan">
+                                <img class="standard-img" src="{% static 'image/coin.png' %}" alt="standard plans ajudai">
+                                <h3 class="title">Standard</h3>
+                                <p class="price"><span class="moeda">R$</span>0,20<span class="moeda1">/Conversa</span></p>
+                                <p class="conversas-qnt">Usando <strong>0 a 1500</strong><span class="moeda1">/mês</span></p>
                         </div>
                         
-                        <div class="plan-popular">
+                        <!-- <div class="plan-popular">
                             <div class="pricing_best">
                                 <span class="pricing_best-text">Popular +</span>
                             </div>
@@ -69,9 +95,16 @@
                                     <li>Gestor de pedidos</li>
                                 </ul>
                                 <a href="#" class="select-plan">Assine já</a>
-                            </div>
+                        </div> -->
 
-                            <div class="plan">
+                        <div class="plan">
+                            <img class="standard-img" src="{% static 'image/money.png' %}" alt="advanced plans ajudai">
+                            <h3 class="title">Plus</h3>
+                            <p class="price-pop"><span class="moeda">R$</span>0,18<span class="moeda1">/Conversa</span></p>
+                            <p class="conversas-qnt">Usando <strong>1501 a 2500</strong><span class="moeda1">/mês</span></p>
+                        </div>
+
+                            <!-- <div class="plan">
                                 <img class="standard-img" src="{% static 'image/premium.png' %}" alt="premium plans ajudai">
                                 <h2 class="title">Premium</h2>
                                 <p class="price"><span class="moeda">R$</span>0,16</p>
@@ -87,7 +120,18 @@
                             </ul>
                                 <a href="#" class="select-plan">Assine já</a>
                             </div>
+                             -->
+
                             <div class="plan">
+                                <img class="standard-img" src="{% static 'image/premium.png' %}" alt="premium plans ajudai">
+                                <h2 class="title">Premium</h2>
+                                <p class="price"><span class="moeda">R$</span>0,16<span class="moeda1">/Conversa</span></p>
+                                <p class="conversas-qnt">Usando <strong>2501 a 4500</strong><span class="moeda1">/mês</span></p>
+                            </div>
+
+
+
+                            <!-- <div class="plan">
                                 <img class="standard-img" src="{% static 'image/rocket.png' %}" alt="business vip plan ajudai">
                                 <h2 class="title">Corporativo VIP</h2>
                                 <p class="price"><span class="moeda">R$</span>0,12</p>
@@ -102,10 +146,59 @@
                                     <li>Gestor de pedidos</li>
                             </ul>
                                 <a href="#" class="select-plan">Assine já</a>
+                            </div> -->
+
+                            <div class="plan">
+                                <img class="standard-img" src="{% static 'image/rocket.png' %}" alt="business vip plan ajudai">
+                                <h2 class="title">Corporativo VIP</h2>
+                                <p class="price"><span class="moeda">R$</span>0,12<span class="moeda1">/Conversa</span></p>
+                                <p class="conversas-qnt">Usando <strong>4501 a 20000</strong><span class="moeda1">/mês</span></p>
+                            </div>
+                          </div>
+                          <div class="secao-implementacao">
+                            <div style="width: 40%">
+                              <h3>Taxa de implementação Ajudai</h3>
+                              <p>Para a implementação do Chatbot Ajudai, nós cobramos um valor de <strong>R$559.</strong> 
+                              Esse custo tem a finalidade de: </p>
+                              <ul style="list-style: none; margin: 0; padding: 0">
+                                <li style="margin: 10px 0;"><i class="fa-solid fa-pen-to-square" style="margin-right: 10px; width: 20px; height: auto;"></i>Customizar o Chatbot com as regras do seu estabelecimeto</li>
+                                <li style="margin: 10px 0;"><i class="fa-solid fa-rotate" style="margin-right: 10px; width: 20px; height: auto;"></i>Sincronizar API do Whatsapp</li>
+                                <li style="margin: 10px 0;"><i class="fa-solid fa-terminal" style="margin-right: 10px; width: 20px; height: auto;"></i>Desenvolver comandos para o Chatbot</li>
+                                <li style="margin: 10px 0;"><i class="fa-regular fa-file" style="margin-right: 10px; width: 20px; height: auto;"></i>Adequar cardápio do restaurante (se houver)</li>
+                                <li style="margin: 10px 0;"><i class="fa-solid fa-gear" style="margin-right: 10px; width: 20px; height: auto;"></i>Manutenção contra bugs</li>
+                              </ul>
+                            </div>
+                            <div style="display: flex; justify-content: center; flex-direction:column; align-items: center; width: 60%">
+                              <img style="width: 300px; height: auto;" src="{% static 'image/pagamento_ajudai_ilustration.svg' %}" alt="pagamento ajudai">
+                              <button class="assinatura-btn">Assine já</button>
+                              <p style="margin: 0; padding: 0; text-align: center; font-size: 12px">*A taxa de implementação será cobrado apenas <strong>uma vez</strong  > e deverá ser paga no primeiro mês de uso</p>
                             </div>
                           </div>
                           
                           <div class="divider"></div>
+
+                          <h3>Faça o cálculo ideal para seu negócio</h3>
+                          <p>Coloque o número de conversas no campo abaixo para fazer o cálculo exato do valor do nosso serviço</p>
+
+
+                          <div class="calculadora">
+                            <div class="calculadora-conversas">
+                                <!-- <label for="conversas" class="label-calculadora">Quantidade de Conversas:</label> -->
+                                <input type="number" id="conversas" min="0" placeholder="Digite o número de conversas..." class="input-calculadora">
+                                <button id="calcular-btn" class="button-calculadora">Calcular<i class="fa-solid fa-calculator"></i></button>
+                            </div>
+                            
+                            <div class="resposta-valores">
+                                
+                                <p><span id="quantidade-conversas-label">Para a quantidade de conversas de: </span></p>
+                                <p class="quantidade-conversas"><span id="quantidade-conversas"></span></p>
+                                <p class="mensagem-erro"><span class="mensagem-erro" id="mensagem-erro"></span></p>
+
+                                <p><span id="valor-total-label">Seu investimento total mensal será: </span></p>
+                                <p class="valor-total"><span id="valor-total"></span></p>
+                                <p style="margin: 0; padding: 0; font-size: 12px">*Valor calculado segue a regra de preço dos planos acima</p>
+                            </div>
+                        </div>
                           
                           <div class="explain-conversation">
                             <h3>Como funciona a cobrança de uma conversa?</h3>
@@ -140,26 +233,8 @@
                             </tbody>
                         </table>
 
-                        <h3>Faça o cálculo ideal para seu negócio</h3>
-                        <p>Coloque o número de conversas no campo abaixo para fazer o cálculo exato do valor do nosso serviço</p>
-
-                        <div class="calculadora">
-                            <div class="calculadora-conversas">
-                                <!-- <label for="conversas" class="label-calculadora">Quantidade de Conversas:</label> -->
-                                <input type="number" id="conversas" min="0" placeholder="Digite o número de conversas..." class="input-calculadora">
-                                <button id="calcular-btn" class="button-calculadora">Calcular<i class="fa-solid fa-calculator"></i></button>
-                            </div>
-                            
-                            <div class="resposta-valores">
-                                
-                                <p><span id="quantidade-conversas-label">Para a quantidade de conversas de: </span></p>
-                                <p class="quantidade-conversas"><span id="quantidade-conversas"></span></p>
-                                <p class="mensagem-erro"><span class="mensagem-erro" id="mensagem-erro"></span></p>
-
-                                <p><span id="valor-total-label">Seu investimento total mensal será: </span></p>
-                                <p class="valor-total"><span id="valor-total"></span></p>
-                            </div>
-                        </div>
+                        
+                        
                         
 
                     </div>
@@ -179,6 +254,8 @@
                 var valorTotalLabel = document.getElementById("valor-total-label");
                 var valorTotalElement = document.getElementById("valor-total");
                 var messageError = document.getElementById("mensagem-erro");
+
+                inputConversas.value = "0";
               
                 inputConversas.addEventListener("keydown", function(event) {
                   if (event.key === "Enter") {
@@ -186,6 +263,8 @@
                     calcularPrecificacao();
                   }
                 });
+
+                calcularPrecificacao();
               
                 calcularBtn.addEventListener("click", function() {
                   calcularPrecificacao();
@@ -225,6 +304,92 @@
               
               
         </script>
-        
+
+  
+        <script>
+          const progressBar = document.getElementById("progress-barx");
+          const progressNext = document.getElementById("progress-next");
+          const progressPrev = document.getElementById("progress-prev");
+          const steps = document.querySelectorAll(".stepx");
+          let active = 1;
+
+          document.addEventListener("DOMContentLoaded", () => {
+            // Configurar o plano padrão
+            active = 1;
+            updateProgress();
+            updateCardHighlight(0); // Destacar o plano padrão
+          });
+          
+
+          progressNext.addEventListener("click", () => {
+            active++;
+            if (active > steps.length) {
+              active = steps.length;
+            }
+            updateProgress();
+            updateCardHighlight(active - 1);
+          });
+
+          progressPrev.addEventListener("click", () => {
+            active--;
+            if (active < 1) {
+              active = 1;
+            }
+            updateProgress();
+            updateCardHighlight(active - 1);
+          });
+
+          steps.forEach((step, index) => {
+            step.addEventListener("click", () => {
+              active = index + 1;
+              updateProgress();
+              updateCardHighlight(index); // Chamada à função para destacar o card correspondente
+            });
+          });
+
+          const updateCardHighlight = (activeIndex) => {
+            const planContainers = document.querySelectorAll(".plan-container .plan");
+            planContainers.forEach((planContainer, index) => {
+              if (index === activeIndex) {
+                planContainer.classList.add("highlighted");
+                planContainer.style.opacity = "1"; // Restaurar a opacidade completa
+              } else {
+                planContainer.classList.remove("highlighted");
+                planContainer.style.opacity = "0.5"; // Reduzir a opacidade dos outros cards
+              }
+            });
+          };
+
+          const updateProgress = () => {
+            steps.forEach((step, i) => {
+              if (i < active) {
+                step.classList.add("activex");
+              } else {
+                step.classList.remove("activex");
+              }
+            });
+            progressBar.style.width = ((active - 1) / (steps.length - 1)) * 100 + "%";
+            if (active === 1) {
+              progressPrev.disabled = true;
+            } else if (active === steps.length) {
+              progressNext.disabled = true;
+            } else {
+              progressPrev.disabled = false;
+              progressNext.disabled = false;
+            }
+          };
+
+          // Atualize o progresso inicial
+          updateProgress();
+
+        </script>
     </body>
 </html>
+<!-- 
+steps.forEach((step, index) => {
+  step.addEventListener("click", () => {
+    active = index + 1;
+    updateProgress();
+    updateCardHighlight(index); // Chamada à função para destacar o card correspondente
+  });
+}); -->

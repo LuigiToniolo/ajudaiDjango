@@ -11371,10 +11371,10 @@ outline: none;
   box-shadow: 0 1px 3px 0 rgba(0,0,0,.2), 0 1px 1px 0 rgba(0,0,0,.14), 0 2px 1px -1px rgba(0,0,0,.12)
 }
 
-.plan-popular:hover {
+/* .plan-popular:hover {
   transform: scale(1.05);
   box-shadow: 0 1px 30px 0 rgba(0,0,0,.2), 0 1px 1px 0 rgba(0,0,0,.14), 0 2px 1px -1px rgba(0,0,0,.12)
-}
+} */
 
 .plan-container {
   display: flex;
@@ -11391,8 +11391,48 @@ outline: none;
   border-radius: 5px;
   text-align: center;
   margin: 10px;
-  transition: transform 90ms ease-in;
-  box-shadow: 0 1px 3px 0 rgba(0,0,0,.2), 0 1px 1px 0 rgba(0,0,0,.14), 0 2px 1px -1px rgba(0,0,0,.12)
+  /* transition: transform 90ms ease-in; */
+  transition: box-shadow 0.3s ease-in-out, opacity 0.3s ease-in-out;
+  box-shadow: 0 1px 3px 0 rgba(0,0,0,.2), 0 1px 1px 0 rgba(0,0,0,.14), 0 2px 1px -1px rgba(0,0,0,.12);
+  opacity: 0.5;
+ 
+}
+
+.plan-container .plan.highlighted {
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.5);
+  opacity: 1; 
+  transform: scale(1.05);
+  
+}
+.btn-planos {
+  margin-bottom: 3vh;
+  width: auto;
+  margin-bottom: 2vh;   
+  margin-top: 2vh;  
+  margin-right: 1vw;
+  padding: 1%;
+  background-color: #5C7AD3;
+  color: #fff;
+  border: transparent;
+  border-radius: 5px;
+  text-align: center;
+  transition: background-color 0.3s ease;
+}
+
+.btn-planos:active {
+  background-color: #889BD3;
+}
+
+.titulo-plan {
+  display: flex;
+  flex-direction: row;
+  align-items: baseline;
+}
+
+
+
+.btn-planos:disabled {
+  background-color: #889BD3;
 }
 
 .calculadora {
@@ -11478,6 +11518,31 @@ outline: none;
   text-align: center;
 }
 
+.assinatura-btn {
+  margin-bottom: 3vh;
+  display: flex;
+  justify-content: center;
+  padding: 10px 100px;
+  background-color: #F58A07;
+  color: #fff;
+  border: transparent;
+  font-weight: 500;
+  border-radius: 25px;
+  transition: transform 90ms ease-in;
+  text-align: center;
+}
+
+.assinatura-btn:hover {
+  transform: scale(1.05);
+}
+
+.secao-implementacao {
+  display: flex;
+  align-items: center;
+  margin: 5vh 0;
+}
+
+
 .button-calculadora:hover {
   transform: scale(1.05);
 }
@@ -11522,21 +11587,77 @@ outline: none;
 }
 
 
-.explain-conversation {
+#progressx {
+  position: relative;
+  margin-bottom: 2vh;   
+  margin-bottom: 2vh;
+  width: 80%;
+  margin: 3vh 10%;
+  
+}
 
+#progress-barx {
+  position: absolute;
+  background: #5C7AD3;
+  height: 5px;
+  width: 0%;
+  top: 41%;
+  left: 0;
+  z-index: 1;
+}
+
+#progress-numx {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  justify-content: space-between;
+  z-index: 2;
+}
+
+#progress-numx::before {
+  content: "";
+  background-color: lightgray;
+  position: absolute;
+  top: 41%;
+  left: 0;
+  line-height: 30px;
+  height: 5px;
+  width: 100%;
+  z-index: 0;
+}
+
+#progress-numx .stepx {
+  border: 3px solid lightgray;
+  border-radius: 5px;
+  padding: 10px;
+  width: auto;
+  height: auto;
+  text-align: center;
+  background-color: #fff;
+  font-weight: 500;
+  font-size: 16px; 
+  cursor: pointer;
+  position: relative;
+  z-index: 1;
+}
+
+#progress-numx .stepx.activex {
+  border-color: #5C7AD3;
+  background-color: #5C7AD3;
+  color: #fff;
+  z-index: 99;
 }
 
 
-
-
-.plan:hover {
+/* .plan:hover {
   transform: scale(1.05);
   box-shadow: 0 1px 30px 0 rgba(0,0,0,.2), 0 1px 1px 0 rgba(0,0,0,.14), 0 2px 1px -1px rgba(0,0,0,.12)
-}
+} */
 
 .standard-img {
   width: 150px;
-  height: auto;
+  height: 150px;
 }
 
 .title {
@@ -11552,6 +11673,10 @@ outline: none;
   margin-top: 12px;
 }
 
+.moeda1 {
+  font-size: 11px;
+}
+
 .condicao {
   font-size: 12px;
   margin-top: 20px;
@@ -11559,7 +11684,16 @@ outline: none;
 
 .cobranca-conversa {
   margin: 0;
-  font-size: 22px;
+  font-size: 20px;
+}
+
+.conversas-qnt {
+  font-size: 16px;
+  /* font-weight: 500; */
+  /* margin-top: 1vh; */
+  text-align: center;
+  padding: 0;
+  margin: 0;
 }
 
 .resumo {
