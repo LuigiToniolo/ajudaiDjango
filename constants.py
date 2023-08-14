@@ -100,6 +100,8 @@ MIN_TOKEN_LIMIT_RATE_LEFT_TO_AWNSER = 0.0
 CHAT_API_GENERAL_ERROR_MESSAGE = 'Me desculpe, tive problemas para conseguir obter uma resposta para você. Por favor, tente novamente mais tarde...'
 CHAT_API_MESSAGE_AND_AWNSER_OVERLIMT_EVEN_TRYING_TO_SHORT = 'Desculpe, a resposta que você que quer ocuparia um espaço de maior do que sou capaz de processar. Por favor, pergunte algo mais específico.'
 
+FECHAR_PEDIDO_ERROR_MESSAGE_FUNCTION_CALL = 'Não foi possível realizar o fechamento do pedido. Tente novamente ou aguarde até que um atendente humano assuma a conversa'
+
 TOKEN_LIMIT_MARGIN = 0.08
 #---------------------------------------------------------------------
 #FORM FIELD LIMITS AND SIZES

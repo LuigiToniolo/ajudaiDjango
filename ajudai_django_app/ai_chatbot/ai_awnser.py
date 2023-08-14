@@ -3,7 +3,7 @@ import json
 from ajudai_django_app.ai_chatbot.ai_extration import ai_gpt_extrair_informacao_do_cardapio
 from ajudai_django_app.ai_chatbot.ai_tools import count_tokens, instruction_builder, messages_to_string
 from ajudai_django_app.models import ChatBot, Pedido
-from constants import AWNSER_WHEN_MESSAGE_IS_OVER_THE_LIMIT, CHAT_API_GENERAL_ERROR_MESSAGE, CHAT_API_MESSAGE_AND_AWNSER_OVERLIMT_EVEN_TRYING_TO_SHORT, MIN_TOKEN_LIMIT_RATE_LEFT_TO_AWNSER, TOKEN_LIMIT_MARGIN
+from constants import AWNSER_WHEN_MESSAGE_IS_OVER_THE_LIMIT, CHAT_API_GENERAL_ERROR_MESSAGE, CHAT_API_MESSAGE_AND_AWNSER_OVERLIMT_EVEN_TRYING_TO_SHORT, FECHAR_PEDIDO_ERROR_MESSAGE_FUNCTION_CALL, MIN_TOKEN_LIMIT_RATE_LEFT_TO_AWNSER, TOKEN_LIMIT_MARGIN
 
 from get_secret_variables import get_secret_var
 
@@ -30,12 +30,8 @@ def criar_pedido_e_retornar_resumo(
         conversation
     ):
     resumo_do_pedido = f"Seu pedido foi confirmado! \nResumo do Pedido:\n - Nome do Cliente: {nome_cliente} \n - Itens do pedido: {itens_pedido} \n - Total do pedido: {valor_total} \n - Método de Pagamento: {metodo_de_pagamento} - Endereço: {endereco_cliente}"
-    try:
-        Pedido.criar_novo_pedido_ja_com_parametros(nome_cliente, endereco_cliente, itens_pedido, taxa_de_entrega, valor_total, metodo_de_pagamento, resumo_do_pedido, user, conversation)
-        return resumo_do_pedido
-    except:
-        #TODO aqui, caso necessário, pode executar outras funções, como, desativar automaticamnte o chatbot
-        return 'Não foi possível realizar o fechamento do pedido. Tente novamente ou aguarde até que um atendente humano assuma a conversa'
+    Pedido.criar_novo_pedido_ja_com_parametros(nome_cliente, endereco_cliente, itens_pedido, taxa_de_entrega, valor_total, metodo_de_pagamento, resumo_do_pedido, user, conversation)
+    return resumo_do_pedido 
 
 
 
@@ -158,35 +154,65 @@ def generate_gpt_response(prompt, context, role, aditional_instructions, model_n
                     function_args = json.loads(response_message["function_call"]["arguments"])
                     if function_name == 'obeter_info_produto_cardapio':
                         function_response = fuction_to_call(
-                            informacao_solicitada=function_args.get("informacao_solicitada"),
+                            informacao_solicitada=str(function_args.get("informacao_solicitada")),
                             chatbot_id=chatbot_id,
                         )
-                    if function_name == 'criar_pedido_e_retornar_resumo':
-                        function_response = fuction_to_call(
-                            nome_cliente = function_args.get("nome_cliente"),
-                            endereco_cliente = function_args.get("endereco_cliente"),
-                            itens_pedido = function_args.get("itens_pedido"),
-                            taxa_de_entrega = function_args.get("taxa_de_entrega"),
-                            valor_total = function_args.get("valor_total"),
-                            metodo_de_pagamento = function_args.get("metodo_de_pagamento"),
-                            user = user, 
-                            conversation = conversation,
+                        #AQUI, CASO NECESSÁRIO, PODE SER NECESSÁRIO PADRONIZAR UM FUCNTION RESPONSSE PARA CASO NÃO ACHE NO CARDÁPIO E FAZER UMA RESPOSTA TRAVADA, SEM CHAMAR O COMPLETION
+                        context.append({
+                            "role": "function",
+                            "name": function_name,
+                            "content": function_response,
+                        })
+
+                        completions_after_function_response = openai.ChatCompletion.create(
+                            model=model_name,
+                            temperature=0,
+                            messages=context
                         )
-                    context.append({
-                        "role": "function",
-                        "name": function_name,
-                        "content": function_response,
-                    })
 
-                    completions_after_function_response = openai.ChatCompletion.create(
-                        model=model_name,
-                        temperature=0,
-                        messages=context
-                    )
+                        awnser = completions_after_function_response['choices'][0]['message']['content']
+                        context.append({"role": "assistant", "content": awnser})
+                        tokens_used = completions.usage['total_tokens'] + completions_after_function_response.usage['total_tokens']
 
-                    awnser = completions_after_function_response['choices'][0]['message']['content']
-                    context.append({"role": "assistant", "content": awnser})
-                    tokens_used = completions.usage['total_tokens'] + completions_after_function_response.usage['total_tokens']
+                    if function_name == 'criar_pedido_e_retornar_resumo':
+                        try:
+                            function_response = fuction_to_call(
+                                nome_cliente = str(function_args.get("nome_cliente")),
+                                endereco_cliente = str(function_args.get("endereco_cliente")),
+                                itens_pedido = str(function_args.get("itens_pedido")),
+                                taxa_de_entrega = str(function_args.get("taxa_de_entrega")),
+                                valor_total = str(function_args.get("valor_total")),
+                                metodo_de_pagamento = str(function_args.get("metodo_de_pagamento")),
+                                user = user, 
+                                conversation = conversation,
+                            )
+                            context.append({
+                                "role": "function",
+                                "name": function_name,
+                                "content": function_response,
+                            })
+                            completions_after_function_response = openai.ChatCompletion.create(
+                                model=model_name,
+                                temperature=0,
+                                messages=context
+                            )
+
+                            awnser = completions_after_function_response['choices'][0]['message']['content']
+                            context.append({"role": "assistant", "content": awnser})
+                            tokens_used = completions.usage['total_tokens'] + completions_after_function_response.usage['total_tokens']
+
+                        except:
+                            function_response = 'Não foi possível realizar o fechamento do pedido. Tente novamente ou aguarde até que um atendente humano assuma a conversa'
+                            context.append({
+                                "role": "function",
+                                "name": function_name,
+                                "content": function_response,
+                            })
+
+                            awnser = FECHAR_PEDIDO_ERROR_MESSAGE_FUNCTION_CALL
+                            context.append({"role": "assistant", "content": awnser})
+                            tokens_used = completions.usage['total_tokens'] #AQUI APENAS PARA O PRIMEIRO COMPLETION, NÃO PARA O DEPOIS DA CHAMADA DE FUNÇÃO
+
                     
                 else:
                     awnser = completions['choices'][0]['message']['content']
