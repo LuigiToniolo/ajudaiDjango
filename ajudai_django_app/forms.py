@@ -119,6 +119,26 @@ class ChatBotForm(forms.ModelForm):
                 }
             )
         )
+    cardapio = forms.CharField(
+        max_length=MAX_CHAR_INSTRUCTIONS_CHATBOT_FORM, 
+        label='Cardápio de restaurante (com nomes dos pratos, ingredientes e preços)',
+        widget=forms.Textarea(
+            attrs={
+                # 'style': 'width: {}px;'.format(ADITIONAL_INTRUCTIONS_FIELD_SIZE_IN_PX),
+                'rows': ADITIONAL_INTRUCTIONS_FIELD_ROWS ,
+                'id' : ADITIONAL_INTRUCTIONS_FIELD_ID,
+                'data-max-height': '350',
+                }
+            )
+        )
+    descricao_funcao_cardapio = forms.CharField(
+        label='Descrição função com informações do cardápio',
+        initial='Obtém uma informação específica, ou um conjunto de informações específicas contidas no cardápio, como nome do produto, tamanho, ingredientes e preço',
+        )
+    descricao_informacao_solicitada_do_cardapio = forms.CharField(
+        label='Descrição do formato da informação a ser solicitada do cardápio',
+        initial='A informação a ser obtida através do cardápio, por exemplo, ingredientes da pizza de mussarela, preço do refrigerante coca cola lata, preço da pizza de alho'
+        )
     whatsapp_number = forms.CharField(
         label='Número WhatsApp Business',
         widget=forms.TextInput(attrs={
@@ -140,7 +160,7 @@ class ChatBotForm(forms.ModelForm):
     
     class Meta:
         model = ChatBot
-        fields = [ADITIONAL_INTRUCTIONS_FIELD_NAME, 'nome_do_chatbot', 'whatsapp_number', 'whats_app_api_auth_token', 'facebook_page_id' ]
+        fields = ['nome_do_chatbot', 'whatsapp_number', 'whats_app_api_auth_token', 'facebook_page_id', ADITIONAL_INTRUCTIONS_FIELD_NAME, 'cardapio', 'descricao_funcao_cardapio', 'descricao_informacao_solicitada_do_cardapio']
 
     def clean(self):
         cleaned_data = super().clean()
@@ -149,3 +169,10 @@ class ChatBotForm(forms.ModelForm):
 class MessageForm(forms.Form):
     message = forms.CharField(widget=forms.Textarea)
     conversa_id = forms.IntegerField()
+
+class ConversationLimitForm(forms.Form):
+    conversation_limit = forms.IntegerField(min_value=0, max_value=20000)
+    limit_on = forms.BooleanField(required=False)
+
+class LigarDesligarTodosChatbotsForm(forms.Form):
+    chatbots_on = forms.BooleanField(required=False)

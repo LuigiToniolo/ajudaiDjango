@@ -8,24 +8,24 @@
           <tbody>
           <tr>
               <td class="strong-text"><strong>Plano atual </strong></td>
-              <td class="main-content-text">Basic</td>
+              <td class="main-content-text">{{ nome_do_plano }}</td>
           </tr>
 
           <tr>
               <td class="strong-text"><strong>Valor cobrado por conversa </strong></td>
-              <td class="main-content-text">R$0,20/conversa</td>
+              <td class="main-content-text">R${{ valor_por_conversa_do_plano_atual }}/conversa</td>
           </tr>
 
           <tr>
               <td class="strong-text"><strong>Uso do chatbot:</strong></td>
-              <td class="main-content-text">1500/998 (Conversas)</td>
+              <td class="main-content-text">{{ limite_conversas_plano_atual }}/{{ numero_de_conversas }} (Conversas)</td>
           </tr>
           <tr>
               <td class="strong-text"></td>
           </tr>
           <tr>
               <td class="strong-text"><strong>Valor total calculado </strong></td>
-              <td class="main-content-text">R$199,60</td>
+              <td class="main-content-text">R${{ gasto_atual_do_periodo }}</td>
           </tr>
 
           </tbody>
@@ -99,13 +99,13 @@
 
     <div class="container">
       <div class="circular-progress">
-          <span class="progress-value">43,3%</span>
+          <span class="progress-value">{{ taxa_conversao }}%</span>
       </div>
       <h4>Clientes convertidos</h4>
   </div>
 
-  <p>Parabéns! Das suas <strong>998 conversas</strong>, você conseguiu fazer <strong>432 novos pedidos!</strong>
-      Portanto, de todas as suas conversas, 43.3% realizaram um pedido.
+  <p>Parabéns! Das suas <strong>{{ numero_de_conversas }} conversas</strong>, você conseguiu fazer <strong>{{ numero_de_pedidos }} novos pedidos!</strong>
+      Portanto, de todas as suas conversas, {{ taxa_conversao }}% realizaram um pedido.
   </p>
 
     
@@ -117,12 +117,12 @@
     <span class="close-modal-global">&times;</span>
     <h2>Status da sua Fatura</h2>
     <div id="conteudo-fatura-aberta">
-      <p>Veja aqui os detalhes da fatura do seu plano atual. Sua fatura ainda não fechou. A data de fechamento da sua fatura do plano escolhido será daqui <strong>9 dias</strong>, ou no dia:</p>
-      <h4>23/06/2023</h4>
+      <p>Veja aqui os detalhes da fatura do seu plano atual. Sua fatura ainda não fechou. A data de fechamento da sua fatura do plano escolhido será daqui <strong>{{ dias_para_pagamento }} dias</strong>, ou no dia:</p>
+      <h4>{{ data_proximo_pagamento|date:"d/m/Y" }}</h4>
     </div>
     <div id="conteudo-fatura-fechada">
       <p>Veja aqui os detalhes da fatura do seu plano atual. Sua fatura já está fechada e está pronta para pagar! A data de fechamento da sua fatura do plano escolhido foi: </p>
-      <h4>23/06/2023</h4>
+      <h4>{{ data_proximo_pagamento|date:"d/m/Y" }}</h4>
       <p>Clique no botão abaixo para você ser redirecionado para a página dos detalhes do seu plano e la você irá encontrar o lugar para o pagamento de sua fatura!</p>
       
       <a class="botao-pagamento-fatura" href="{% url 'meu-plano' %}#conteudo-fatura-fechada-plano">
@@ -138,9 +138,9 @@
 <script>
 //Aqui está o script da progress bar do plano atual do nosso usuário
 
-var conversasPlanoAtual = 998; // Valor atual das conversas (deve ser ajustado conforme o plano do cliente)
-var valorMinimo = 0; // Valor mínimo da barra
-var valorMaximo = 1500; // Valor máximo da barra
+var conversasPlanoAtual = {{ conversas_a_pagar }}; // Valor atual das conversas (deve ser ajustado conforme o plano do cliente)
+var valorMinimo = {{ minimo_conversas_plano_atual }}; // Valor mínimo da barra
+var valorMaximo = {{ limite_conversas_plano_atual }}; // Valor máximo da barra
 
 // Obter as barras de progresso e os elementos de valor
 var progress1 = document.getElementById("progress1");
@@ -160,7 +160,7 @@ progress1Value.textContent = conversasPlanoAtual + " Conversas";
 
 <script>
   // Aqui está o script do rounded range com a porcentagem de conversões dos clientes
-  var progressValue = 43.3; // Valor da porcentagem desejada
+  var progressValue = {{ taxa_conversao }}; // Valor da porcentagem desejada
 
   var progressBar = document.querySelector(".circular-progress");
   var progressValueText = document.querySelector(".progress-value");

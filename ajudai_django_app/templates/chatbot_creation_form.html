@@ -84,6 +84,19 @@
                                 {% endfor %}
                                 </div>
                             {% endif %}
+                            <p>{{ form.cardapio.label_tag }}</p>
+                            <p>{{ form.cardapio }}</p>
+                            {% if form.cardapio.errors %}
+                                <div class="alert alert-danger">
+                                {% for error in form.cardapio.errors %}
+                                    <p>{{ error }}</p>
+                                {% endfor %}
+                                </div>
+                            {% endif %}
+                            <p>{{ form.descricao_funcao_cardapio.label_tag }}</p>
+                            <p>{{ form.descricao_funcao_cardapio }}</p>
+                            <p>{{ form.descricao_informacao_solicitada_do_cardapio.label_tag }}</p>
+                            <p>{{ form.descricao_informacao_solicitada_do_cardapio }}</p>
                             <button type="submit" class="botao-save-chatbot">{{ submit_button_text }}</button>
                         </form>    
                         

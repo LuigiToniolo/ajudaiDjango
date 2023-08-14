@@ -13,6 +13,11 @@ USER_LEVEL_PREMIUM = 'premium_user'
 
 DIAS_TOLERACIA_INADIMPLECIA = 7
 
+PRODUCT_NAME_BASIC = 'Basic'
+PRODUCT_NAME_PLUS = 'Plus'
+PRODUCT_NAME_PREMIUM = 'Premium'
+PRODUCT_NAME_COORPORATE = 'VIP'
+
 PRUDUCT_TYPE_PLAN = 'plan'
 PRUDUCT_TYPE_ADESAO = 'adesao'
 PRUDUCT_TYPE_CONVERSA_AVULSA = 'conversa_avulsa'
@@ -27,6 +32,11 @@ USAGE_PAYED_STATUS_SUCCESS = 'payment_success'
 ADESAO_PURCHASE_STATUS_PENDING = 'Pending'
 ADESAO_PURCHASE_STATUS_PROCESSED = 'Processed'
 ADESAO_PURCHASE_STATUS_CALCELED = 'Canceled'
+
+PAYMENT_METHOD_CREDIT_CARD='cartao_credito'
+PAYMENT_METHOD_BOLETO='boleto'
+PAYMENT_METHOD_PIX='pix'
+PAYMENT_METHOD_OTHER='outro'
 
 EVENT_INVALID_PAYLOAD = 'invalid payload'
 EVENT_INVALID_SIGNATURE = 'invalid sgnature'
@@ -46,9 +56,17 @@ CONVERSA_PAGA = 'paga'
 CONVERSA_PAGAMENTO_PENDENTE = 'pendente'
 CONVERSA_AGUARDANDO_VENCIMENTO = 'aguardando_vencimento'
 
+FATURA_PAGA='fatura_paga'
+FATURA_PENDENTE='fatura_pendente'
+
 WEBHOOK_ADESAO_ID = 'webhook_adesao'
 WEBHOOK_PAYMENT_METHOD_ID = 'webhook_method'
 WEBHOOK_USAGE_PAYMENT_ID = 'webhook_usage_payment'
+
+LIMITE_CONVERSAS_PLANO_STANDARD = 1500
+LIMITE_CONVERSAS_PLANO_PLUS = 2500
+LIMITE_CONVERSAS_PLANO_PREMIUM = 4500
+
 #--------------------------------------------------------------------
 #CONVERSA RESSET
 HOURS_TO_RESET_INACTIVE = 2
@@ -68,6 +86,8 @@ GPT3_TOKEK_LIMIT = 4096
 MAX_INSTRUCTIONS_RATE_SIZE = 0.95
 #o limite deixado para a pergunta/prompt é, então 0,05 menos o limite de reserva para a resposta abaixo
 
+SLEEP_SECONDS_INTER_AI_API_CALL = 0.5
+API_MAX_ATTEMP = 5
 
 MAX_PROMPT_IN_CHARS = int(GPT3_TOKEK_LIMIT * 4)
 MAX_CHAR_INSTRUCTIONS_CHATBOT_FORM = int(GPT3_TOKEK_LIMIT *MAX_INSTRUCTIONS_RATE_SIZE * 4)
@@ -79,6 +99,8 @@ MIN_TOKEN_LIMIT_RATE_LEFT_TO_AWNSER = 0.0
 
 CHAT_API_GENERAL_ERROR_MESSAGE = 'Me desculpe, tive problemas para conseguir obter uma resposta para você. Por favor, tente novamente mais tarde...'
 CHAT_API_MESSAGE_AND_AWNSER_OVERLIMT_EVEN_TRYING_TO_SHORT = 'Desculpe, a resposta que você que quer ocuparia um espaço de maior do que sou capaz de processar. Por favor, pergunte algo mais específico.'
+
+FECHAR_PEDIDO_ERROR_MESSAGE_FUNCTION_CALL = 'Não foi possível realizar o fechamento do pedido. Tente novamente ou aguarde até que um atendente humano assuma a conversa'
 
 TOKEN_LIMIT_MARGIN = 0.08
 #---------------------------------------------------------------------
@@ -120,3 +142,4 @@ STATUS_PEDIDO_CANCELADO = 'cancelado'
 
 #---------------------------------------------------------------------
 #TEXTS
+SEM_METODO_DE_PAGAMENTO_CLIENTE_LOCALIZADO_NA_CONVERSA='Não foi possível extrair o método de pagamento da conversa'

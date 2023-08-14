@@ -39,12 +39,12 @@
 
                             <div class="meus-planos">
 
-                                <div class="my-plan popular">
+                                <div class="my-plan{% if is_Basic_Plan %} popular{% endif %}">
                                     <img class="standard-img" src="{% static 'image/coin.png' %}" alt="advanced plans ajudai">
                                     <div class="content-card-plan">
                                         <h3 class="title">Basic</h3>
                                         <ul class="features">
-                                            <li><strong>1501 a 2500</strong> Conversas por mês</li>
+                                            <li><strong>0 a 1500</strong> Conversas por mês</li>
                                             <li>Suporte AjudaAI 24 horas</li>
                                             <li>Acesso ilimitado ao software</li>
                                             <li>Suporte e Implementação grátis</li>
@@ -52,7 +52,7 @@
                                         </ul>
                                     </div>
                                 </div>
-                                <div class="my-plan">
+                                <div class="my-plan{% if is_Plus_Plan %} popular{% endif %}">
                                     <img class="standard-img" src="{% static 'image/money.png' %}" alt="advanced plans ajudai">
                                     <div class="content-card-plan">
                                         <h3 class="title">Plus</h3>
@@ -65,7 +65,7 @@
                                         </ul>
                                     </div>
                                 </div>
-                                <div class="my-plan">
+                                <div class="my-plan{% if is_Premium_Plan %} popular{% endif %}">
                                     <img class="standard-img" src="{% static 'image/premium.png' %}" alt="advanced plans ajudai">
                                     <div class="content-card-plan">
                                         <h3 class="title">Premium</h3>
@@ -78,7 +78,7 @@
                                         </ul>
                                     </div>
                                 </div>
-                                <div class="my-plan">
+                                <div class="my-plan{% if is_Cooporate_Plan %} popular{% endif %}">
                                     <img class="standard-img" src="{% static 'image/rocket.png' %}" alt="advanced plans ajudai">
                                     <div class="content-card-plan">
                                         <h3 class="title">Corporativo VIP</h3>
@@ -108,7 +108,7 @@
                                             <th>Conversas totais</th>
                                             <th>Data fatura</th>
                                             <th>Pagamento</th>
-                                            <th>Entenda valores</th>
+                                            <!-- <th>Entenda valores</th> -->
                                         </tr>
                                     </thead>
                                     <tfoot>
@@ -119,35 +119,21 @@
                                             <th>Conversas totais</th>
                                             <th>Data fatura</th>
                                             <th>Pagamento</th>
-                                            <th>Entenda valores</th>
+                                            <!-- <th>Entenda valores</th> -->
                                         </tr>
                                     </tfoot>
                                     <tbody>
-                                        <tr>
-                                            <td>Basic</td>
-                                            <td>R$0,20</td>
-                                            <td>R$220,00</td>
-                                            <td>1100</td>
-                                            <td>26/02/2023</td>
-                                            <td>Pagamento confirmado</td>
-                                            <td class="top-table"><a href="#ancora-modal" data-modal-id="modal1-plano">Saiba mais</a></td>
-                                        </tr>
-                                            <td>Plus</td>
-                                            <td>R$0,18</td>
-                                            <td>R$338,22</td>
-                                            <td>1879</td>
-                                            <td>26/03/2023</td>
-                                            <td>Pagamento confirmado</td>
-                                            <td class="top-table"><a href="#ancora-modal" data-modal-id="modal2-plano">Saiba mais</a></td>
-                                        </tr>
-                                            <td>Premium</td>
-                                            <td>R$0,16</td>
-                                            <td>R$566,40</td>
-                                            <td>3540</td>
-                                            <td>26/04/2023</td>
-                                            <td>Aguardando confirmação</td>
-                                            <td class="top-table"><a href="#ancora-modal" data-modal-id="modal3-plano">Saiba mais</a></td>
-                                        </tr>
+                                        {% for fatura in faturas_pagas %}
+                                            <tr>
+                                                <td>{{ fatura.product_name }}</td>
+                                                <td>R${{ fatura.product_price }}</td>
+                                                <td>{{ fatura.valor_total }}</td>
+                                                <td>{{ fatura.numero_conversas }}</td>
+                                                <td>{{ fatura.date|date:"d/m/Y" }}</td>
+                                                <td>{{ fatura.get_status_display }}</td>
+                                                <!-- <td class="top-table"><a href="#ancora-modal" data-modal-id="modal1-plano">Saiba mais</a></td> -->
+                                            </tr>
+                                        {% endfor %}
                                     </tbody>
                                 </table>
                             </div>
@@ -169,16 +155,17 @@
                                 <tbody>
                                   <tr>
                                     <td class="top-table">Ajudai</td>
-                                    <td class="top-table">R$559,00</td>
-                                    <td class="top-table">26/02/2023</td>
+                                    <td class="top-table">{{ preco_adesao }}</td>
+                                    <td class="top-table">{{ adesao.date|date:"d/m/Y" }}</td>
                                     <td class="top-table">Vitalício</td>
-                                    <td class="top-table">Aguardando confirmação</td>
-                                    <td class="top-table">Cartão de crédito</td>
+                                    <td class="top-table">Confirmado</td>
+                                    <td class="top-table">{{ adesao.get_payment_method_display }}</td>
                                   </tr>
                                   <!-- Adicione mais linhas conforme necessário -->
                                 </tbody>
                             </table>
 
+                            <!-- Não existe pagamento da fatura (é cobrado auto) 
                             <div class="pagamento-fatura" id="conteudo-fatura-fechada-plano">
                                 <h4>Sua fatura desse mês chegou!</h4>
                                 <p>Faça o pagamento da sua fatura para não ficar sem o melhor serviço de chatbot para o WhatsApp!</p>
@@ -186,6 +173,7 @@
                                   <i class="fa-solid fa-sack-dollar"></i>
                                 </button>
                               </div>
+                            -->
                               
                             
                         </div>

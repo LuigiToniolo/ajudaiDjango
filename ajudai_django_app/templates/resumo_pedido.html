@@ -53,12 +53,25 @@
                     <div class="container-fluid px-4">
                       <div class="container-center">
                         <div class="container-pedido">
-                          <h1>{{ page_title }} nº {{pedido.id }}</h1>
-                          <p><strong>{{ label_status_pedido }}: </strong> {{ pedido.status_do_pedido }}</p>
+                          <h1>Resumo do Pedido nº {{pedido.id }}</h1>
+                          <p><strong>Status do Pedido: </strong> {{ pedido.get_status_do_pedido_display }}</p>
                           {% if not pedido.criado_manualmente %}
-                            <p><strong>{{ label_numero_cliente_pedido }}: </strong>{{ numero_cliente_pedido }}</p>
-                            <p><strong>{{ label_resumo_pedido }}: </strong></p>
-                            <p style="margin-bottom: 3vh;">{{ pedido.resumo_do_pedido }}</p>
+                            <p><strong>Número Whatsapp do Cliente: </strong>{{ numero_cliente_pedido }}</p>
+                            {% if dados_cliente %}
+                              <p><strong>Nome do cliente: </strong>{{ dados_cliente.nome }}</p>
+                            {% else %}
+                              <p><strong>Nome do cliente: </strong>Não coletado para esse pedido.</p>
+                            {% endif %}
+                            <p><strong>Itens do pedido: </strong>{{ itens_do_pedido }}</p>
+                            <p><strong>Taxa de entrega: </strong>{{ taxa_de_entrega }}</p>
+                            <p><strong>Total do pedido: </strong>{{ valor_total_pedido }}</p>
+                            {% if dados_cliente %}
+                              <p><strong>Endereço de entrega: </strong>{{ dados_cliente.endereco }}</p>
+                              <p><strong>Método de pagamento: </strong>{{ dados_cliente.metodo_pagamento }}</p>
+                            {% else %}
+                              <p><strong>Endereço de entrega: </strong>Não coletado para esse pedido.</p>
+                              <p><strong>Método de pagamento: </strong>Não coletado para esse pedido.</p>
+                            {% endif %}
                           {% endif %}
                           <a class="botao-voltar" href="{% url 'pedidos-realizados' %}"><i style="margin-right: 5px;" class="fa-solid fa-arrow-left"></i>Voltar</a><br>
                         </div>

@@ -1,3 +1,4 @@
+import time
 from django.db import models, transaction
 from django.contrib.auth.models import AbstractUser
 from django.contrib.auth import authenticate, login, logout
@@ -7,11 +8,16 @@ from django.core.validators import RegexValidator
 from django.utils import timezone
 from datetime import timedelta, datetime
 from django.db.models import Q
+from ajudai_django_app.ai_chatbot.ai_extration import ai_gpt_extrair_dado_do_resumo, ai_gpt_extrair_endereco_do_resumo
 from ajudai_django_app.payments_process.charge_usage import charge_usages
 from ajudai_django_app.phone_integration.messages import send_response
 import pytz
-
-from constants import ADESAO_PURCHASE_STATUS_CALCELED, ADESAO_PURCHASE_STATUS_PENDING, ADESAO_PURCHASE_STATUS_PROCESSED, AI_PROVIDER_OPEN_AI, BRL_CURRENCY_SIMBOL, CONVERSA_AGUARDANDO_VENCIMENTO, CONVERSA_PAGA, CONVERSA_PAGAMENTO_PENDENTE, DIAS_TOLERACIA_INADIMPLECIA, GPT3_MODEL_NAME, HOURS_TO_RESER_ABSOLUTE, HOURS_TO_RESET_INACTIVE, MAX_CHAR_INSTRUCTIONS_CHATBOT_FORM, MENSAGEM_ENCERRAMENTO_DE_CONVERSA_INATIVIDADE, MENSAGEM_ENCERRAMENTO_DE_CONVERSA_TEMPO_LIMITE, PAYMENT_METHOD_REGISTRATION_STATUS_FAILING, PAYMENT_METHOD_REGISTRATION_STATUS_PENDING, PAYMENT_METHOD_REGISTRATION_STATUS_SUCCESS, PAYMENT_PERIOD_ANUALY, PAYMENT_PERIOD_DAILY, PAYMENT_PERIOD_MONTHLY, PRUDUCT_TYPE_ADESAO, PRUDUCT_TYPE_CONVERSA_AVULSA, PRUDUCT_TYPE_PLAN, STATUS_CONVERSA_EM_ANDAMENTO, STATUS_CONVERSA_ENCERRADA, STATUS_CONVERSA_FALHA, STATUS_PEDIDO_CANCELADO, STATUS_PEDIDO_EM_PROCESSO, STATUS_PEDIDO_ENTREGUE, STATUS_PEDIDO_PENDENTE_DE_ENTREGA, STATUS_PEDIDO_REALIZADO, USER_LEVEL_FREE, USER_LEVEL_PREMIUM, USER_PAYMENT_METHOD_FAILED, USER_PAYMENT_METHOD_NOT_REGISTERED, USER_PAYMENT_METHOD_STATUS_OK
+import re
+from decimal import Decimal
+import re
+from unidecode import unidecode
+from django.core.exceptions import ObjectDoesNotExist
+from constants import ADESAO_PURCHASE_STATUS_CALCELED, ADESAO_PURCHASE_STATUS_PENDING, ADESAO_PURCHASE_STATUS_PROCESSED, AI_PROVIDER_OPEN_AI, API_MAX_ATTEMP, BRL_CURRENCY_SIMBOL, CONVERSA_AGUARDANDO_VENCIMENTO, CONVERSA_PAGA, CONVERSA_PAGAMENTO_PENDENTE, DIAS_TOLERACIA_INADIMPLECIA, FATURA_PAGA, FATURA_PENDENTE, GPT3_MODEL_NAME, HOURS_TO_RESER_ABSOLUTE, HOURS_TO_RESET_INACTIVE, LIMITE_CONVERSAS_PLANO_PLUS, LIMITE_CONVERSAS_PLANO_PREMIUM, LIMITE_CONVERSAS_PLANO_STANDARD, MAX_CHAR_INSTRUCTIONS_CHATBOT_FORM, MENSAGEM_ENCERRAMENTO_DE_CONVERSA_INATIVIDADE, MENSAGEM_ENCERRAMENTO_DE_CONVERSA_TEMPO_LIMITE, PAYMENT_METHOD_BOLETO, PAYMENT_METHOD_CREDIT_CARD, PAYMENT_METHOD_OTHER, PAYMENT_METHOD_PIX, PAYMENT_METHOD_REGISTRATION_STATUS_FAILING, PAYMENT_METHOD_REGISTRATION_STATUS_PENDING, PAYMENT_METHOD_REGISTRATION_STATUS_SUCCESS, PAYMENT_PERIOD_ANUALY, PAYMENT_PERIOD_DAILY, PAYMENT_PERIOD_MONTHLY, PRODUCT_NAME_BASIC, PRODUCT_NAME_COORPORATE, PRODUCT_NAME_PLUS, PRODUCT_NAME_PREMIUM, PRUDUCT_TYPE_ADESAO, PRUDUCT_TYPE_CONVERSA_AVULSA, PRUDUCT_TYPE_PLAN, SEM_METODO_DE_PAGAMENTO_CLIENTE_LOCALIZADO_NA_CONVERSA, SLEEP_SECONDS_INTER_AI_API_CALL, STATUS_CONVERSA_EM_ANDAMENTO, STATUS_CONVERSA_ENCERRADA, STATUS_CONVERSA_FALHA, STATUS_PEDIDO_CANCELADO, STATUS_PEDIDO_EM_PROCESSO, STATUS_PEDIDO_ENTREGUE, STATUS_PEDIDO_PENDENTE_DE_ENTREGA, STATUS_PEDIDO_REALIZADO, USER_LEVEL_FREE, USER_LEVEL_PREMIUM, USER_PAYMENT_METHOD_FAILED, USER_PAYMENT_METHOD_NOT_REGISTERED, USER_PAYMENT_METHOD_STATUS_OK
 
 sao_paulo_tz = pytz.timezone('America/Sao_Paulo')
 def current_date_sao_paulo():
@@ -79,16 +85,19 @@ class CustomUser(AbstractUser):
 
     last_payment_date = models.DateField(null=True, blank=True)
     stripe_id = models.CharField(max_length=50, blank=True, null=True)
-    moneatry_limit_set_by_user = models.DecimalField(
+    conversation_limit_set_by_user = models.DecimalField(
         max_digits=7, 
         decimal_places=2, 
         default=5000.00
         )
+    limit_on=models.BooleanField(default=False)
     valor_em_debito = models.DecimalField(
         max_digits=12, 
         decimal_places=2, 
         default=0.00
         )
+    
+    chatbots_on = models.BooleanField(default=True)
 
     def usuario_adimplente(self):
         if self.valor_em_debito > 0:
@@ -187,13 +196,19 @@ class CustomUser(AbstractUser):
         if today >= reset_date:
             return True
         return False
+    
+    def days_to_next_payment(self, reset_period):
+        if self.user_plan == USER_LEVEL_FREE:
+            return None
         
-    def reset_payment_date(self, reset_period):
         today = timezone.now().astimezone(sao_paulo_tz).date()
+
+        if self.last_payment_date is None:
+            self.last_payment_date = today
+        
         if reset_period == PAYMENT_PERIOD_DAILY:
             reset_date = self.last_payment_date + timedelta(days=1)
         elif reset_period == PAYMENT_PERIOD_MONTHLY:
-            # Get the next month
             year, month = self.last_payment_date.year, self.last_payment_date.month + 1
             day =self.last_payment_date.day
             if month > 12:
@@ -201,42 +216,72 @@ class CustomUser(AbstractUser):
                 month = 1
             reset_date = self.last_payment_date.replace(year=year, month=month, day=day)
         elif reset_period == PAYMENT_PERIOD_ANUALY:
-            # Get the next month
             year = self.last_payment_date.year + 1
             month = self.last_payment_date.month
             day =self.last_payment_date.day
             reset_date = self.last_payment_date.replace(year=year, month=month, day=day)
-        else:
-            raise ValueError('Invalid reset period')
 
-        if today >= reset_date:
-            self.last_payment_date = today
-            self.save()
+        return (reset_date - today).days
 
-    def atualiza_valor_em_debito(self, reset_period):
-        if self.is_payment_time(reset_period):
-            self.reset_payment_date(reset_period)
-            Conversa.conversations_to_payment_due(self)
-            conversas_a_pagar = Conversa.count_pending_payment_conversations(self)
-            product = Product.objects.filter(Q(minimo_conversas__lte=conversas_a_pagar) & Q(maximo_conversas__gte=conversas_a_pagar)).first()
-            if product:
-                price = product.price_shown
-                valor_devido_anterior = self.valor_em_debito
-                valor_a_adicionar = price * conversas_a_pagar
-                self.valor_em_debito = valor_devido_anterior + valor_a_adicionar
+        
+    def reset_payment_date(self, reset_period):
+        if self.userIsPremium == True:
+            today = timezone.now().astimezone(sao_paulo_tz).date()
+            if reset_period == PAYMENT_PERIOD_DAILY:
+                reset_date = self.last_payment_date + timedelta(days=1)
+            elif reset_period == PAYMENT_PERIOD_MONTHLY:
+                # Get the next month
+                year, month = self.last_payment_date.year, self.last_payment_date.month + 1
+                day =self.last_payment_date.day
+                if month > 12:
+                    year += 1
+                    month = 1
+                reset_date = self.last_payment_date.replace(year=year, month=month, day=day)
+            elif reset_period == PAYMENT_PERIOD_ANUALY:
+                # Get the next month
+                year = self.last_payment_date.year + 1
+                month = self.last_payment_date.month
+                day =self.last_payment_date.day
+                reset_date = self.last_payment_date.replace(year=year, month=month, day=day)
+            else:
+                raise ValueError('Invalid reset period')
+
+            if today >= reset_date:
+                self.last_payment_date = today
                 self.save()
 
+    def atualiza_valor_em_debito(self, valor_a_adicionar):
+        valor_devido_anterior = self.valor_em_debito
+        self.valor_em_debito = valor_devido_anterior + valor_a_adicionar
+        self.save()
     
+    def current_user_plan_price_and_conversas_a_pagar(self, reset_period):
+        if self.userIsPremium == False:
+            return None, None, None
+        self.reset_payment_date(reset_period)
+        conversas_a_pagar = Conversa.count_conversations_in_current_billing_period(self)
+        product = Product.objects.filter(Q(minimo_conversas__lte=conversas_a_pagar) & Q(maximo_conversas__gte=conversas_a_pagar)).first()
+        price = None
+        if product:
+            price = product.price_shown
+
+        return product, price, conversas_a_pagar
+
     def charge_new_conversations_first_attempt(self, reset_period):
-        if self.is_payment_time(reset_period):
-            self.reset_payment_date(reset_period)
-            Conversa.conversations_to_payment_due(self)
-            conversas_a_pagar = Conversa.count_pending_payment_conversations(self)
-            product = Product.objects.filter(Q(minimo_conversas__lte=conversas_a_pagar) & Q(maximo_conversas__gte=conversas_a_pagar)).first()
-            if product:
-                price = product.price_shown
-                total_cost = price * conversas_a_pagar
-                charge_usages(total_cost, self)
+        product, price, conversas_a_pagar = self.current_user_plan_price_and_conversas_a_pagar(reset_period)
+        total_cost = price * conversas_a_pagar
+        charge_usages(total_cost, self)
+        #TODO VER SE ABAIXO ESTA CORRETO E TESTAR
+        nova_fatura = PaymentsForUseMadde.objects.create(
+            user = self,
+            numero_conversas = conversas_a_pagar,
+            product_name = product.name,
+            product_price = product.price_shown,
+            valor_total='R$'+str(total_cost),
+            date=current_date_sao_paulo,
+            time=current_time_sao_paulo,
+            )
+        self.atualiza_valor_em_debito(total_cost)
 
     def inform_all_user_debt(self):
         return self.valor_em_debito
@@ -246,10 +291,19 @@ class CustomUser(AbstractUser):
         charge_usages(total_cost, self)
 
     def finance_check(self, reset_period):
-        self.charge_new_conversations_first_attempt(reset_period)
-        self.atualiza_valor_em_debito(reset_period)
+        if self.is_payment_time(reset_period):
+            self.reset_payment_date(reset_period)
+            #cobra cnversas aguardando vencimento
+            self.charge_new_conversations_first_attempt(reset_period)
+            #transforma as conversas que aguardam vencimento em conversas em divida (elas serao transformadas em regulares apos o webhook)
+            Conversa.conversations_to_payment_due(self)
 
     def reduce_debt_amount(self, amount_payed):
+        self.valor_em_debito = 0
+        self.save()
+
+        #TODO VARIFICAR NECESSIDADE DE REFINAR MÉTODO DESCONTANDO SO O AMOUNT_PAYED
+        '''
         valor_devido_anterior = self.valor_em_debito
         valor_devido_atual = valor_devido_anterior - amount_payed
         if valor_devido_atual >=0:
@@ -257,20 +311,31 @@ class CustomUser(AbstractUser):
         else:
             self.valor_em_debito = 0
         self.save()
+        '''
 
     def can_create_new_messages(self, reset_period):
         if self.is_payment_time(reset_period):
             self.reset_payment_date(reset_period)
             Conversa.conversations_to_payment_due(self)
             conversas_a_pagar = Conversa.count_pending_payment_conversations(self)
-            product = Product.objects.filter(Q(minimo_conversas__lte=conversas_a_pagar) & Q(maximo_conversas__gte=conversas_a_pagar)).first()
-            if product:
-                price = product.price_shown
-                total_cost = price * conversas_a_pagar
-                if total_cost >= self.moneatry_limit_set_by_user:
+            if self.limit_on:
+                if conversas_a_pagar>self.conversation_limit_set_by_user:
                     return False
+                ''' DESATIVADO POR LIMITE AGORA EH DE CONVERSAS
+                product = Product.objects.filter(Q(minimo_conversas__lte=conversas_a_pagar) & Q(maximo_conversas__gte=conversas_a_pagar)).first()
+                if product:
+                    price = product.price_shown
+                    total_cost = price * conversas_a_pagar
+                    if total_cost >= self.moneatry_limit_set_by_user:
+                        return False
+                '''
 
-        return True        
+        return True      
+    
+    def total_conversas(self):
+        chatbots = ChatBot.objects.filter(user=self)
+        total_conversas = Conversa.objects.filter(chatbot__in=chatbots).count()
+        return total_conversas  
 
 class Premium_User_Payment_Method_Registration(models.Model):
     PREMIUM_USER_REGISTER_STATUS_CHOICES = (
@@ -317,10 +382,17 @@ class Product(models.Model):
         (PRUDUCT_TYPE_ADESAO , 'Adesão'),
         (PRUDUCT_TYPE_CONVERSA_AVULSA , 'Conversa Aulsa'),
     )
+    PRODUCT_NAME_CHOICES = (
+        (PRODUCT_NAME_BASIC, 'Basic'),
+        (PRODUCT_NAME_PLUS, 'Plus'),
+        (PRODUCT_NAME_PREMIUM, 'Premium'),
+        (PRODUCT_NAME_COORPORATE, 'Corporativo VIP'),
+    )
 
     name = models.CharField(
         max_length=32,
-        default='Conversa Finalizada',
+        default=PRODUCT_NAME_BASIC,
+        choices=PRODUCT_NAME_CHOICES,
         )
     tipo_de_produto = models.CharField(
         max_length=30,
@@ -352,8 +424,17 @@ class Product(models.Model):
 
     def __str__(self):
         return self.name
+    
 
 class Adesao_Purchase(models.Model):
+    PAYMENT_METHOD_CHOICES = (
+        (PAYMENT_METHOD_CREDIT_CARD, 'Cartão de Crédito'),
+        (PAYMENT_METHOD_BOLETO, 'Boleto'),
+        (PAYMENT_METHOD_PIX, 'Pix'),
+        (PAYMENT_METHOD_OTHER, 'Outro'),
+    )
+
+
     id = models.AutoField(primary_key=True)
     date = models.DateField()
     time = models.TimeField(default=current_time_sao_paulo)
@@ -361,15 +442,24 @@ class Adesao_Purchase(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, default=1)
     stripe_checkout_id = models.CharField(max_length=255, default='')
     status = models.CharField(max_length=50, default=ADESAO_PURCHASE_STATUS_PENDING)
+    payment_method = models.CharField(
+        max_length=30, 
+        choices=PAYMENT_METHOD_CHOICES,
+        default=PAYMENT_METHOD_CREDIT_CARD,
+        )
 
     def cancel_purchase(self):
         self.status = ADESAO_PURCHASE_STATUS_CALCELED
         self.save()
 
 class ChatBot(models.Model):
+    id = models.AutoField(primary_key=True)
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, default=1)
     nome_do_chatbot = models.CharField(max_length=40, default='sem nome')
     aditional_intructions = models.CharField(max_length=MAX_CHAR_INSTRUCTIONS_CHATBOT_FORM, default='')
+    cardapio = models.CharField(max_length=MAX_CHAR_INSTRUCTIONS_CHATBOT_FORM, default='')
+    descricao_funcao_cardapio = models.CharField(max_length=1000, default='Obtém uma informação específica, ou um conjunto de informações específicas contidas no cardápio, como nome do produto, tamanho, ingredientes e preço')
+    descricao_informacao_solicitada_do_cardapio = models.CharField(max_length=1000, default='A informação a ser obtida através do cardápio, por exemplo, ingredientes da pizza de mussarela, preço do refrigerante coca cola lata, preço da pizza de alho')
     whatsapp_number=models.CharField(
         validators=[phone_regex],
         default='99999999999',
@@ -469,8 +559,6 @@ class Conversa(models.Model):
 
         self.save()
 
-    
-
     @staticmethod
     def conversations_to_payment_due(user):
         user_chatbots = ChatBot.objects.filter(user=user)
@@ -484,6 +572,13 @@ class Conversa(models.Model):
         user_chatbots = ChatBot.objects.filter(user=user)
         pending_conversations = Conversa.objects.filter(Q(chatbot__in=user_chatbots) & Q(financial_status=CONVERSA_PAGAMENTO_PENDENTE))
         return pending_conversations.count()
+    
+    @staticmethod
+    def count_conversations_in_current_billing_period(user):
+        user_chatbots = ChatBot.objects.filter(user=user)
+        current_conversations = Conversa.objects.filter(Q(chatbot__in=user_chatbots) & Q(financial_status=CONVERSA_AGUARDANDO_VENCIMENTO))
+        return current_conversations.count()
+
 
     @staticmethod
     def register_payed_conversations(user, amount_payed):
@@ -530,7 +625,30 @@ class Conversa(models.Model):
     def __str__(self):
         conversa_id = self.id
         return f"Conversa n° {conversa_id} - com o número: {self.company_client_number} - status: {self.status_da_conversa}"
+
+class DadosClienteCadatrado(models.Model):
+
+    ultima_conversa = models.ForeignKey(Conversa, on_delete=models.SET_NULL, null=True)
+    nome = models.CharField(
+        max_length=60,
+        default='',
+    )
+    endereco = models.CharField(
+        max_length=60,
+        default='',
+    )
+    telefone = models.CharField(
+        max_length=20,
+        default='',
+        )
+    metodo_pagamento = models.CharField(
+        max_length=60,
+        default='',
+    )
     
+    def __str__(self):
+        return self.nome
+
 class Pedido(models.Model):
     STATUS_CHOICES = (
         (STATUS_PEDIDO_REALIZADO , 'Pendido realizado'),
@@ -558,6 +676,27 @@ class Pedido(models.Model):
         )
     date = models.DateField(default=current_date_sao_paulo)
     time = models.TimeField(default=current_time_sao_paulo)
+    nome_do_cliente = models.CharField(
+        max_length=60,
+        default='',
+        )
+    itens_pedido = models.CharField(
+        max_length=12000,
+        default=''
+        )
+    endereco_entrega=models.CharField(
+        max_length=200,
+        default='',
+        )
+    taxa_de_entrega = models.CharField(
+        max_length=60,
+        default='',
+        )
+    valor_total = models.CharField(
+        max_length=60,
+        default='',
+        )
+
 
     def mensagem_novo_status(self):
         mensagem = ' '
@@ -571,12 +710,178 @@ class Pedido(models.Model):
             mensagem = 'Atenção, seu pedido foi entregue! Aproveite!'
         return mensagem
     
+    def extrair_valor_total_pedido_do_resumo(self):
+        """
+        pattern = r'R\$ *[\d\.]*\,\d\d'
+        matches = re.findall(pattern, self.resumo_do_pedido)  # This finds all instances of the pattern
+
+        total_pedido = Decimal('0.00')  # initialize the total order value
+        for match in matches:
+            # Remove the 'R$' and replace the comma with a dot to convert to a Decimal
+            value = Decimal(match.replace('R$', '').replace(',', '.'))
+            total_pedido += value
+
+        return total_pedido
+        """
+        try:
+            return ai_gpt_extrair_dado_do_resumo('valor da total do pedido (colocar R$ na frente do valor)' ,self.resumo_do_pedido)
+        except:
+            return 'Não foi possível extrair o total do pedido da conversa'
+        
+    def extrair_metodo_pagamento_do_resumo(self):
+        try:
+            return ai_gpt_extrair_dado_do_resumo('método de pagamento' ,self.resumo_do_pedido)
+        except:
+            return "Não foi possível extrair o método de pagamento da conversa"
+    
+    def extrair_endereco_cliente_do_resumo(self):
+        try:
+            return ai_gpt_extrair_endereco_do_resumo(self.resumo_do_pedido)
+        except:
+            return "Não foi possível extrair o endereço de entrega da conversa"
+    
+    def extrair_nome_cliente_do_resumo(self):
+        try:
+            return ai_gpt_extrair_dado_do_resumo('nome do cliente' ,self.resumo_do_pedido)
+        except:
+            return 'Não foi possível extrair o nome do cliente da conversa'
+    
+    def extrair_itens_do_pedido_do_resumo(self):
+        try:
+            return ai_gpt_extrair_dado_do_resumo('itens do pedido, incluindo o item, quantidade (1x, 2x, 3x...) e preço do item' ,self.resumo_do_pedido)
+        except:
+            return 'Não foi possível extrair o nome do cliente da conversa'
+        
+    def extrair_taxa_de_entrega_do_pedido_do_resumo(self):
+        try:
+            return ai_gpt_extrair_dado_do_resumo('valor da taxa de entrega' ,self.resumo_do_pedido)
+        except:
+            return 'Não foi possível extrair a taxa de entrega da conversa'
+
+    # ciração de pedido a ser chamada quando não se tem os parâmetros do pedido (a serem extraidos do reumo)
+    @staticmethod
+    def criar_novo_pedido(user, conversation, resumo, numero_cliente):
+        pedido = Pedido.objects.create(
+            user=user,
+            conversa=conversation,
+            resumo_do_pedido = resumo,
+        )
+        attempt_count = 0
+        success_pedido_register = False
+        while attempt_count < API_MAX_ATTEMP and success_pedido_register == False:
+            try:
+                time.sleep(SLEEP_SECONDS_INTER_AI_API_CALL)
+                nome_cliente = pedido.extrair_nome_cliente_do_resumo()
+                time.sleep(SLEEP_SECONDS_INTER_AI_API_CALL)
+                endereco_cliente = pedido.extrair_endereco_cliente_do_resumo()
+                time.sleep(SLEEP_SECONDS_INTER_AI_API_CALL)
+                valor_total = pedido.extrair_valor_total_pedido_do_resumo()
+                time.sleep(SLEEP_SECONDS_INTER_AI_API_CALL)
+                itens_pedido = pedido.extrair_itens_do_pedido_do_resumo()
+                pedido.nome_do_cliente = nome_cliente
+                pedido.endereco_entrega=endereco_cliente
+                pedido.valor_total=valor_total
+                pedido.itens_pedido = itens_pedido
+                pedido.save()
+                success_pedido_register = True
+            except:
+                 time.sleep(SLEEP_SECONDS_INTER_AI_API_CALL)
+
+                                    #se os dados do cliente do pedido ja existem, atualiza-os
+        try:
+            dados_cliente = DadosClienteCadatrado.objects.get(
+                 ultima_conversa__company_client_number=conversation.company_client_number)
+            # If the object is found, update the fields
+            dados_cliente.ultima_conversa = conversation
+            dados_cliente.nome = nome_cliente
+            dados_cliente.endereco = endereco_cliente
+            dados_cliente.metodo_pagamento = pedido.extrair_metodo_pagamento_do_resumo()
+            dados_cliente.save()
+        #se os dados do cliente ainda nao existem, cria-se novo objeto
+        except ObjectDoesNotExist:
+            dados_cliente = DadosClienteCadatrado.objects.create(
+                ultima_conversa=conversation,
+                nome=nome_cliente,
+                endereco=endereco_cliente,
+                metodo_pagamento = pedido.extrair_metodo_pagamento_do_resumo(),
+                telefone = numero_cliente,
+            )
+
+    def criar_novo_pedido_ja_com_parametros(nome_cliente, endereco_cliente, itens_pedido, taxa_de_entrega, valor_total, metodo_de_pagamento, resumo_do_pedido, user, conversation):
+        pedido = Pedido.objects.create(
+            user=user,
+            conversa=conversation,
+            resumo_do_pedido = resumo_do_pedido,
+        )
+
+        pedido.nome_do_cliente = nome_cliente
+        pedido.endereco_entrega=endereco_cliente
+        pedido.valor_total=valor_total
+        pedido.itens_pedido = itens_pedido
+        pedido.taxa_de_entrega = taxa_de_entrega
+        pedido.save()
+
+        try:
+            dados_cliente = DadosClienteCadatrado.objects.get(
+                 ultima_conversa__company_client_number=conversation.company_client_number)
+            # If the object is found, update the fields
+            dados_cliente.ultima_conversa = conversation
+            dados_cliente.nome = nome_cliente
+            dados_cliente.endereco = endereco_cliente
+            dados_cliente.metodo_pagamento = metodo_de_pagamento
+            dados_cliente.save()
+        #se os dados do cliente ainda nao existem, cria-se novo objeto
+        except ObjectDoesNotExist:
+            dados_cliente = DadosClienteCadatrado.objects.create(
+                ultima_conversa=conversation,
+                nome=nome_cliente,
+                endereco=endereco_cliente,
+                metodo_pagamento = metodo_de_pagamento,
+                telefone = conversation.company_client_number,
+            )
+    
     def __str__(self):
         if self.criado_manualmente == True:
             return self.nome_pedido_manual
         
         return f"Pedido {self.id}"
 
+
+class PaymentsForUseMadde(models.Model):
+    FINANCEIRO_CHOICES = (
+        (FATURA_PAGA, 'Pagamnento confirmado'),
+        (FATURA_PENDENTE, 'Aguardando confirmação'), #conversas já vencidas mas não pagas
+    )
+
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    date = models.DateField(default=current_date_sao_paulo)
+    time = models.TimeField(default=current_time_sao_paulo)
+    product_name = models.CharField(
+        max_length=120,
+        default=PRODUCT_NAME_BASIC,
+        )
+    product_price = models.DecimalField(max_digits=7, decimal_places=2, default=0.00)
+    status = models.CharField(
+        max_length=120,
+        default=FATURA_PENDENTE,
+        choices=FINANCEIRO_CHOICES,
+        )
+    numero_conversas = models.PositiveIntegerField(
+        default=0,
+        )
+    valor_total = models.CharField(
+        max_length=20,
+        default='R$0,00',
+        )
+    
+    @staticmethod
+    def registrar_fatura_paga(user):
+        user_payments = PaymentsForUseMadde.objects.filter(user=user)
+        for payment in user_payments:
+            payment.status = FATURA_PAGA
+            FATURA_PAGA.save()
+        #TODO AVALIAR REFINAMENTO PARA SÓ SER PAGO O VALOR RECEBIDO NO WEBHOOK
+        #TODO FALTA TESTE
 
 def register_adesao_purchase_after_webhook_confirm(checkout_id):
     try:

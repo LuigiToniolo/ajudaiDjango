@@ -2,7 +2,7 @@ import requests
 import json
 
 def send_response(page_id, auth_token, to_number, message_text):
-    graph_api_version = 'v16.0'
+    graph_api_version = 'v17.0'
     url = f"https://graph.facebook.com/{graph_api_version}/{page_id}/messages"
     headers = {
         "Authorization": f"Bearer {auth_token}",

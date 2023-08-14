@@ -321,7 +321,7 @@
         }, 30000); 
 
         //mostra antiga conversa ativa em caso de reload
-        if (activeConversaId !== null) {
+        if (activeConversaId !== null && activeConversaId !== undefined && activeConversaId !== "")  {
               console.log("Trying to show conversation with ID: ", activeConversaId);
               $(".conversation").hide();
               $("#conversation-" + activeConversaId).show();
