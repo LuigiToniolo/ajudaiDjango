@@ -31,7 +31,7 @@ def criar_pedido_e_retornar_resumo(
     ):
     resumo_do_pedido = f"Seu pedido foi confirmado! \nResumo do Pedido:\n - Nome do Cliente: {nome_cliente} \n - Itens do pedido: {itens_pedido} \n - Total do pedido: {valor_total} \n - Método de Pagamento: {metodo_de_pagamento} - Endereço: {endereco_cliente}"
     Pedido.criar_novo_pedido_ja_com_parametros(nome_cliente, endereco_cliente, itens_pedido, taxa_de_entrega, valor_total, metodo_de_pagamento, resumo_do_pedido, user, conversation)
-    return resumo_do_pedido
+    return 'Pedido feito com sucesso'
 
 
 
@@ -142,6 +142,7 @@ def generate_gpt_response(prompt, context, role, aditional_instructions, model_n
                     functions=functions,
                     function_call="auto",
                 )
+                tokens_used = completions.usage['total_tokens']
 
                 response_message = completions["choices"][0]["message"]
                 if response_message.get("function_call"):
@@ -172,7 +173,7 @@ def generate_gpt_response(prompt, context, role, aditional_instructions, model_n
 
                         awnser = completions_after_function_response['choices'][0]['message']['content']
                         context.append({"role": "assistant", "content": awnser})
-                        tokens_used = completions.usage['total_tokens'] + completions_after_function_response.usage['total_tokens']
+                        tokens_used = tokens_used + completions_after_function_response.usage['total_tokens']
 
                     if function_name == 'criar_pedido_e_retornar_resumo':
                         try:
@@ -194,7 +195,6 @@ def generate_gpt_response(prompt, context, role, aditional_instructions, model_n
 
                             awnser =  'Seu pedido foi registrado com sucesso! Te informaremos por aqui de qualquer atualização. Muito obrigado!'
                             context.append({"role": "assistant", "content": awnser})
-                            tokens_used = completions.usage['total_tokens']
 
                         except:
                             function_response = 'Não foi possível realizar o fechamento do pedido. Tente novamente ou aguarde até que um atendente humano assuma a conversa'
@@ -206,13 +206,10 @@ def generate_gpt_response(prompt, context, role, aditional_instructions, model_n
 
                             awnser = FECHAR_PEDIDO_ERROR_MESSAGE_FUNCTION_CALL
                             context.append({"role": "assistant", "content": awnser})
-                            tokens_used = completions.usage['total_tokens'] #AQUI APENAS PARA O PRIMEIRO COMPLETION, NÃO PARA O DEPOIS DA CHAMADA DE FUNÇÃO
-
 
                 else:
                     awnser = completions['choices'][0]['message']['content']
                     context.append({"role": "assistant", "content": awnser})
-                    tokens_used = completions.usage['total_tokens']
 
 
             except Exception as e:
