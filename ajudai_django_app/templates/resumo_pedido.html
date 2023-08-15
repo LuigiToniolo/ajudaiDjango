@@ -54,7 +54,6 @@
                       <div class="container-center">
                         <div class="container-pedido">
                           <h1 style="text-align: start; margin-bottom: 0">{{ page_title }} - nº {{pedido.id}}</h1>
-                          <p>Veja as informações do resumo do pedido <strong>nº {{pedido.id}}</strong></p>
                           <div class="grid-container">
                             <div class="grid-item">
                               <p class="title-card">Nome do cliente:</p>
@@ -69,21 +68,31 @@
                               <p>{{ pedido.status_do_pedido }}</p>
                             </div>
                             <div class="grid-item">
-                              <p class="title-card">Total do pedido:</p>
-                              <p>R$43,00</p>
+                              <p class="title-card">Número do pedido</p>
+                              <p>nº {{pedido.id}}</p>
                             </div>
                             <div class="grid-item full-width">
                               <p class="title-card">Itens do pedido: </p>
                               <p>1x X-Egg - R$ 23,00; 1x Coca-cola - R$5,00; 1x batata frita - R$15,00</p>
                             </div>
                             <div class="grid-item">
+                              <p class="title-card">Taxa de entrega</p>
+                              <p>R$5,00</p>
+                            </div>
+                            <div class="grid-item">
                               <p class="title-card">Endereço de entrega: </p>
                               <p>Rua Campos Sales, 2777, Vila Elizabeth - CEP: 13560-350</p>
                             </div>
+                            
                             <div class="grid-item">
                               <p class="title-card">Método de pagamento: </p>
                               <p>Cartão de débito</p>
                             </div>
+                            <div class="grid-item">
+                              <p class="title-card">Total do pedido: </p>
+                              <p>R$43,00</p>
+                            </div>
+                            
                             <a class="botao-voltar" href="{% url 'pedidos-realizados' %}"><i style="margin-right: 5px;" class="fa-solid fa-arrow-left"></i>Voltar</a><br>
                           </div>
 
