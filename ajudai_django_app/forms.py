@@ -135,10 +135,6 @@ class ChatBotForm(forms.ModelForm):
         label='Descrição função com informações do cardápio',
         initial='Obtém uma informação específica, ou um conjunto de informações específicas contidas no cardápio, como nome do produto, tamanho, ingredientes e preço',
         )
-    descricao_informacao_solicitada_do_cardapio = forms.CharField(
-        label='Descrição do formato da informação a ser solicitada do cardápio',
-        initial='A informação a ser obtida através do cardápio, por exemplo, ingredientes da pizza de mussarela, preço do refrigerante coca cola lata, preço da pizza de alho'
-        )
     whatsapp_number = forms.CharField(
         label='Número WhatsApp Business',
         widget=forms.TextInput(attrs={
@@ -160,7 +156,7 @@ class ChatBotForm(forms.ModelForm):
     
     class Meta:
         model = ChatBot
-        fields = ['nome_do_chatbot', 'whatsapp_number', 'whats_app_api_auth_token', 'facebook_page_id', ADITIONAL_INTRUCTIONS_FIELD_NAME, 'cardapio', 'descricao_funcao_cardapio', 'descricao_informacao_solicitada_do_cardapio']
+        fields = ['nome_do_chatbot', 'whatsapp_number', 'whats_app_api_auth_token', 'facebook_page_id', ADITIONAL_INTRUCTIONS_FIELD_NAME, 'cardapio', 'descricao_funcao_cardapio',]
 
     def clean(self):
         cleaned_data = super().clean()

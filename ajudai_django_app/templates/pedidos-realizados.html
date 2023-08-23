@@ -19,9 +19,7 @@
         {% include 'includes/topMenu.html' %}
         <div id="layoutSidenav">
             <div id="layoutSidenav_nav">
-
                 {% include 'includes/sidebar.html' %}
-
             </div>
             <div id="layoutSidenav_content">
                 <main>
@@ -35,7 +33,7 @@
 
                                 </div>
                                 <ul id="todo" class="dropzone" ondrop="drop(event)" ondragover="allowDrop(event)">
-                                  <button onclick="createCard()" class="button-novo">+ Novo pedido</button>
+                                  <button onclick="createCard()" class="button-novo" style="display: none;">+ Novo pedido</button>
                                 </ul>
                             </div>
                             <div class="column-kanban">
@@ -72,7 +70,7 @@
                           
                           <h3>Como funciona o envio das mensagens de status do pedido para o cliente?</h3>
                           <p style="margin-bottom: 3vh;">Para que seu cliente fique sabendo do status do pedido "pedido realizado", "pedido em processamento", "aguardando entrega" e "pedido retirado/entregue", basta você arrastar os pedidos de uma coluna para outra que o chatbot envia mensagens automaticamente notificando o status do pedido realizado.</p>
-                    
+
                     </div>
                 </main>
                 {% include 'includes/footer.html' %}

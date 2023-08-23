@@ -17,9 +17,9 @@
   background-color: #F2F2F2;
 }
 
-.column-kanban:nth-child(2) ul {
-  background-color: #b5c7fd;
-}
+    .column-kanban:nth-child(2) ul {
+      background-color: #b5c7fd;
+    }
 
 .column-kanban:nth-child(3) ul {
   background-color: #ffc4c4;
@@ -67,42 +67,43 @@
   margin-left: 10px;
 }
 
-.button-novo {
-  width: 100%;
-  border: 1px solid black;
-  border-radius: 10px;
-  background-color: transparent;
-}
+    .button-novo {
+      width: 100%;
+      border: 1px solid black;
+      border-radius: 10px;
+      background-color: transparent;
+      display: none;
+    }
 
-.card-kanban {
-  background-color: #fff;
-  padding: 10px;
-  margin-bottom: 10px;
-  margin-top: 10px;
-  border-radius: 4px;
-  cursor: grab;
-  display: flex;
-  flex-direction: column;
-}
+    .card-kanban {
+      background-color: #fff;
+      padding: 10px;
+      margin-bottom: 10px;
+      margin-top: 10px;
+      border-radius: 4px;
+      cursor: grab;
+      display: flex;
+      flex-direction: column;
+    }
 
-.fa-clock,
-.fa-calendar {
-  color: #a8a8a8;
-  margin-right: 3px;
-}
+    .fa-clock,
+    .fa-calendar {
+      color: #a8a8a8;
+      margin-right: 3px;
+    }
 
-.ver-pedido-link {
-  text-decoration: none;
-  background-color: #e6e6e6;
-  border-radius: 5px;
-  text-align: center;
-  color: #000;
-}
+    .ver-pedido-link {
+      text-decoration: none;
+      background-color: #e6e6e6;
+      border-radius: 5px;
+      text-align: center;
+      color: #000;
+    }
 
-.ver-pedido-link:hover {
-  color: #000;
-  transform: scale(1.02);
-}
+    .ver-pedido-link:hover {
+      color: #000;
+      transform: scale(1.02);
+    }
 
 select {
   padding: 5px;

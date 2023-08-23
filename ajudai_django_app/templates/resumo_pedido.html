@@ -53,27 +53,74 @@
                     <div class="container-fluid px-4">
                       <div class="container-center">
                         <div class="container-pedido">
-                          <h1>Resumo do Pedido nº {{pedido.id }}</h1>
-                          <p><strong>Status do Pedido: </strong> {{ pedido.get_status_do_pedido_display }}</p>
-                          {% if not pedido.criado_manualmente %}
-                            <p><strong>Número Whatsapp do Cliente: </strong>{{ numero_cliente_pedido }}</p>
-                            {% if dados_cliente %}
-                              <p><strong>Nome do cliente: </strong>{{ dados_cliente.nome }}</p>
-                            {% else %}
-                              <p><strong>Nome do cliente: </strong>Não coletado para esse pedido.</p>
+                          <h1 style="text-align: start; margin-bottom: 0">Resumo do Pedido -  nº {{ pedido.id }}</h1>
+                          <div class="grid-container">
+                            {% if not pedido.criado_manualmente %}
+                              <div class="grid-item">
+                                <p class="title-card">Nome do cliente:</p>
+                                {% if dados_cliente %}
+                                  <p>Nome do cliente: {{ dados_cliente.nome }}</p>
+                                {% else %}
+                                  <p>Nome do cliente: Não coletado para esse pedido.</p>
+                                {% endif %}
+                              </div>
+                              <div class="grid-item">
+                                <p class="title-card">Número Whatsapp do Cliente: :</p>
+                                <p>{{ numero_cliente_pedido }}</p>
+                              </div>
+                              <div class="grid-item">
+                                <p class="title-card">Status do Pedido: </p>
+                                <p>{{ pedido.status_do_pedido }}</p>
+                              </div>
+                              <div class="grid-item">
+                                <p class="title-card">Número do pedido</p>
+                                <p>nº {{ pedido.id }}</p>
+                              </div>
+                              <div class="grid-item full-width">
+                                <p class="title-card">Itens do pedido: </p>
+                                <p>{{ itens_do_pedido }}</p>
+                              </div>
+                              <div class="grid-item">
+                                <p class="title-card">Taxa de entrega</p>
+                                <p>{{ taxa_de_entrega }}</p>
+                              </div>
+                              {% if dados_cliente %}
+                                <div class="grid-item">
+                                  <p class="title-card">Endereço de entrega: </p>
+                                  <p>{{ dados_cliente.endereco }}</p>
+                                </div>
+                                <div class="grid-item">
+                                  <p class="title-card">Método de pagamento: </p>
+                                  <p>{{ dados_cliente.metodo_pagamento }}</p>
+                                </div>
+                                {% else %}
+                                <div class="grid-item">
+                                  <p class="title-card">Endereço de entrega: </p>
+                                  <p>Não coletado para esse pedido.</p>
+                                </div>
+                                <div class="grid-item">
+                                  <p class="title-card">Método de pagamento: </p>
+                                  <p>Não coletado para esse pedido.</p>
+                                </div>
+                              {% endif %}
+                              <div class="grid-item">
+                                <p class="title-card">Total do pedido: </p>
+                                <p>{{ valor_total_pedido }}</p>
+                              </div>
+
+                              <a class="botao-voltar" href="{% url 'pedidos-realizados' %}"><i style="margin-right: 5px;" class="fa-solid fa-arrow-left"></i>Voltar</a><br>
+                              </div>
                             {% endif %}
-                            <p><strong>Itens do pedido: </strong>{{ itens_do_pedido }}</p>
-                            <p><strong>Taxa de entrega: </strong>{{ taxa_de_entrega }}</p>
-                            <p><strong>Total do pedido: </strong>{{ valor_total_pedido }}</p>
-                            {% if dados_cliente %}
-                              <p><strong>Endereço de entrega: </strong>{{ dados_cliente.endereco }}</p>
-                              <p><strong>Método de pagamento: </strong>{{ dados_cliente.metodo_pagamento }}</p>
-                            {% else %}
-                              <p><strong>Endereço de entrega: </strong>Não coletado para esse pedido.</p>
-                              <p><strong>Método de pagamento: </strong>Não coletado para esse pedido.</p>
-                            {% endif %}
-                          {% endif %}
-                          <a class="botao-voltar" href="{% url 'pedidos-realizados' %}"><i style="margin-right: 5px;" class="fa-solid fa-arrow-left"></i>Voltar</a><br>
+                         
+                          <!-- <p style="margin: 0; padding: 0;"><strong>{{ label_status_pedido }}: </strong> {{ pedido.status_do_pedido }}</p>
+
+                          <p style="margin: 0; padding: 0;"><strong>Itens do pedido</strong> 1x X-Egg - R$ 23,00</p>
+                          <p style="margin: 0; padding: 0;"><strong>Total do pedido:</strong> R$ 23,00</p>
+                          <p style="margin: 0; padding: 0;"><strong>Endereço de entrega:</strong> Rua Campos Sales, 2777, Vila Elizabeth - CEP: 13560-350</p>
+                          <p style="margin-bottom: 20px; padding: 0;"><strong>Método de pagamento</strong>  Cartão de Débito</p> -->
+
+                          <!-- <p><strong>{{ label_resumo_pedido }}: </strong></p>
+                          <p style="margin-bottom: 3vh;">{{ pedido.resumo_do_pedido }}</p> -->
                         </div>
                       </div>
                     </div>

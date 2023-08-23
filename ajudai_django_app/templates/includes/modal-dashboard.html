@@ -160,7 +160,10 @@ progress1Value.textContent = conversasPlanoAtual + " Conversas";
 
 <script>
   // Aqui está o script do rounded range com a porcentagem de conversões dos clientes
-  var progressValue = {{ taxa_conversao }}; // Valor da porcentagem desejada
+  var progressValue = {{ taxa_conversao }}; 
+  progressValue = progressValue.toLocaleString('de-DE'); // Converts the number to a string using the German locale, which uses a comma as the decimal separator
+  progressValue = parseFloat(progressValue.replace(',', '.')); // Convert the string back to a number, replacing the comma with a dot
+  // Valor da porcentagem desejada
 
   var progressBar = document.querySelector(".circular-progress");
   var progressValueText = document.querySelector(".progress-value");
