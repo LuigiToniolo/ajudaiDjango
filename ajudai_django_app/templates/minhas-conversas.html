@@ -10,6 +10,7 @@
         <title>Minhas conversas - Ajudai</title>
         <link rel="icon" href="{% static 'image/logo-ajudai-circulo.png' %}">
         <script src="https://use.fontawesome.com/releases/v6.0.0/js/all.js" crossorigin="anonymous"></script>
+        <script src="https://use.fontawesome.com/releases/v6.0.0/js/all.js" crossorigin="anonymous"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
         <link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Montserrat'>
@@ -32,8 +33,19 @@
           </div>
           <div class="menu-icons">
             <a href="{% url 'dashboard' %}" title="Home">
+            <a href="{% url 'dashboard' %}" title="Home">
               <div class="icons-div">
                 <i class="fas fa-home" id="icones-menu"></i>
+              </div>
+            </a>
+            <a href="{% url 'pedidos-realizados' %}" title="Pedidos realizados">
+              <div class="icons-div">
+                <i class="fas fa-sticky-note" id="icones-menu"></i>
+              </div>
+            </a>
+            <a href="{% url 'meus-chatbots' %}" title="Meus chatbos">
+              <div class="icons-div">
+                <i class="fas fa-robot" id="icones-menu"></i>
               </div>
             </a>
             <a href="{% url 'pedidos-realizados' %}" title="Pedidos realizados">
@@ -53,6 +65,7 @@
           <h2>Meus clientes</h2>
           <ul>
             {% for conversa in conversas %}
+            <li id="contact-{{ conversa.id }}" onclick="toggleDivBackground(this)">
             <li id="contact-{{ conversa.id }}" onclick="toggleDivBackground(this)">
               <div class="conteudo-contato">
 

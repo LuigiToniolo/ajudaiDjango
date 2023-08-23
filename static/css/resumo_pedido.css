@@ -1,41 +1,16 @@
-/* body {
-    margin: 0;
-    padding: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    background-color: #FFFFFF;
-    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", "Liberation Sans", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-  
-  }
-   */
-   /* .container-welcome {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  text-align: center;
-} */
-.container-center {
-    /* display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100%; */
+  /* .container-center {
     position: absolute;
-    width: 80%;
+    width: 65%;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    /* text-align: center; */
-  }
+    
+  } */
   
   .container-pedido {
-      background-color: #f2f2f2;
-      padding: 8%;
+      /* background-color: #f2f2f2; */
+      padding: 20px;
       border-radius: 10px;
-      box-shadow: 0 14px 28px rgba(0,0,0,0.25), 
-        0 10px 10px rgba(0,0,0,0.22);
   }
 
   .botao-voltar {
@@ -46,6 +21,7 @@
     border-style: none;
     cursor: pointer;
     text-decoration: none;
+    text-align: center;
     margin-top: 3vh;
   }
 
@@ -62,6 +38,34 @@
   p {
     font-size: 18px;
     color: #000;
+  }
+
+
+
+
+  .grid-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    padding: 10px;
+  }
+
+  .grid-item {
+    background-color: #f2f2f2;
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: start;
+  }
+
+  .full-width {
+    grid-column: span 2;
+  }
+
+  .title-card {
+    font-size: 18px;
+    font-weight: 500;
+    margin: 0;
+    padding: 0;
   }
 
 

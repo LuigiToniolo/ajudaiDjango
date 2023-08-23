@@ -33,6 +33,18 @@ toggleButton.addEventListener('click', function() {
 
 
 
+document.addEventListener('DOMContentLoaded', function() {
+    var botaoLimitar = document.querySelector('.botao-limitar');
+    var modal = document.getElementById('modal');
+
+    botaoLimitar.addEventListener('click', function() {
+      modal.style.display = 'flex';
+
+      setTimeout(function() {
+        modal.style.display = 'none';
+      }, 4000);
+    });
+  });
 
 
 //Configuração quantidade de conversas

@@ -1366,4 +1366,3 @@ def pay_debit(request):
             'userIsPremium' : user.userIsPremium(),
         }
     )
-

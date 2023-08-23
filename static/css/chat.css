@@ -432,3 +432,62 @@ background-color: #555;
   flex-direction: row;
   justify-content: flex-end;
 }
+
+
+
+
+.dropup {
+  display: none;
+  position: fixed;
+  bottom: 65px;
+  right: 20px;
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 10px;
+}
+
+.dropup p {
+  margin: 0;
+}
+
+.dropup button {
+  margin-top: 10px;
+}
+
+.botao-play-chatbot {
+  display: none;
+}
+
+.botao-concordar {
+  border-radius: 5px;
+  background-color: #5C7AD3;
+  color: #FFFFFF;
+  padding: 5px;
+  border-style: none;
+  cursor: pointer;
+  margin-right: 10px;
+}
+
+.botao-cancelar {
+  border-radius: 5px;
+  background-color: #ff9696;
+  color: #FFFFFF;
+  padding: 5px;
+  border-style: none;
+  cursor: pointer;
+}
+
+.botao-cancelar:hover  {
+  transform: scale(1.05);
+}
+.botao-concordar:hover  {
+  transform: scale(1.05);
+}
+
+.botoes-acao {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+}
+
