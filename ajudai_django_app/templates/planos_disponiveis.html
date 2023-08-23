@@ -170,8 +170,10 @@
                             </div>
                             <div style="display: flex; justify-content: center; flex-direction:column; align-items: center; width: 60%">
                               <img style="width: 300px; height: auto;" src="{% static 'image/pagamento_ajudai_ilustration.svg' %}" alt="pagamento ajudai">
-                              <button class="assinatura-btn">Assine já</button>
-                              <p style="margin: 0; padding: 0; text-align: center; font-size: 12px">*A taxa de implementação será cobrado apenas <strong>uma vez</strong  > e deverá ser paga no primeiro mês de uso</p>
+                              <a href="{% url 'checkout_pagamento_adesao' %}">
+                                  <button class="assinatura-btn">Assine já</button>
+                              </a>
+                              <p style="margin: 0; padding: 0; text-align: center; font-size: 12px">*A taxa de implementação será cobrado apenas <strong>uma vez</strong> e deverá ser paga no primeiro mês de uso</p>
                             </div>
                           </div>
                           
