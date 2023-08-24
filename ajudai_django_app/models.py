@@ -387,6 +387,7 @@ class Product(models.Model):
         (PRODUCT_NAME_PLUS, 'Plus'),
         (PRODUCT_NAME_PREMIUM, 'Premium'),
         (PRODUCT_NAME_COORPORATE, 'Corporativo VIP'),
+        (PRUDUCT_TYPE_ADESAO , 'Adesão'),
     )
 
     name = models.CharField(
