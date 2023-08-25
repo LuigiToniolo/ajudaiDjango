@@ -7,20 +7,20 @@
         <link rel="stylesheet" type="text/css" href="{% static 'ajudai_django_app/css/database_error.css' %}" />
     </head>
     <body>
-        <div id="menu">
-            <nav>
-              <ul>
-                {% if user and user.username %}
-                  <a href="{% url 'user_accounts' %}">{{ user.username }} (my account)</a><br>
-                {% else %}
-                  <a href="{% url 'login' %}">Log In</a><br>
-                {% endif %}
-              </ul>
-            </nav>
-          </div>
 
-        <p>{{ error_message }}</p>
-        {{ SUPPORT_EMAIL }}<br><br><br>
+      <div class="container">
+        <div class="card">
+          <img class="img-ops" src="{% static 'image/img-ops.svg' %}" alt="opa-ajudai">
+          <h1>Ops :(</h1>
+          <p class="texto-aviso">Desculpe, parece ter havido 
+            um erro ao gravar ou recuperar informações de nossos 
+            bancos de dados. Por favor, tente novamente mais tarde. 
+            Caso o erro persista entre em contato conosco. 
+            <a style="color: #212D40;" href="{% url 'contato' %}">Acesse aqui</a>
+          </p>
+          <a class="botao-voltar" href="{% url 'dashboard' %}">Voltar</a>
+        </div>
+      </div>
 
     </body>
 </html>
