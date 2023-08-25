@@ -122,7 +122,10 @@ def dashboard_view(request):
 
     numero_de_pedidos = pedidos_do_periodo.count()
     numero_de_conversas = conversas_do_periodo.count()
-    taxa_conversao = round((numero_de_pedidos / numero_de_conversas) * 100, 2)
+    if numero_de_conversas > 0:
+        taxa_conversao = round((numero_de_pedidos / numero_de_conversas) * 100, 2)
+    else:
+        taxa_conversao = 0.0
     dias_para_pagamento = user.days_to_next_payment(STANDART_PERIOD)
     data_proximo_pagamento = today + timedelta(days=dias_para_pagamento)
     nome_do_plano = plano_atual_usuario.name
