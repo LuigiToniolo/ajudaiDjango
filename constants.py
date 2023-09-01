@@ -4,7 +4,7 @@ MAIN_APP_NAME = 'ajudai_django_app'
 SUPPORT_EMAIL = ''
 FANTASY_NAME = 'Ajudaí'
 
-DOMAIN = 'http://127.0.0.1:8000' #TODO PREENCHER COM URL REAL EM PRODUÇÃO (do projeto python no pythonanywhere, que deve ser um um sub da landing page)
+DOMAIN = 'https://areadocliente.ajudai.io'
 
 #--------------------------------------------------------------------
 #USUARIOS/PAGAMENTOS/PRUDUTOS
