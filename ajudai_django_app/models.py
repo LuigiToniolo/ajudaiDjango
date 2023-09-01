@@ -12,10 +12,7 @@ from ajudai_django_app.ai_chatbot.ai_extration import ai_gpt_extrair_dado_do_res
 from ajudai_django_app.payments_process.charge_usage import charge_usages
 from ajudai_django_app.phone_integration.messages import send_response
 import pytz
-import re
-from decimal import Decimal
-import re
-from unidecode import unidecode
+from dateutil.relativedelta import relativedelta
 from django.core.exceptions import ObjectDoesNotExist
 from constants import ADESAO_PURCHASE_STATUS_CALCELED, ADESAO_PURCHASE_STATUS_PENDING, ADESAO_PURCHASE_STATUS_PROCESSED, AI_PROVIDER_OPEN_AI, API_MAX_ATTEMP, BRL_CURRENCY_SIMBOL, CONVERSA_AGUARDANDO_VENCIMENTO, CONVERSA_PAGA, CONVERSA_PAGAMENTO_PENDENTE, DIAS_TOLERACIA_INADIMPLECIA, FATURA_PAGA, FATURA_PENDENTE, GPT3_MODEL_NAME, HOURS_TO_RESER_ABSOLUTE, HOURS_TO_RESET_INACTIVE, LIMITE_CONVERSAS_PLANO_PLUS, LIMITE_CONVERSAS_PLANO_PREMIUM, LIMITE_CONVERSAS_PLANO_STANDARD, MAX_CHAR_INSTRUCTIONS_CHATBOT_FORM, MENSAGEM_ENCERRAMENTO_DE_CONVERSA_INATIVIDADE, MENSAGEM_ENCERRAMENTO_DE_CONVERSA_TEMPO_LIMITE, PAYMENT_METHOD_BOLETO, PAYMENT_METHOD_CREDIT_CARD, PAYMENT_METHOD_OTHER, PAYMENT_METHOD_PIX, PAYMENT_METHOD_REGISTRATION_STATUS_FAILING, PAYMENT_METHOD_REGISTRATION_STATUS_PENDING, PAYMENT_METHOD_REGISTRATION_STATUS_SUCCESS, PAYMENT_PERIOD_ANUALY, PAYMENT_PERIOD_DAILY, PAYMENT_PERIOD_MONTHLY, PRODUCT_NAME_BASIC, PRODUCT_NAME_COORPORATE, PRODUCT_NAME_PLUS, PRODUCT_NAME_PREMIUM, PRUDUCT_TYPE_ADESAO, PRUDUCT_TYPE_CONVERSA_AVULSA, PRUDUCT_TYPE_PLAN, SEM_METODO_DE_PAGAMENTO_CLIENTE_LOCALIZADO_NA_CONVERSA, SLEEP_SECONDS_INTER_AI_API_CALL, STATUS_CONVERSA_EM_ANDAMENTO, STATUS_CONVERSA_ENCERRADA, STATUS_CONVERSA_FALHA, STATUS_PEDIDO_CANCELADO, STATUS_PEDIDO_EM_PROCESSO, STATUS_PEDIDO_ENTREGUE, STATUS_PEDIDO_PENDENTE_DE_ENTREGA, STATUS_PEDIDO_REALIZADO, USER_LEVEL_ADMIN, USER_LEVEL_FREE, USER_LEVEL_PREMIUM, USER_PAYMENT_METHOD_FAILED, USER_PAYMENT_METHOD_NOT_REGISTERED, USER_PAYMENT_METHOD_STATUS_OK
 
@@ -183,17 +180,9 @@ class CustomUser(AbstractUser):
         if reset_period == PAYMENT_PERIOD_DAILY:
             reset_date = self.last_payment_date + timedelta(days=1)
         elif reset_period == PAYMENT_PERIOD_MONTHLY:
-            year, month = self.last_payment_date.year, self.last_payment_date.month + 1
-            day =self.last_payment_date.day
-            if month > 12:
-                year += 1
-                month = 1
-            reset_date = self.last_payment_date.replace(year=year, month=month, day=day)
+            reset_date = self.last_payment_date + relativedelta(months=1)
         elif reset_period == PAYMENT_PERIOD_ANUALY:
-            year = self.last_payment_date.year + 1
-            month = self.last_payment_date.month
-            day =self.last_payment_date.day
-            reset_date = self.last_payment_date.replace(year=year, month=month, day=day)
+            reset_date = self.last_payment_date + relativedelta(years=1)
         else:
             raise ValueError('Invalid reset period')
 
@@ -205,6 +194,9 @@ class CustomUser(AbstractUser):
         if self.user_plan == USER_LEVEL_FREE:
             return None
         
+        if self.user_plan == USER_LEVEL_ADMIN:
+            return 30
+
         today = timezone.now().astimezone(sao_paulo_tz).date()
 
         if self.last_payment_date is None:
@@ -213,17 +205,9 @@ class CustomUser(AbstractUser):
         if reset_period == PAYMENT_PERIOD_DAILY:
             reset_date = self.last_payment_date + timedelta(days=1)
         elif reset_period == PAYMENT_PERIOD_MONTHLY:
-            year, month = self.last_payment_date.year, self.last_payment_date.month + 1
-            day =self.last_payment_date.day
-            if month > 12:
-                year += 1
-                month = 1
-            reset_date = self.last_payment_date.replace(year=year, month=month, day=day)
+            reset_date = self.last_payment_date + relativedelta(months=1)
         elif reset_period == PAYMENT_PERIOD_ANUALY:
-            year = self.last_payment_date.year + 1
-            month = self.last_payment_date.month
-            day =self.last_payment_date.day
-            reset_date = self.last_payment_date.replace(year=year, month=month, day=day)
+            reset_date = self.last_payment_date + relativedelta(years=1)
 
         return (reset_date - today).days
 
@@ -234,19 +218,9 @@ class CustomUser(AbstractUser):
             if reset_period == PAYMENT_PERIOD_DAILY:
                 reset_date = self.last_payment_date + timedelta(days=1)
             elif reset_period == PAYMENT_PERIOD_MONTHLY:
-                # Get the next month
-                year, month = self.last_payment_date.year, self.last_payment_date.month + 1
-                day =self.last_payment_date.day
-                if month > 12:
-                    year += 1
-                    month = 1
-                reset_date = self.last_payment_date.replace(year=year, month=month, day=day)
+                reset_date = self.last_payment_date + relativedelta(months=1)
             elif reset_period == PAYMENT_PERIOD_ANUALY:
-                # Get the next month
-                year = self.last_payment_date.year + 1
-                month = self.last_payment_date.month
-                day =self.last_payment_date.day
-                reset_date = self.last_payment_date.replace(year=year, month=month, day=day)
+                reset_date = self.last_payment_date + relativedelta(years=1)
             else:
                 raise ValueError('Invalid reset period')
 
@@ -262,8 +236,11 @@ class CustomUser(AbstractUser):
     def current_user_plan_price_and_conversas_a_pagar(self, reset_period):
         if self.userIsPremium == False:
             return None, None, None
-        self.reset_payment_date(reset_period)
-        conversas_a_pagar = Conversa.count_conversations_in_current_billing_period(self)
+        if self.user_plan == USER_LEVEL_ADMIN:
+            conversas_a_pagar = 0
+        else:
+            self.reset_payment_date(reset_period)
+            conversas_a_pagar = Conversa.count_conversations_in_current_billing_period(self)
         product = Product.objects.filter(Q(minimo_conversas__lte=conversas_a_pagar) & Q(maximo_conversas__gte=conversas_a_pagar)).first()
         price = None
         if product:
