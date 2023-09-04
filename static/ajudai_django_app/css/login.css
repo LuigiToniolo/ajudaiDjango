@@ -302,3 +302,79 @@ body {
 }
 
 }
+
+@media (min-width: 768px) {
+
+	.container-mobile {
+		display: none;
+	}
+
+}
+
+@media (max-width: 768px) {
+
+
+	.container {
+		display: none;
+	}
+	body {
+		/* background: linear-gradient(45deg, #FFFFFF, #5C7AD3 ); */
+		background-color: #5C7AD3;
+		/* height: 100%; */
+	}
+	.container-mobile {
+		display: flex;
+		flex-direction: column;
+		justify-content: space-between;
+
+	}
+
+	.inputs-mobile {
+		width: 100%;
+		align-items: center;
+		display: flex;
+		flex-direction: column;
+		margin: 3vh 0;
+	}
+	p {
+		margin: 0;
+	}
+	label {
+		display: none;
+	}
+
+	.card-login-mobile {
+		background: rgba(255, 255, 255, 0.4);
+		
+		border-radius: 25px;
+		/* width: 90vw;
+		height: 60vh; */
+	}
+	.titulo-login-mobile {
+		position: relative;
+		color: #FFFFFF;
+		
+		text-align: center;
+		justify-content: center;
+	}
+
+	.titulo-login-mobile {
+		padding: 3vh 3vw;
+		font-size: 46px;
+
+	}
+	.logo {
+		width: 100px;
+		height: auto;
+		align-items: center;
+		text-align: center;
+	}
+	.logo-mobile {
+		display: flex;
+		justify-content: center;
+	}
+
+
+
+
+}
