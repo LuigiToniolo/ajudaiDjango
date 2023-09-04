@@ -22,21 +22,27 @@
       </div>
       <div class="container-mobile">
         <div class="form-mobile">
-          <div class="inputs-mobile">
-            {{ login_form.as_p }}
-          </div>
-          <input class="botao-mobile" type="submit" value="{{ submit_login_text }}">
-          {% if error_message %}
+          <form method="post" action="{% url 'login' %}">
+            {% csrf_token %}
+            <div class="inputs-mobile">
+              {{ login_form.as_p }}
+            </div>
+            <input class="botao-mobile" type="submit" value="{{ submit_login_text }}">
+            <p class="forget"><a class="forget-link" href="{% url 'password_reset' %}">Esqueceu a senha?</a></p>
+            {% if error_message %}
             <p class="erro-msg">{{ error_message }}</p>
-          {% endif %}
-          <p class="forget"><a class="forget-link" href="{% url 'password_reset' %}">Esqueceu a senha?</a></p>
-          <div class="divider-mobile">
-            <div class="line"></div>
-            <div class="text">OU</div>
-            <div class="line"></div>
+            {% endif %}
+          </form>
+
+
+            <div class="divider-mobile">
+              <div class="line"></div>
+              <div class="text">OU</div>
+              <div class="line"></div>
+          </div>
+          <a class="botao-registrar" href="{% url 'register' %}">crie uma conta Ajudai!</a>
         </div>
-        <a class="botao-registrar" href="{% url 'register' %}">crie uma conta Ajudai!</a>
-        </div>
+
         <div>
         </div>
       </div>

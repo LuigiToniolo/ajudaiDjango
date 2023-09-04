@@ -11326,6 +11326,14 @@ outline: none;
   .cabecalho-planos {
     display: flex;
     flex-direction: column;
+    align-items: center;
+  }
+  .doodle-plans {
+    width: 350px;
+    height: auto;
+  }
+  .btn-blanos {
+    padding: 15px;
   }
 }
 
@@ -11542,6 +11550,10 @@ outline: none;
   margin: 5vh 0;
 }
 
+.info-compra {
+  width: 40%;
+}
+
 
 .button-calculadora:hover {
   transform: scale(1.05);
@@ -11557,6 +11569,12 @@ outline: none;
     width: 45%;
     max-width: none;
   }
+  .info-compra {
+    width: 100%;
+  }
+  .botao-assinatura {
+    width: 100%;
+  }
 }
 
 
@@ -11564,6 +11582,20 @@ outline: none;
   .plan-container {
     flex-wrap: wrap;
     justify-content: center;
+  }
+
+  .calculadora-conversas {
+    width: 100%;
+    max-width: none;
+  }
+  .resposta-valores {
+    width: 100%;
+    max-width: none;
+  }
+
+  .calculadora {
+    width: 100%;
+    
   }
   
   .plan {
@@ -11574,6 +11606,23 @@ outline: none;
     width: 45%;
     margin-bottom: 1.5rem;
   }
+  .secao-implementacao {
+    flex-direction: column;
+  }
+  .info-compra {
+    width: 100%;
+  }
+  .botao-assinatura {
+    width: 100%;
+  }
+}
+
+.botao-assinatura {
+  display: flex; 
+  justify-content: center; 
+  flex-direction:column; 
+  align-items: center; 
+  width: 60%
 }
 
 /* Estilos para telas menores (celular) */
@@ -11584,6 +11633,19 @@ outline: none;
   .plan-popular {
     width: 100%;
   }
+  .info-compra {
+    width: 100%;
+  }
+  .assinatura-btn {
+    width: 100%;
+  }
+  .botao-assinatura {
+    width: 100%;
+  }
+  .calculadora {
+    width: 100%;
+  }
+
 }
 
 
@@ -11825,6 +11887,41 @@ outline: none;
 
 }
 
+/* ------------ MEU PERFIL MOBILE -------------- */
+
+@media (max-width: 768px) {
+  .container-meu-perfil { 
+    flex-direction: column;
+  }
+  .coluna-img {
+    width: 100%;
+  }
+  .coluna-campos {
+    width: 100%;
+  }
+  .coluna-operacoes {
+    width: 100%;
+  }
+  .logout-button {
+    width: 100%;
+    margin-bottom: 3vh;
+    /* background-color: transparent; */
+  }
+  .alterar-senha {
+    background-color: #FFFFFF;
+    border-radius: 25px;
+    padding: 10px;
+    text-align: center;
+  }
+  .titulo-welcome {
+    text-align: center;
+    margin-top: 1vh;
+  }
+  
+}
+
+/* -------------------------- */
+
 .toggle-container {
   display: inline-block;
 }
@@ -12013,6 +12110,38 @@ outline: none;
   text-align: left;
 }
 
+@media (max-width: 600px) {
+
+
+  .tabela {
+      display: flex;
+      flex-direction: column;
+      overflow-x: auto;
+  }
+
+  .titulo-tabela {
+      order: -1;
+      text-align: center;
+      font-weight: bold;
+      padding: 10px;
+  }
+
+  .row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px;
+      border-bottom: 1px solid #ddd;
+  }
+
+  .row:nth-child(even) {
+      background-color: #f2f2f2;
+  }
+
+  .top-table {
+      flex-basis: 50%;
+  }
+}
 .top-table-plan {
   padding: 8px;
   text-align: left;

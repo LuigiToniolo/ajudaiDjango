@@ -23,10 +23,11 @@
             <div id="layoutSidenav_content">
                 <main>
                     <div class="container-fluid px-4">
+                        <h2 class="titulo-welcome">Olá, <strong>{{ user.username }}!</strong></h2>
                         <div class="container-meu-perfil">
                             <div class="coluna-img">
                                 <img class="avatar-img" src="{% static 'image/logo-default.jpg' %}" alt="foto avatar ajudai area logada">
-                                <p class="texto-img"><strong>{{ user.username }}</strong></p>
+                                <p class="texto-img">Seja bem-vindo (a) <strong>{{ user.username }}!</strong></p>
                                 <p>{{ user.email }}</p>
                             </div>
                             <div class="divider-vertical"></div>
@@ -47,9 +48,9 @@
                             <div class="coluna-operacoes">
                                 <h4 class="titulos">Configurações de conta</h4>
                                 <h5 class="subtitulos-user">Alteração de senha</h5>
-                                <p><a class="logout-button" href="{% url 'change_password' %}">{{ change_password_text }} 
-                                    <i class='fas fa-user-cog'></i></a></p>
-    
+                                <div class="alterar-senha">
+                                    <a class="logout-button" href="{% url 'change_password' %}">{{ change_password_text }} <i class='fas fa-user-cog'></i></a>
+                                </div>
                                 <h5 class="subtitulos-user">Fazer Logout</h5>
                                 <form method="post" action="{% url 'logout' %}">
                                    {% csrf_token %}

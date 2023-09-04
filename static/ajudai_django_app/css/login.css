@@ -326,6 +326,13 @@ body {
 		display: none;
 	}
 
+	form {
+		background-color: transparent;
+		width: 100%;
+		padding: 0;
+		margin: 0;
+	}
+
 	body {
 		margin: 0;
 		padding: 0;
@@ -339,6 +346,9 @@ body {
 
 	}
 
+	.inputs-mobile {
+		width: 100%;
+	}
 	.container-mobile {
 		display: flex;
 		flex-direction: column;
@@ -464,7 +474,6 @@ body {
 		text-align: center;
 		align-items: center;
 		
-
 	}
 
 	input {
@@ -479,57 +488,12 @@ body {
 	label {
 		color: #212D40;
 	}
+	input:focus {
+		outline: none !important;
+		border:1px solid #5C7AD3;
+		box-shadow: 0 0 1px #212D40;
+	  }
 
 
-
-	/* body {
-		background-color: #5C7AD3;
-	}
-	.container-mobile {
-		display: flex;
-		flex-direction: column;
-		justify-content: space-between;
-	}
-
-	.inputs-mobile {
-		width: 100%;
-		align-items: center;
-		display: flex;
-		flex-direction: column;
-		margin: 3vh 0;
-	}
-	p {
-		margin: 0;
-	}
-	label {
-		display: none;
-	}
-
-	.card-login-mobile {
-		background: rgba(255, 255, 255, 0.4);
-		border-radius: 25px;
-	}
-	.titulo-login-mobile {
-		position: relative;
-		color: #FFFFFF;
-		text-align: center;
-		justify-content: center;
-	}
-
-	.titulo-login-mobile {
-		padding: 3vh 3vw;
-		font-size: 46px;
-
-	}
-	.logo {
-		width: 100px;
-		height: auto;
-		align-items: center;
-		text-align: center;
-	}
-	.logo-mobile {
-		display: flex;
-		justify-content: center;
-	} */
 
 }
