@@ -423,6 +423,12 @@ background-color: #555;
   justify-content: flex-end;
 }
 
+@media (min-width: 780px) {
+.contato-button {
+  display: none;
+}
+}
+
 @media (max-width: 780px) {
   body {
   margin: 0;
@@ -430,7 +436,12 @@ background-color: #555;
   font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", "Liberation Sans", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 }
 
-
+.message-client {
+  max-width: 90%;
+}
+.message-response {
+  max-width: 90%;
+}
 
 .chat-container {
   display: flex;
@@ -467,35 +478,6 @@ background-color: #555;
 .side-conversation.expanded {
   flex: 1; 
 }
-
-
-
-
-
-
-/* .chat-container {
-  flex-direction: column;
-}
-
-.menu {
-  display: none;
-}
-
-.contacts {
-  display: none;
-}
-
-.side-conversation {
-  flex: 1;
-  display: block;
-  max-height: 100%;
-  overflow-y: auto;
-}
-
-
-.side-conversation.expanded {
-  flex: 1; 
-} */
 
 
 }
