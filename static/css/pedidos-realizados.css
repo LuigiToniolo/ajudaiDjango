@@ -78,8 +78,8 @@
       overflow-y: auto;
     }
     .title-column {
-
       padding: 0 0;
+      margin-bottom: 5px;
     }
   }
 
