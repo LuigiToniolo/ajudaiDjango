@@ -153,7 +153,6 @@
     
     <script src="{% static 'js/scriptsChat.js' %}"></script>
 
-
         <script>
           $(document).ready(function() {
               $("li[id^='contact-']").click(function() {
@@ -164,7 +163,7 @@
                   $(".defaultText").hide(); // Oculta a mensagem "Escolha uma mensagem"
                   $(".side-conversation").css("display", "flex");
               });
-              // Note for the code in django template: The following are Django template tags
+              
               // Your IDE might show them as syntax errors, but they will be processed correctly by Django.
               {% if updated_conversa_id %}
                   $(".conversation").hide();
@@ -174,8 +173,19 @@
                   $(".conversation").hide();
                   $(".defaultText").show(); // Exibe a mensagem "Escolha uma mensagem"
               {% endif %}
+
+              // Verifica a largura da tela
+              var screenWidth = $(window).width();
+
+              // Verifica se a largura da tela é menor que 768 pixels (ou o valor desejado)
+              if (screenWidth < 768) {
+                  $(".defaultText").hide(); // Oculta a mensagem "Escolha uma mensagem"
+              }
+              
           });
-      </script>
+        </script>
+      
+        
 
       <script>
         function mostrarDropup() {
@@ -221,6 +231,52 @@
           element.querySelector('.conteudo-contato').style.backgroundColor = '#dddddd';
         }
         
+      </script>
+
+      <script>
+        $(document).ready(function() {
+          $("li[id^='contact-']").click(function() {
+              var id = $(this).attr('id').split('-')[1];
+              console.log("Clicked contact ID: ", id);
+      
+              // Oculta todas as conversas e mostra a conversa selecionada
+              $(".conversation").hide();
+              $("#conversation-" + id).show();
+      
+              // Restaura a cor de fundo dos contatos
+              $(".conteudo-contato").css("background-color", "");
+      
+              // Define a cor de fundo do contato selecionado
+              $(this).find('.conteudo-contato').css("background-color", '#dddddd');
+      
+              // Mostra a parte "side-conversation" e adiciona a classe "expanded"
+              $(".defaultText").hide();
+              $(".side-conversation").show().addClass("expanded");
+
+
+          });
+      });
+
+      $(document).ready(function() {
+        $("li[id^='contact-']").click(function() {
+            var id = $(this).attr('id').split('-')[1];
+            console.log("Clicked contact ID: ", id);
+    
+            // Oculta a lista de contatos
+            $(".contacts").hide();
+    
+            // Oculta todas as conversas e mostra a conversa selecionada
+            $(".conversation").hide();
+            $("#conversation-" + id).show();
+    
+            // Mostra a parte "side-conversation" e adiciona a classe "expanded"
+            $(".side-conversation").show().addClass("expanded");
+        });
+    
+        // Resto do seu código JavaScript...
+    });
+    
+      
       </script>
       
 </html>
