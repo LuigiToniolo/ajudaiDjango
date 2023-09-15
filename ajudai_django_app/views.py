@@ -122,6 +122,7 @@ def dashboard_view(request):
 
     numero_de_pedidos = pedidos.count()
     numero_de_conversas = conversas.count()
+    numero_de_conversas_do_periodo = conversas_do_periodo.count()
     if numero_de_conversas > 0:
         taxa_conversao = round((numero_de_pedidos / numero_de_conversas) * 100, 2)
     else:
@@ -171,7 +172,7 @@ def dashboard_view(request):
         'dados_clientes' : dados_clientes,
         'numero_de_pedidos' : numero_de_pedidos,
         'numero_de_conversas' : numero_de_conversas,
-        'conversas_do_periodo' : conversas_do_periodo,
+        'numero_de_conversas_do_periodo' : numero_de_conversas_do_periodo,
         'taxa_conversao' : taxa_conversao,
         'dias_para_pagamento' : dias_para_pagamento,
         'nome_do_plano' : nome_do_plano,
