@@ -120,8 +120,8 @@ def dashboard_view(request):
 
     plano_atual_usuario, preco_atual, conversas_a_pagar = user.current_user_plan_price_and_conversas_a_pagar(STANDART_PERIOD)
 
-    numero_de_pedidos = pedidos_do_periodo.count()
-    numero_de_conversas = conversas_do_periodo.count()
+    numero_de_pedidos = pedidos.count()
+    numero_de_conversas = conversas.count()
     if numero_de_conversas > 0:
         taxa_conversao = round((numero_de_pedidos / numero_de_conversas) * 100, 2)
     else:
@@ -171,6 +171,7 @@ def dashboard_view(request):
         'dados_clientes' : dados_clientes,
         'numero_de_pedidos' : numero_de_pedidos,
         'numero_de_conversas' : numero_de_conversas,
+        'conversas_do_periodo' : conversas_do_periodo,
         'taxa_conversao' : taxa_conversao,
         'dias_para_pagamento' : dias_para_pagamento,
         'nome_do_plano' : nome_do_plano,
