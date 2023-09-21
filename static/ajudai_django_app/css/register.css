@@ -195,6 +195,15 @@ label{
 	body {
 		margin: 0;
 	}
+	input {
+		border-radius: 25px;
+	}
+
+	input:focus {
+		outline: none !important;
+		border:1px solid #5C7AD3;
+		box-shadow: 0 0 1px #212D40;
+	  }
 	.container {
 		border-radius: 0;
 	}
@@ -212,6 +221,9 @@ label{
 	.botao {
 		width: 100%;
 		margin-top: 3vh;
+	}
+	.subtitulo {
+		width: 80%;
 	}
 }
 

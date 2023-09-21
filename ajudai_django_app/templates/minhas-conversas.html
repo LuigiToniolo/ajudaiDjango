@@ -32,6 +32,11 @@
             </a>
           </div>
           <div class="menu-icons">
+            <a title="Meus contatos" class="contato-button">
+              <div class="icons-div">
+                <i class="fa-regular fa-comments" id="icones-menu"></i>
+              </div>
+            </a>
             <a href="{% url 'dashboard' %}" title="Home">
             <a href="{% url 'dashboard' %}" title="Home">
               <div class="icons-div">
@@ -48,6 +53,7 @@
                 <i class="fas fa-robot" id="icones-menu"></i>
               </div>
             </a>
+
           </div>
         </div>
         <div class="contacts">
@@ -142,11 +148,7 @@
           </div>
         </div>
 
-
-
       </div>
-
-
 
     </body>
     
@@ -171,7 +173,9 @@
         document.getElementById("dropup").style.display = "none";
       }
 
-      <!-- Função que faz o destaque das conversas selecionadas -->
+
+      // Função que faz o destaque das conversas selecionadas 
+
       function toggleDivBackground(element) {
           // Obtém todos os elementos da lista
           var listaContatos = document.querySelectorAll('.conteudo-contato');
@@ -339,4 +343,73 @@
 
       });
     </script>
+
+    <!------------------- Scripts frond-end: ------------------>
+
+    <script>
+      $(document).ready(function() {
+        $("li[id^='contact-']").click(function() {
+            var id = $(this).attr('id').split('-')[1];
+            console.log("Clicked contact ID: ", id);
+    
+            // Oculta todas as conversas e mostra a conversa selecionada
+            $(".conversation").hide();
+            $("#conversation-" + id).show();
+    
+            // Restaura a cor de fundo dos contatos
+            $(".conteudo-contato").css("background-color", "");
+    
+            // Define a cor de fundo do contato selecionado
+            $(this).find('.conteudo-contato').css("background-color", '#dddddd');
+    
+            // Mostra a parte "side-conversation" e adiciona a classe "expanded"
+            $(".defaultText").hide();
+            $(".side-conversation").show().addClass("expanded");
+
+
+        });
+    });
+
+    
+    $(document).ready(function() {
+    $("li[id^='contact-']").click(function() {
+        var id = $(this).attr('id').split('-')[1];
+        console.log("Clicked contact ID: ", id);
+
+        // Verifica a largura da tela
+        var screenWidth = $(window).width();
+
+        // Se a largura da tela for menor que 768 pixels (ou o valor desejado),
+        // a funcionalidade será ativada
+        if (screenWidth < 768) {
+            // Oculta a lista de contatos
+            $(".contacts").hide();
+
+            // Oculta todas as conversas e mostra a conversa selecionada
+            $(".conversation").hide();
+            $("#conversation-" + id).show();
+
+            // Mostra a parte "side-conversation" e adiciona a classe "expanded"
+            $(".side-conversation").show().addClass("expanded");
+        }
+      });
+      
+      // Resto do seu código JavaScript...
+    });
+    
+    </script>
+
+    <script>
+      $(document).ready(function() {
+        // Evento de clique no botão "Meus contatos"
+        $("a[title='Meus contatos']").click(function() {
+          // Oculta a tela de conversação (.side-conversation)
+          $(".side-conversation").hide();
+          // Mostra a tela de contatos (.contacts)
+          $(".contacts").show();
+        });
+      });
+    </script>
+
+
 </html>

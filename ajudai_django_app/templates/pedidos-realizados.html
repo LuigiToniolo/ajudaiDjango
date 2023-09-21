@@ -24,16 +24,16 @@
             <div id="layoutSidenav_content">
                 <main>
                     <div class="container-fluid px-4">
+                        <h2 class="titulo-kanban">Pedidos de {{ user.username }}</h2>
                         <div class="kanban">
                             <div class="column-kanban">
                                 <div class="title-column">
                                     <p>Pedidos realizados</p>
                                     <i class='fa fa-file' id="icones-kanban"></i>
                                     <span class="card-count">0</span>
-
                                 </div>
                                 <ul id="todo" class="dropzone" ondrop="drop(event)" ondragover="allowDrop(event)">
-                                  <button onclick="createCard()" class="button-novo" style="display: none;">+ Novo pedido</button>
+                                  <!-- <button onclick="createCard()" class="button-novo">+ Novo pedido</button> -->
                                 </ul>
                             </div>
                             <div class="column-kanban">
@@ -68,7 +68,7 @@
                             </div>
                           </div>
                           
-                          <h3>Como funciona o envio das mensagens de status do pedido para o cliente?</h3>
+                          <h3 class="como-funciona">Como funciona o envio das mensagens de status do pedido para o cliente?</h3>
                           <p style="margin-bottom: 3vh;">Para que seu cliente fique sabendo do status do pedido "pedido realizado", "pedido em processamento", "aguardando entrega" e "pedido retirado/entregue", basta você arrastar os pedidos de uma coluna para outra que o chatbot envia mensagens automaticamente notificando o status do pedido realizado.</p>
 
                     </div>
@@ -323,6 +323,6 @@
         </script>
 
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
-        <!-- <script src="{% static 'js/scripts.js' %}"></script> -->
+        <script src="{% static 'js/scripts.js' %}"></script>
     </body>
 </html>

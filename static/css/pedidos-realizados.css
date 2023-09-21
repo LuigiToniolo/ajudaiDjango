@@ -48,13 +48,40 @@
   overflow-y: auto;
 }
 
-.title-column {
-  display: flex;
-  align-items: center;
-  text-align: center;
-  justify-content: center;
-  padding: 3vh 0;
-}
+    .title-column {
+      display: flex;
+      align-items: center;
+      text-align: center;
+      justify-content: center;
+      padding: 3vh 0;
+    }
+    @media (min-width: 780px) {
+    .titulo-kanban {
+      display: none;
+    }
+  }
+
+    @media (max-width: 780px) {
+      .como-funciona {
+        margin-top: 5vh;
+      }
+
+      .titulo-kanban {
+        text-align: center;
+        align-items: center;
+        margin-top: 3vh;
+      }
+      
+    .column-kanban ul {
+
+      max-height: 100vh; 
+      overflow-y: auto;
+    }
+    .title-column {
+      padding: 0 0;
+      margin-bottom: 5px;
+    }
+  }
 
 .title-column p {
   margin: 0;

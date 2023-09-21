@@ -79,8 +79,8 @@ class LoginForm(forms.Form):
             attrs={
                 'name': USER_NAME_FIELD_ID, 
                 'id': USER_NAME_FIELD_ID, 
-                'style': 
-                'width: {}px;'.format(REGISTER_FIELD_STANDART_SIZE_IN_PX)
+                # 'style': 
+                # 'width: {}px;'.format(REGISTER_FIELD_STANDART_SIZE_IN_PX)
                 }
             )
         )
@@ -90,7 +90,7 @@ class LoginForm(forms.Form):
             attrs={
                 'name': PASSWORD_FIELD_ID, 
                 'id': PASSWORD_FIELD_ID, 
-                'style': 'width: {}px;'.format(REGISTER_FIELD_STANDART_SIZE_IN_PX)
+                # 'style': 'width: {}px;'.format(REGISTER_FIELD_STANDART_SIZE_IN_PX)
                 }
             )
         )

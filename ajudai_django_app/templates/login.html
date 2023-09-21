@@ -15,6 +15,47 @@
         <!--Stylesheet-->
     </head>
     <body>
+      
+      <div class="title-login-mobile">
+        <h1 style="color: #FFFFFF; text-align:center;">Olá!</h1>
+        <h4 style="color: #FFFFFF; margin: 0;">Seja bem-vindo!</h4>
+      </div>
+      <div class="container-mobile">
+        <div class="form-mobile">
+          <form method="post" action="{% url 'login' %}">
+            {% csrf_token %}
+            <div class="inputs-mobile">
+              {{ login_form.as_p }}
+            </div>
+            <input class="botao-mobile" type="submit" value="{{ submit_login_text }}">
+            <p class="forget"><a class="forget-link" href="{% url 'password_reset' %}">Esqueceu a senha?</a></p>
+            {% if error_message %}
+            <p class="erro-msg">{{ error_message }}</p>
+            {% endif %}
+          </form>
+
+
+            <div class="divider-mobile">
+              <div class="line"></div>
+              <div class="text">OU</div>
+              <div class="line"></div>
+          </div>
+          <a class="botao-registrar" href="{% url 'register' %}">crie uma conta Ajudai!</a>
+        </div>
+
+        <div>
+        </div>
+      </div>
+      <div class="logo-mobile">
+        <img class="logo-mobile" src="{% static 'image/logo-ajudai.svg' %}" alt="Logotigo ajudai">
+        <div class="links-privacidade">
+          <a href="https://ajudai.io/politica-de-privacidade/">Política de privacidade</a>
+          <a style="margin: 0 10px;">-</a>
+          <a href="https://ajudai.io/contato/">  Contato</a>
+        </div>
+      </div>
+
+
         <div class="container" id="container">
           <div class="form-container sign-in-container">
               <form method="post" action="{% url 'login' %}">
