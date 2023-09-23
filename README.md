@@ -43,30 +43,28 @@ Navegue até o diretório `.venv` do projeto e execute:
 ### Criar o banco de dados interno para desenvolvimento
 Use a mesma senha e nome do BD que está no `.env` na parte de **"desenvolvimento"**. No prompt de comandos raiz do seu computador (não precisa ser no venv), execute:
 
-\```bash
 psql -U postgres   
 CREATE DATABASE nome_do_db;
-\```
 
 ### Migrações
 Dentro do venv do projeto, execute:
-\```bash
+
 python manage.py migrate
 python manage.py makemigrations
 python manage.py migrate
-\```
+
 
 ### Criar usuário admin / superuser
 Dentro do venv do projeto, execute:
-\```bash
+
 python manage.py createsuperuser
-\```
+
 
 ## Configuração de Filas (Opcional)
 Se seu projeto usa filas gerenciadas pelo django-q, para ativá-lo execute:
-\```bash
+
 python manage.py qcluster
-\```
+
 
 ## Rodar o projeto
 Para rodar o projeto, no venv, execute:
