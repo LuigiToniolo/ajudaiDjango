@@ -50,7 +50,9 @@ CREATE DATABASE nome_do_db;
 Dentro do venv do projeto, execute:
 
 python manage.py migrate
+
 python manage.py makemigrations
+
 python manage.py migrate
 
 
