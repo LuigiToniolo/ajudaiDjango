@@ -14,22 +14,22 @@ source .venv/bin/activate
 \```
 
 ### macOS
-\```bash
+
 python3 -m venv .venv
 source .venv/bin/activate
-\```
+
 
 ### Windows
-\```bash
+
 py -3 -m venv .venv
 .venv\scripts\activate
-\```
+
 
 ## Instalar dependências
 Navegue até o diretório `.venv` do projeto e execute:
-\```bash
-pip install -r requirements.txt
-\```
+
+  pip install -r requirements.txt
+
 
 ## Configuração de ambiente
 - Ter e ajustar o arquivo `.env` na raiz do projeto com as variáveis marcadas como **"desenvolvimento"** ativas e as **"produção"** comentadas/desativadas.
