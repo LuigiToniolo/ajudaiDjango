@@ -68,7 +68,7 @@ python manage.py qcluster
 
 ## Rodar o projeto
 Para rodar o projeto, no venv, execute:
-\```bash
+
 python manage.py runserver
-\```
+
 
