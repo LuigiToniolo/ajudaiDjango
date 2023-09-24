@@ -5,6 +5,9 @@ from ajudai_django_app.ai_chatbot.ai_tools import count_tokens, instruction_buil
 from ajudai_django_app.models import ChatBot, Pedido
 from constants import AWNSER_WHEN_MESSAGE_IS_OVER_THE_LIMIT, CHAT_API_GENERAL_ERROR_MESSAGE, CHAT_API_MESSAGE_AND_AWNSER_OVERLIMT_EVEN_TRYING_TO_SHORT, FECHAR_PEDIDO_ERROR_MESSAGE_FUNCTION_CALL, MIN_TOKEN_LIMIT_RATE_LEFT_TO_AWNSER, TOKEN_LIMIT_MARGIN
 
+# AUTO AVALIAR
+from ajudai_django_app.ai_chatbot.AutoAvaliar.ai_extraction import ai_gpt_extrair_resposta_de_FAQ
+
 from get_secret_variables import get_secret_var
 
 openai.api_key = get_secret_var("OPENAI_API_KEY")
@@ -32,6 +35,19 @@ def criar_pedido_e_retornar_resumo(
     resumo_do_pedido = f"Seu pedido foi confirmado! \nResumo do Pedido:\n - Nome do Cliente: {nome_cliente} \n - Itens do pedido: {itens_pedido} \n - Total do pedido: {valor_total} \n - Método de Pagamento: {metodo_de_pagamento} - Endereço: {endereco_cliente}"
     Pedido.criar_novo_pedido_ja_com_parametros(nome_cliente, endereco_cliente, itens_pedido, taxa_de_entrega, valor_total, metodo_de_pagamento, resumo_do_pedido, user, conversation)
     return 'Pedido feito com sucesso'
+
+
+### AUTO AVALIAR
+def obter_resposta_faq(mensagem_usuario, chatbot_id):
+    try:
+        chatbot = ChatBot.objects.get(
+                    id=chatbot_id,
+                    )
+        faq = chatbot.cardapio
+        return ai_gpt_extrair_resposta_de_FAQ(mensagem_usuario, faq)
+    except:
+        return 'Não foi possível extrair informações do FAQ'
+
 
 
 
@@ -91,6 +107,24 @@ def generate_gpt_response(prompt, context, role, aditional_instructions, model_n
 
     ]
 
+    # AUTO AVALIAR
+    functions += [
+        {
+            "name": "obter_resposta_do_faq",
+            "description": chatbot.descricao_funcao_cardapio,
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "resposta_faq": {
+                        "type": "string",
+                        "description": 'Resposta da pergunta frequente (FAQ) feita pelo cliente.',
+                    },
+                },
+                "required": ["resposta_faq"],
+            },
+        },
+    ]
+    
     #a mínima estrutura para a requisição será a instrução mais o prompt. Caso haja rompimento do máximo pelo contexto passado, ele será elimido até funcionar
     tokens_prompt_and_instructions = count_tokens(model_name, instructions + ' ' + prompt)
 
@@ -148,7 +182,8 @@ def generate_gpt_response(prompt, context, role, aditional_instructions, model_n
                 if response_message.get("function_call"):
                     available_functions = {
                         "obeter_precos_itens_cardapio": obeter_precos_itens_cardapio,
-                         "criar_pedido_e_retornar_resumo": criar_pedido_e_retornar_resumo,
+                        "criar_pedido_e_retornar_resumo": criar_pedido_e_retornar_resumo,
+                        "obter_resposta_do_faq": obter_resposta_faq,
                     }
                     function_name = response_message["function_call"]["name"]
                     fuction_to_call = available_functions[function_name]
@@ -206,6 +241,29 @@ def generate_gpt_response(prompt, context, role, aditional_instructions, model_n
 
                             awnser = FECHAR_PEDIDO_ERROR_MESSAGE_FUNCTION_CALL
                             context.append({"role": "assistant", "content": awnser})
+                    
+                    # AUTO AVALIAR    
+                    if function_name == 'obter_resposta_do_faq':
+                        function_response = fuction_to_call(
+                            mensagem_usuario=str(function_args.get("resposta_faq")),
+                            chatbot_id=chatbot_id,
+                        )
+                        context.append({
+                            "role": "function",
+                            "name": function_name,
+                            "content": function_response,
+                        })
+
+                        completions_after_function_response = openai.ChatCompletion.create(
+                            model=model_name,
+                            temperature=0,
+                            messages=context
+                        )
+
+                        awnser = completions_after_function_response['choices'][0]['message']['content']
+                        context.append({"role": "assistant", "content": awnser})
+                        tokens_used = tokens_used + completions_after_function_response.usage['total_tokens']
+                            
 
                 else:
                     awnser = completions['choices'][0]['message']['content']
