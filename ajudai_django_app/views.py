@@ -10,6 +10,7 @@ from ajudai_django_app.models import Adesao_Purchase, ChatBot, Conversa, CustomU
 from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
 from ajudai_django_app.payments_process.sign_in import create_stripe_customer, return_adesao_checkout_session, return_checkout_session_id, return_checkout_session_url, return_setup_future_payments_checkout_session
 from ajudai_django_app.payments_process.webhooks import HTTP_PAYMENT_API_SIGNATURE, LABEL_TO_CHECKOUT_SESSION_ID, get_session_data, get_usage_payment_webhook_customer, get_webhook_event, success_payment_checkout_and_section_recovery, success_payment_usage_charge
+from ajudai_django_app.phone_integration.interactive_messages import send_products_catalog
 from ajudai_django_app.phone_integration.messages import send_response
 from constants import ADESAO_PURCHASE_STATUS_PENDING, ADESAO_PURCHASE_STATUS_PROCESSED, API_MAX_ATTEMP, ADESAO_PURCHASE_STATUS_PROCESSED, ADITIONAL_INTRUCTIONS_FIELD_ID, ADITIONAL_INTRUCTIONS_FIELD_NAME, DOMAIN, EVENT_INVALID_PAYLOAD, EVENT_INVALID_SIGNATURE, FANTASY_NAME, GPT3_MODEL_NAME, GPT3_TOKEK_LIMIT, PASSWORD_FIELD_ID, PAYMENT_METHOD_REGISTRATION_STATUS_PENDING, PRODUCT_NAME_COORPORATE, PRODUCT_NAME_PLUS, PRODUCT_NAME_PREMIUM, PRUDUCT_TYPE_ADESAO, PRUDUCT_TYPE_CONVERSA_AVULSA, SLEEP_SECONDS_INTER_AI_API_CALL, STANDART_PERIOD, STATUS_CONVERSA_EM_ANDAMENTO, STATUS_PEDIDO_EM_PROCESSO, STATUS_PEDIDO_ENTREGUE, STATUS_PEDIDO_PENDENTE_DE_ENTREGA, STATUS_PEDIDO_REALIZADO, SUPPORT_EMAIL, USER_LEVEL_ADMIN, USER_LEVEL_PREMIUM, USER_NAME_FIELD_ID, WEBHOOK_ADESAO_ID, WEBHOOK_PAYMENT_METHOD_ID, WEBHOOK_USAGE_PAYMENT_ID
 from get_secret_variables import get_secret_var
@@ -1038,6 +1039,7 @@ def process_message(data):
                                 raise Exception(f'Usuário inadimplente:{user}')
 
                             # Get or create a conversation for the phone number
+                            new_conversation = False
                             try:
                                 conversation = Conversa.objects.get(
                                     company_client_number=numero_cliente,
@@ -1052,45 +1054,60 @@ def process_message(data):
                                         creation_date=timezone.now().astimezone(sao_paulo_tz).date(),
                                         creation_time=timezone.now().astimezone(sao_paulo_tz).time(),
                                     )
+                                    new_conversation = True
                                 else:
                                     raise Exception(f'Usuário{user} não pode criar mensagens')
                             new_context = []
                             if conversation.chatbot_ativo == True and user.chatbots_on == True:
-                                role = ''
-                                try:
-                                    gpt_response, new_context, tokens_used_on_this_request = generate_gpt_response(
-                                        incoming_message, 
-                                        conversation.context, 
-                                        role,  
-                                        aditional_instructions, 
-                                        GPT3_MODEL_NAME, 
-                                        GPT3_TOKEK_LIMIT, 
-                                        chatbot.id,
-                                        user,
-                                        conversation
-                                    )
-                                except Exception as e:
-                                    raise Exception('Erro ao chamar função de resposta IA') from e
+                                if new_conversation:
+                                    send_products_catalog(
+                                        chatbot.facebook_page_id, 
+                                        chatbot.whats_app_api_auth_token, 
+                                        numero_cliente, 
+                                        title_text, 
+                                        body_text, 
+                                        footer_text, 
+                                        catalog_id, 
+                                        sections_and_products_list)
+                                    #TODO ADICIONAR AO MODELO DE CHATBOT E AO SEU FORM, OS ELEMENTOS ACIMA,  REFERICIAR NOS PARÂMETROS ACIMA
+                                    #TODO lidar como o contexto e os outros elementos de conversation. deve ser setado para que o bot entenda que o menu foi enviado
+                                    pass
+                                else:
+                                    role = ''
+                                    try:
+                                        gpt_response, new_context, tokens_used_on_this_request = generate_gpt_response(
+                                            incoming_message, 
+                                            conversation.context, 
+                                            role,  
+                                            aditional_instructions, 
+                                            GPT3_MODEL_NAME, 
+                                            GPT3_TOKEK_LIMIT, 
+                                            chatbot.id,
+                                            user,
+                                            conversation
+                                        )
+                                    except Exception as e:
+                                        raise Exception('Erro ao chamar função de resposta IA') from e
 
-                                """" finalização de conversa por chamada de função
-                                conversa_finalizada_com_pedido, resumo = pedido_confirmado(gpt_response)
-                                if conversa_finalizada_com_pedido:
-                                    Pedido.criar_novo_pedido(user,conversation,resumo,numero_cliente) 
-                                    informar_loja_fechamento_pedido(resumo, company_number)
-                                """
-                                #chama função que responde o cliente da loja via integência artificial
-                                send_response(chatbot.facebook_page_id, chatbot.whats_app_api_auth_token, numero_cliente, gpt_response)
+                                    """" finalização de conversa por chamada de função
+                                    conversa_finalizada_com_pedido, resumo = pedido_confirmado(gpt_response)
+                                    if conversa_finalizada_com_pedido:
+                                        Pedido.criar_novo_pedido(user,conversation,resumo,numero_cliente) 
+                                        informar_loja_fechamento_pedido(resumo, company_number)
+                                    """
+                                    #chama função que responde o cliente da loja via integência artificial
+                                    send_response(chatbot.facebook_page_id, chatbot.whats_app_api_auth_token, numero_cliente, gpt_response)
 
-                                conversation.substitute_conversa_context(new_context)
-                                tokens_used_before = conversation.total_tokens_used
-                                conversation.total_tokens_used = tokens_used_before + tokens_used_on_this_request
-                                conversation.last_message_shown = False
-                                conversation.need_refresh_view = True
-                                conversation.date = timezone.now().astimezone(sao_paulo_tz).date()
-                                conversation.time = timezone.now().astimezone(sao_paulo_tz).time()
-                                conversation.save()
+                                    conversation.substitute_conversa_context(new_context)
+                                    tokens_used_before = conversation.total_tokens_used
+                                    conversation.total_tokens_used = tokens_used_before + tokens_used_on_this_request
+                                    conversation.last_message_shown = False
+                                    conversation.need_refresh_view = True
+                                    conversation.date = timezone.now().astimezone(sao_paulo_tz).date()
+                                    conversation.time = timezone.now().astimezone(sao_paulo_tz).time()
+                                    conversation.save()
 
-                                return
+                                    return
 
                             #case no response was created by ai, just saves the message in the context
                             new_context = conversation.context
