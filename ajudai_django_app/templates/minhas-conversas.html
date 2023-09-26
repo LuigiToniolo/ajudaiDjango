@@ -45,6 +45,13 @@
 
           </div>
 
+          {% for conversa in conversas %}
+          <div class="client-name">
+            {% if message.role == "user" %}
+            <p class="texto-contato"><strong>{{ conversa.company_client_number }}</strong></p>
+            {% endif %}
+          </div>
+          {% endfor %}
 
           <a id="mobileMenuButton" class="mobile-menu-button">
             <i style="color: #FFF;" class="fa-solid fa-ellipsis-vertical"></i>

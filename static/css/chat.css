@@ -659,7 +659,9 @@ background-color: #555;
 }
 
 
-
+.client-name {
+  z-index: 99999999;
+}
 
 .side-conversation {
   flex: 1; 
