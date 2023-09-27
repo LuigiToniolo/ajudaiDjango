@@ -722,6 +722,9 @@ background-color: #555;
   padding: 10px 0px 10px 10px;
 }
 
+.botao-send {
+  margin-right: 10px;
+}
 
 #icon-send {
     color: #FFFFFF; /* Cor do ícone */
