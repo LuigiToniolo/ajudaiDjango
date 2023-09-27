@@ -33,9 +33,6 @@
               alt="Logotigo do Ajudai"
               />
             </a>
-          
-            <!-- <a id="contatoButton" title="Voltar" class="contato-button" style="display: none;">
-            </a> -->
             
             <a id="back-button" title="Meus contatos" class="contato-button">
               <div class="icons-div">
@@ -43,15 +40,25 @@
               </div>
             </a>
 
+            
+            <div class="info-cliente">
+              <div>
+                <img
+                class="foto-perfil"
+                id="perfil-cliente"
+                src="{% static 'image/user-default.png' %}"
+                alt="Foto perfil cliente"
+                />
+              </div>
+              <div class="nome-cliente">
+                <p class="numero-cliente"><strong>5511934758397</strong></p>
+                <p class="data-mensagem">26/09/2023</p>
+              </div>
+            </div>
+
           </div>
 
-          {% for conversa in conversas %}
-          <div class="client-name">
-            {% if message.role == "user" %}
-            <p class="texto-contato"><strong>{{ conversa.company_client_number }}</strong></p>
-            {% endif %}
-          </div>
-          {% endfor %}
+          
 
           <a id="mobileMenuButton" class="mobile-menu-button">
             <i style="color: #FFF;" class="fa-solid fa-ellipsis-vertical"></i>
@@ -535,6 +542,7 @@
             $("#conversation-" + id).show();
             $('#logo-ajudai').hide();
             $('#back-button').show();
+            $('.info-cliente').show();
 
             $(this).find('.conteudo-contato').css("background-color", '#fff');
 
@@ -551,6 +559,8 @@
       $(document).ready(function() {
 
         $('#back-button').hide();
+        $('.info-cliente').hide();
+        
         // Evento de clique no botão "Meus contatos"
         $("a[title='Meus contatos']").click(function() {
           // Oculta a tela de conversação (.side-conversation)
@@ -559,6 +569,7 @@
           $(".contacts").show();
           $('#logo-ajudai').show();
           $('#back-button').hide();
+          $('.info-cliente').hide();
 
           //localStorage.setItem('backButtonHidden', 'true');
         });

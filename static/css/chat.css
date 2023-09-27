@@ -49,7 +49,6 @@ body {
     height: 40px;
     margin: 10px;
     cursor: pointer;
-    
 }
 
 .menu-icons {
@@ -510,6 +509,10 @@ background-color: #555;
     display: none;
 
   }
+
+  .info-cliente {
+    display: none;
+  }
 }
 
 
@@ -578,7 +581,14 @@ background-color: #555;
 
 .menu-icons {
     display: none;
-  }
+}
+
+.foto-perfil {
+    width: 40px;
+    height: 40px;
+    margin: 10px;
+    cursor: pointer;
+}
 
 .mobile-menu-button {
     background: none;
@@ -659,8 +669,30 @@ background-color: #555;
 }
 
 
-.client-name {
-  z-index: 99999999;
+.info-cliente {
+  margin-left: 10px;
+  display: flex;
+  flex-direction: row;
+}
+
+.nome-cliente {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.numero-cliente {
+  margin: 0;
+  padding: 0;
+  font-size: 16px;
+  color: #212D40;
+}
+
+.data-mensagem {
+  margin: -5px 0 ;
+  padding: 0;
+  font-size: 12px;
+  color: #212D40;
 }
 
 .side-conversation {
