@@ -71,6 +71,9 @@
                           <h3 class="como-funciona">Como funciona o envio das mensagens de status do pedido para o cliente?</h3>
                           <p style="margin-bottom: 3vh;">Para que seu cliente fique sabendo do status do pedido "pedido realizado", "pedido em processamento", "aguardando entrega" e "pedido retirado/entregue", basta você arrastar os pedidos de uma coluna para outra que o chatbot envia mensagens automaticamente notificando o status do pedido realizado.</p>
 
+
+                          
+                          
                     </div>
                 </main>
                 {% include 'includes/footer.html' %}
@@ -156,7 +159,7 @@
                   card.draggable = true;
                   card.addEventListener('dragstart', drag);
                   card.appendChild(document.createTextNode(cardText));
-              
+
                   var datetimeElement = document.createElement('div');
                   datetimeElement.className = 'card-datetime';
               
@@ -220,7 +223,55 @@
                 card.setAttribute('data-id', id); // Set data-id attribute with the id
                 
                 card.addEventListener('dragstart', drag);
-                card.appendChild(document.createTextNode(pedidoText));
+
+                //card.appendChild(document.createTextNode(pedidoText));
+
+                // Container para o texto do pedido e o ícone de lata de lixo
+                var textContainer = document.createElement('div');
+                textContainer.className = 'text-container';
+
+                // Texto do pedido
+                var pedidoTextElement = document.createElement('span');
+                pedidoTextElement.textContent = pedidoText;
+                textContainer.appendChild(pedidoTextElement);
+
+                // Ícone de lata de lixo
+                var deleteIcon = document.createElement('i');
+                deleteIcon.className = 'fas fa-trash-alt delete-icon';
+
+                // -------------------------Dropdown para os botões
+                var dropdown = document.createElement('div');
+                dropdown.className = 'dropdown';
+                dropdown.style.display = 'none'; // Inicialmente, o dropdown está escondido
+
+                // Botão 1
+                var button1 = document.createElement('button');
+                button1.textContent = 'Botão 1';
+                dropdown.appendChild(button1);
+
+                // Botão 2
+                var button2 = document.createElement('button');
+                button2.textContent = 'Botão 2';
+                dropdown.appendChild(button2);
+
+                // Função para alternar a visibilidade do dropdown
+                function toggleDropdown() {
+                    if (dropdown.style.display === 'none') {
+                        dropdown.style.display = 'block';
+                    } else {
+                        dropdown.style.display = 'none';
+                    }
+                }
+
+                // Adicionar evento de clique ao ícone de lata de lixo para mostrar/ocultar o dropdown
+                deleteIcon.addEventListener('click', toggleDropdown);
+
+                // Adicione o ícone de lata de lixo e o dropdown ao textContainer
+                textContainer.appendChild(deleteIcon);
+                card.appendChild(textContainer);
+                card.appendChild(dropdown);
+
+                //-------------------------------------
 
                 // Date and Time elements
                 var datetimeElement = document.createElement('div');

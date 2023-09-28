@@ -113,6 +113,25 @@
       flex-direction: column;
     }
 
+    .text-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .text-container span {
+      color: #212D40;
+    }
+
+    .delete-icon {
+      color: #212D40;
+      cursor: pointer;
+    }
+
+    .delete-icon:hover {
+      transform: scale(1.1);
+    }
+
     .fa-clock,
     .fa-calendar {
       color: #a8a8a8;
