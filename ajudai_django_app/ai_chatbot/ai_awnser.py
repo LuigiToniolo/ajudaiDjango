@@ -39,57 +39,96 @@ def generate_gpt_response(prompt, context, role, aditional_instructions, model_n
     instructions = instruction_builder(aditional_instructions, role)
     token_limit = model_token_limit
     chatbot = ChatBot.objects.get(id=chatbot_id)
-    functions = [
-        {
-            "name": "obeter_precos_itens_cardapio",
-            "description": chatbot.descricao_funcao_cardapio,
-            "parameters": {
-                "type": "object",
-                "properties": {
-                    "itens_do_cardapio": {
-                        "type": "string",
-                        "description": 'Itens do cardápio solictados/pedidos pelo cliente (Exemplo: Um X-Burger e uma Coca-Cola em lata)',
+    functions = []
+    if chatbot.chatbot_has_products_catalog == False:
+        functions = [
+            {
+                "name": "obeter_precos_itens_cardapio",
+                "description": chatbot.descricao_funcao_cardapio,
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "itens_do_cardapio": {
+                            "type": "string",
+                            "description": 'Itens do cardápio solictados/pedidos pelo cliente (Exemplo: Um X-Burger e uma Coca-Cola em lata)',
+                        },
                     },
+                    "required": ["itens_do_cardapio"],
                 },
-                "required": ["itens_do_cardapio"],
             },
-        },
-        {
-            "name": "criar_pedido_e_retornar_resumo",
-            "description": 'Realiza a confirmação do pedido e retorna um resumo final do pedido',
-            "parameters": {
-                "type": "object",
-                "properties": {
-                    "nome_cliente": {
-                        "type": "string",
-                        "description": 'Nome do cliente',
+            {
+                "name": "criar_pedido_e_retornar_resumo",
+                "description": 'Realiza a confirmação do pedido e retorna um resumo final do pedido',
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "nome_cliente": {
+                            "type": "string",
+                            "description": 'Nome do cliente',
+                        },
+                        "endereco_cliente": {
+                            "type": "string",
+                            "description": 'Caso a opção seja por entrega, fornecer o Endereço do cliente completo, inclusive com o CEP. Caso a opção seja por retirada no balção, fornecer o endereço do Estbelecimento',
+                        },
+                        "itens_pedido": {
+                            "type": "string",
+                            "description": 'Itens do pedido do cliente, cada qual o respectivo preço. Inserir a taxa de entrega como um item caso a opção seja de entrega (e não retirada no balcão) (exemplo: Pizza de Mussarela Grande - R$ 45,00; Cola Cola lata - R$ 5,00; Taxa de Entrega R$ 5,00;)',
+                        },
+                        "taxa_de_entrega": {
+                            "type": "string",
+                            "description": 'Taxa de Entrega. Caso o cliente tenha optado por retirar no balcão, o valor é R$0,00 (retirar no balcão)',
+                        },
+                        "valor_total": {
+                            "type": "string",
+                            "description": 'Valor total do pedido, ou seja, a soma total dos valores dos itens do pedido. Inserir o preço da taxa de entrega caso a opção seja de entrega (e não retirada no balcão)',
+                        },
+                        "metodo_de_pagamento": {
+                            "type": "string",
+                            "description": 'Método de pagamento escolhido pelo cliente (por exemplo: pix)',
+                        },
                     },
-                    "endereco_cliente": {
-                        "type": "string",
-                        "description": 'Caso a opção seja por entrega, fornecer o Endereço do cliente completo, inclusive com o CEP. Caso a opção seja por retirada no balção, fornecer o endereço do Estbelecimento',
-                    },
-                    "itens_pedido": {
-                        "type": "string",
-                        "description": 'Itens do pedido do cliente, cada qual o respectivo preço. Inserir a taxa de entrega como um item caso a opção seja de entrega (e não retirada no balcão) (exemplo: Pizza de Mussarela Grande - R$ 45,00; Cola Cola lata - R$ 5,00; Taxa de Entrega R$ 5,00;)',
-                    },
-                    "taxa_de_entrega": {
-                        "type": "string",
-                        "description": 'Taxa de Entrega. Caso o cliente tenha optado por retirar no balcão, o valor é R$0,00 (retirar no balcão)',
-                    },
-                    "valor_total": {
-                        "type": "string",
-                        "description": 'Valor total do pedido, ou seja, a soma total dos valores dos itens do pedido. Inserir o preço da taxa de entrega caso a opção seja de entrega (e não retirada no balcão)',
-                    },
-                    "metodo_de_pagamento": {
-                        "type": "string",
-                        "description": 'Método de pagamento escolhido pelo cliente (por exemplo: pix)',
-                    },
+                    "required": ["nome_cliente", "endereco_cliente", "itens_pedido"],
                 },
-                "required": ["nome_cliente", "endereco_cliente", "itens_pedido"],
             },
-        },
-
-    ]
+        ]
+    else:
+        #TODO AVALAR AQUI COMO VAI SER A CRIAÇÃO DO RESUMO DO PEDIDO CASO HAJA O CATÁLOGO, principalmente em relação aos itens do pedido
+        functions = [
+            {
+                "name": "criar_pedido_e_retornar_resumo",
+                "description": 'Realiza a confirmação do pedido e retorna um resumo final do pedido',
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "nome_cliente": {
+                            "type": "string",
+                            "description": 'Nome do cliente',
+                        },
+                        "endereco_cliente": {
+                            "type": "string",
+                            "description": 'Caso a opção seja por entrega, fornecer o Endereço do cliente completo, inclusive com o CEP. Caso a opção seja por retirada no balção, fornecer o endereço do Estbelecimento',
+                        },
+                        "itens_pedido": {
+                            "type": "string",
+                            "description": 'Itens do pedido do cliente, cada qual o respectivo preço. Inserir a taxa de entrega como um item caso a opção seja de entrega (e não retirada no balcão) (exemplo: Pizza de Mussarela Grande - R$ 45,00; Cola Cola lata - R$ 5,00; Taxa de Entrega R$ 5,00;)',
+                        },
+                        "taxa_de_entrega": {
+                            "type": "string",
+                            "description": 'Taxa de Entrega. Caso o cliente tenha optado por retirar no balcão, o valor é R$0,00 (retirar no balcão)',
+                        },
+                        "valor_total": {
+                            "type": "string",
+                            "description": 'Valor total do pedido, ou seja, a soma total dos valores dos itens do pedido. Inserir o preço da taxa de entrega caso a opção seja de entrega (e não retirada no balcão)',
+                        },
+                        "metodo_de_pagamento": {
+                            "type": "string",
+                            "description": 'Método de pagamento escolhido pelo cliente (por exemplo: pix)',
+                        },
+                    },
+                    "required": ["nome_cliente", "endereco_cliente", "itens_pedido"],
+                },
+            },
+        ]
 
     #a mínima estrutura para a requisição será a instrução mais o prompt. Caso haja rompimento do máximo pelo contexto passado, ele será elimido até funcionar
     tokens_prompt_and_instructions = count_tokens(model_name, instructions + ' ' + prompt)

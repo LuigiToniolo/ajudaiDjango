@@ -1059,19 +1059,20 @@ def process_message(data):
                                     raise Exception(f'Usuário{user} não pode criar mensagens')
                             new_context = []
                             if conversation.chatbot_ativo == True and user.chatbots_on == True:
-                                if new_conversation:
+                                if new_conversation and chatbot.chatbot_has_products_catalog:
                                     send_products_catalog(
                                         chatbot.facebook_page_id, 
                                         chatbot.whats_app_api_auth_token, 
                                         numero_cliente, 
-                                        title_text, 
-                                        body_text, 
-                                        footer_text, 
-                                        catalog_id, 
-                                        sections_and_products_list)
-                                    #TODO ADICIONAR AO MODELO DE CHATBOT E AO SEU FORM, OS ELEMENTOS ACIMA,  REFERICIAR NOS PARÂMETROS ACIMA
+                                        chatbot.title_text, 
+                                        chatbot.body_text, 
+                                        chatbot.footer_text, 
+                                        chatbot.catalog_id, 
+                                        chatbot.sections
+                                        )
                                     #TODO lidar como o contexto e os outros elementos de conversation. deve ser setado para que o bot entenda que o menu foi enviado
                                     pass
+                                #TODO AQUI, FAZER UM IF PARA LIDAR COM MENSAGENS QUE CHEGAM COMO RESPOSTA A MESAGEM INTERATIVA DE CARDÁPIO
                                 else:
                                     role = ''
                                     try:
