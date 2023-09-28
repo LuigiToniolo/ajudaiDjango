@@ -1068,7 +1068,7 @@ def process_message(data):
                                         chatbot.body_text, 
                                         chatbot.footer_text, 
                                         chatbot.catalog_id, 
-                                        chatbot.sections
+                                        chatbot.sections_and_products.get('sections', [])
                                         )
                                     #TODO lidar como o contexto e os outros elementos de conversation. deve ser setado para que o bot entenda que o menu foi enviado
                                     pass
