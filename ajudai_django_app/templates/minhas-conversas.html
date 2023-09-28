@@ -52,16 +52,11 @@
               </div>
 
               {% for conversa in conversas %}
-                {% if not forloop.first %}
-                  
                     <div class="nome-cliente">
                       <p class="numero-cliente"><strong>{{ conversa.company_client_number }}</strong></p>
                       <p class="data-mensagem">{{ message.date }}</p>
                     </div>
-                    
-                  {% endif %}
                 {% endfor %}
-
 
             </div>
 

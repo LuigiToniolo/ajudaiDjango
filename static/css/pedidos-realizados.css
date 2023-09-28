@@ -164,12 +164,6 @@ select {
 }
 
 /* Responsividade para telas menores */
-@media (max-width: 768px) {
-  .column-kanban {
-    flex-basis: 100%;
-    margin-bottom: 20px;
-  }
-}
 
 
 
@@ -191,6 +185,15 @@ select {
 .time-container i {
   margin-right: 5px;
 }
+
+@media (max-width: 768px) {
+  .column-kanban {
+    flex-basis: 100%;
+    margin-bottom: 20px;
+  }
+  
+}
+
 
 
 
