@@ -51,13 +51,16 @@
                 />
               </div>
 
-              <div class="nome-cliente">
-                <p class="numero-cliente"><strong>(5511934758397)</strong></p>
-                <p class="data-mensagem">26/09/2023</p>
-              </div>
-
-
-
+              {% for conversa in conversas %}
+                {% if not forloop.first %}
+                  
+                    <div class="nome-cliente">
+                      <p class="numero-cliente"><strong>{{ conversa.company_client_number }}</strong></p>
+                      <p class="data-mensagem">{{ message.date }}</p>
+                    </div>
+                    
+                  {% endif %}
+                {% endfor %}
 
 
             </div>
@@ -277,19 +280,8 @@
       $(document).ready(function() {
           var activeConversaId = localStorage.getItem('activeConversaId') || null;
 
-         // function isMobile() {
-         //   return window.innerWidth <= 768;
-         // }
-
-          //var sideConversation = document.querySelector('.side-conversation');
-
           console.log("Retrieved activeConversaId from localStorage:", activeConversaId);
 
-          //if (sideConversation && isMobile()) {
-          //  sideConversation.style.display = 'none';
-         // } else {
-         //   $(".side-conversation").css("display", "flex");
-         // }
 
           //mostra a conversa selecionada na lateral
           $("li[id^='contact-']").click(function() {
@@ -301,13 +293,6 @@
               $(".defaultText").hide();
               $(".side-conversation").css("display", "flex");
 
-             // if (sideConversation && isMobile()) {
-             //   sideConversation.style.display = 'none';
-             // } else {
-             //   $(".side-conversation").css("display", "flex");
-             // }
-
-              
               localStorage.setItem('activeConversaId', activeConversaId);
 
               var updateUrl = '/update_last_message_shown/' + activeConversaId + '/';

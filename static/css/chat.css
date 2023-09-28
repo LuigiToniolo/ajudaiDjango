@@ -550,7 +550,6 @@ background-color: #555;
 .icons-div-mobile {
   display: flex;
   flex-direction: row;
-  align-items: center;
   transition: transform 0.3s ease, opacity 0.3s ease;
 }
 
@@ -567,8 +566,12 @@ background-color: #555;
 }
 
 #back-icon:active {
-  background-color: rgb(221, 221, 221);
+  background-color: rgba(221, 221, 221, 0.466);
+  border-radius: 50px;
+  margin: 10px;
 }
+
+.icons
 
 .icons-div-mobile p {
   margin: 0;
