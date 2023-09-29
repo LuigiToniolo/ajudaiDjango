@@ -5,6 +5,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.contrib.auth.models import Group, Permission
 from django.core.validators import RegexValidator
+from django.forms import JSONField
 from django.utils import timezone
 from datetime import timedelta, datetime
 from django.db.models import Q
@@ -453,6 +454,13 @@ class ChatBot(models.Model):
     facebook_page_id = models.CharField(max_length=120)
     creation_date = models.DateField(default=current_date_sao_paulo)
     creation_time = models.TimeField(default=current_time_sao_paulo)
+
+    chatbot_has_products_catalog = models.BooleanField(default=False)
+    title_text = models.CharField(max_length=255, default='')
+    body_text = models.TextField(default='')
+    footer_text = models.CharField(max_length=255, default='')
+    catalog_id = models.CharField(max_length=255, default='')
+    sections_and_products = models.JSONField(default=dict)
 
     def __str__(self):
         name = self.nome_do_chatbot

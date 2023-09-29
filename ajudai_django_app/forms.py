@@ -2,10 +2,17 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.core.exceptions import ValidationError
 from django.contrib.auth.forms import PasswordChangeForm
+import json
 
 from ajudai_django_app.models import ChatBot, CustomUser
 from constants import ADITIONAL_INTRUCTIONS_FIELD_ID, ADITIONAL_INTRUCTIONS_FIELD_NAME, ADITIONAL_INTRUCTIONS_FIELD_ROWS, ADITIONAL_INTRUCTIONS_FIELD_SIZE_IN_PX, CELLPHONE_FIELD_SIZE_IN_PX, CHATBOT_NAME_FIELD_SIZE_IN_PX, COMPANY_NAME_FIELD_SIZE_IN_PX, FACEBOOK_PAG_ID_FIELD_SIZE_IN_PX, FULL_NAME_FIELD_SIZE_IN_PX, MAX_CHAR_INSTRUCTIONS_CHATBOT_FORM, PASSWORD_FIELD_ID, REGISTER_EMAIL_FIELD_SIZE_IN_PX, REGISTER_FIELD_STANDART_SIZE_IN_PX, USER_NAME_FIELD_ID, WHATS_APP_TOKEN_FILD_SIZE_IN_PX
 
+class JSONInput(forms.Textarea):
+    def render(self, name, value, attrs=None, renderer=None):
+        if value:
+            value = json.dumps(value, indent=2)
+        return super().render(name, value, attrs, renderer)
+    
 class CustomUserCreationForm(UserCreationForm):
     email = forms.EmailField(
         label='Email corporativo',
@@ -120,8 +127,9 @@ class ChatBotForm(forms.ModelForm):
             )
         )
     cardapio = forms.CharField(
+        required=False,
         max_length=MAX_CHAR_INSTRUCTIONS_CHATBOT_FORM, 
-        label='Cardápio de restaurante (com nomes dos pratos, ingredientes e preços)',
+        label='Cardápio de restaurante (com nomes dos pratos, ingredientes e preços) (caso o cardápio esteja registrado na própria API, deixar em branco)',
         widget=forms.Textarea(
             attrs={
                 # 'style': 'width: {}px;'.format(ADITIONAL_INTRUCTIONS_FIELD_SIZE_IN_PX),
@@ -132,7 +140,8 @@ class ChatBotForm(forms.ModelForm):
             )
         )
     descricao_funcao_cardapio = forms.CharField(
-        label='Descrição função com informações do cardápio',
+        required=False,
+        label='Descrição função com informações do cardápio (caso o cardápio esteja registrado na própria API, deixar em branco)',
         initial='Obtém uma informação específica, ou um conjunto de informações específicas contidas no cardápio, como nome do produto, tamanho, ingredientes e preço',
         )
     whatsapp_number = forms.CharField(
@@ -153,11 +162,75 @@ class ChatBotForm(forms.ModelForm):
             # 'style': 'width: {}px;'.format(FACEBOOK_PAG_ID_FIELD_SIZE_IN_PX)
             })
     )
+
+    chatbot_has_products_catalog = forms.BooleanField(
+        label='Você possui um cardápio (catálogo de produtos) registrado na API?',
+        required=False,
+    )
     
+    title_text = forms.CharField(
+        required=False,
+        label='Título da Mensagem de Cardápio (caso de cardápio na API)',
+        widget=forms.TextInput(attrs={
+            # any additional attributes you want
+        })
+    )
+
+    body_text = forms.CharField(
+        required=False,
+        label='Texto do corpo da mensagem de Cardápio (caso de cardápio na API)',
+        widget=forms.Textarea(attrs={
+            'rows': 4,  # adjust as necessary
+        })
+    )
+
+    footer_text = forms.CharField(
+        required=False,
+        label='Texto do Rodapé da Mensagem  (caso de cardápio na API)',
+        widget=forms.TextInput(attrs={
+            # any additional attributes you want
+        })
+    )
+
+    catalog_id = forms.CharField(
+        required=False,
+        label='ID do catálogo registrado no FaceBook (Catalog ID)  (caso de cardápio na API)',
+        widget=forms.TextInput(attrs={
+            # any additional attributes you want
+        })
+    )
+
+    sections_and_products = forms.CharField(
+        required=False,
+        label='JSON das Seções e Produtos (respeitar o formato) (caso de cardápio na API)',
+        widget=JSONInput(attrs={'cols': 80, 'rows': 20}),
+        initial=json.dumps({
+            "sections": [
+                {
+                    "title": "",
+                    "product_items": []
+                }
+            ]
+        }, indent=2)
+    )
+
     class Meta:
         model = ChatBot
-        fields = ['nome_do_chatbot', 'whatsapp_number', 'whats_app_api_auth_token', 'facebook_page_id', ADITIONAL_INTRUCTIONS_FIELD_NAME, 'cardapio', 'descricao_funcao_cardapio',]
+        fields = [
+            'nome_do_chatbot', 'whatsapp_number', 'whats_app_api_auth_token', 'facebook_page_id', ADITIONAL_INTRUCTIONS_FIELD_NAME, 'cardapio', 'descricao_funcao_cardapio',
+            'chatbot_has_products_catalog', 'title_text', 'body_text', 'footer_text',
+            'catalog_id', 'sections_and_products'
+        ]
 
+    def clean_sections_and_products(self):
+        data = self.cleaned_data['sections_and_products']
+        try:
+            parsed_data = json.loads(data)
+        except json.JSONDecodeError:
+            raise ValidationError("Invalid JSON format")
+
+        return parsed_data
+    
     def clean(self):
         cleaned_data = super().clean()
         return cleaned_data
