@@ -127,6 +127,7 @@ class ChatBotForm(forms.ModelForm):
             )
         )
     cardapio = forms.CharField(
+        required=False,
         max_length=MAX_CHAR_INSTRUCTIONS_CHATBOT_FORM, 
         label='Cardápio de restaurante (com nomes dos pratos, ingredientes e preços) (caso o cardápio esteja registrado na própria API, deixar em branco)',
         widget=forms.Textarea(
@@ -139,6 +140,7 @@ class ChatBotForm(forms.ModelForm):
             )
         )
     descricao_funcao_cardapio = forms.CharField(
+        required=False,
         label='Descrição função com informações do cardápio (caso o cardápio esteja registrado na própria API, deixar em branco)',
         initial='Obtém uma informação específica, ou um conjunto de informações específicas contidas no cardápio, como nome do produto, tamanho, ingredientes e preço',
         )
@@ -167,6 +169,7 @@ class ChatBotForm(forms.ModelForm):
     )
     
     title_text = forms.CharField(
+        required=False,
         label='Título da Mensagem de Cardápio (caso de cardápio na API)',
         widget=forms.TextInput(attrs={
             # any additional attributes you want
@@ -174,6 +177,7 @@ class ChatBotForm(forms.ModelForm):
     )
 
     body_text = forms.CharField(
+        required=False,
         label='Texto do corpo da mensagem de Cardápio (caso de cardápio na API)',
         widget=forms.Textarea(attrs={
             'rows': 4,  # adjust as necessary
@@ -181,6 +185,7 @@ class ChatBotForm(forms.ModelForm):
     )
 
     footer_text = forms.CharField(
+        required=False,
         label='Texto do Rodapé da Mensagem  (caso de cardápio na API)',
         widget=forms.TextInput(attrs={
             # any additional attributes you want
@@ -188,6 +193,7 @@ class ChatBotForm(forms.ModelForm):
     )
 
     catalog_id = forms.CharField(
+        required=False,
         label='ID do catálogo registrado no FaceBook (Catalog ID)  (caso de cardápio na API)',
         widget=forms.TextInput(attrs={
             # any additional attributes you want
@@ -195,6 +201,7 @@ class ChatBotForm(forms.ModelForm):
     )
 
     sections_and_products = forms.CharField(
+        required=False,
         label='JSON das Seções e Produtos (respeitar o formato) (caso de cardápio na API)',
         widget=JSONInput(attrs={'cols': 80, 'rows': 20}),
         initial=json.dumps({
