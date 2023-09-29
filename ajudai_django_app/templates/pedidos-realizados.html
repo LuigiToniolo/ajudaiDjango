@@ -162,9 +162,6 @@
 
                   var datetimeElement = document.createElement('div');
                   datetimeElement.className = 'card-datetime';
-              
-                  //var calendarIcon = document.createElement('i');
-                  //calendarIcon.className = 'fas fa-calendar';
 
                   var orderIcon = document.createElement('i');
                   orderIcon.className = 'fa-solid fa-burger';
@@ -219,6 +216,7 @@
             }
               
             function createPedidoCard(pedidoText, status, id, url, date, time, resumo_do_pedido) {
+                console.log('Início da função createPedidoCard');
                 var card = document.createElement('li');
                 card.className = 'card-kanban';
                 card.draggable = true;
@@ -237,43 +235,69 @@
                 var pedidoTextElement = document.createElement('span');
                 pedidoTextElement.textContent = pedidoText;
                 textContainer.appendChild(pedidoTextElement);
-
+                
                 // Ícone de lata de lixo
                 var deleteIcon = document.createElement('i');
                 deleteIcon.className = 'fas fa-trash-alt delete-icon';
+                
+                var tagDelete = document.createElement('a');
+                tagDelete.className = 'tagDelete'
+
+                tagDelete.appendChild(deleteIcon);
 
                 // -------------------------Dropdown para os botões não está funcionando (revisar) -----------------------
                 var dropdown = document.createElement('div');
-                dropdown.className = 'dropdown';
+                dropdown.className = 'dropdownDelete';
                 dropdown.style.display = 'none'; // Inicialmente, o dropdown está escondido
-
+                
+                // Texto de aviso
+                var textoAviso = document.createElement('p');
+                textoAviso.className = 'textoAviso'
+                textoAviso.textContent = 'Excluir pedido?';
+                dropdown.appendChild(textoAviso);
+                
                 // Botão 1
-                var button1 = document.createElement('button');
-                button1.textContent = 'Botão 1';
-                dropdown.appendChild(button1);
-
-                // Botão 2
-                var button2 = document.createElement('button');
-                button2.textContent = 'Botão 2';
-                dropdown.appendChild(button2);
+                var botao1 = document.createElement('button');
+                botao1.className = "botao-deletar"
+                botao1.textContent = 'Sim';
+                
+                var botao2 = document.createElement('button');
+                botao2.className = "botao-voltar"
+                botao2.textContent = 'Não';
+                
+                var botoesDiv = document.createElement('div');
+                botoesDiv.className = 'botoesDiv'
+                
+                botoesDiv.appendChild(botao1);
+                botoesDiv.appendChild(botao2);
+                dropdown.appendChild(botoesDiv);
 
                 // Função para alternar a visibilidade do dropdown
                 function toggleDropdown() {
-                    if (dropdown.style.display === 'none') {
+                    console.log('Evento de clique no ícone de lata de lixo acionado');
+                    if (dropdown.style.display === 'none' || dropdown.style.display === '') {
+                        console.log('Dropdown está oculto');
                         dropdown.style.display = 'block';
                         
                     } else {
+                        console.log('Dropdown está visível');
                         dropdown.style.display = 'none';
                     }
                 }
+                
 
                 // Adicionar evento de clique ao ícone de lata de lixo para mostrar/ocultar o dropdown
-                deleteIcon.addEventListener('click', toggleDropdown);
+                tagDelete.addEventListener('click', toggleDropdown);
 
                 // Adicione o ícone de lata de lixo e o dropdown ao textContainer
-                textContainer.appendChild(deleteIcon);
+                textContainer.appendChild(tagDelete);
                 card.appendChild(textContainer);
                 card.appendChild(dropdown);
+
+                botao2.addEventListener('click', function() {
+                    console.log('Botão "Não" clicado');
+                    dropdown.style.display = 'none'; // Oculta o dropdown ao clicar em "Não"
+                });
 
                 //-------------------------------------
 
