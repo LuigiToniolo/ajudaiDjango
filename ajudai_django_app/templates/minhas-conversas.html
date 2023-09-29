@@ -41,7 +41,8 @@
             </a>
 
             
-            <div class="info-cliente">
+            <!-- {% for conversa in conversas %} -->
+            <div class="info-cliente" id="infoCliente-{{ conversa.id }}">
               <div>
                 <img
                 class="foto-perfil"
@@ -50,15 +51,16 @@
                 alt="Foto perfil cliente"
                 />
               </div>
+           
+                <div class="nome-cliente">
+                  <p class="numero-cliente"><strong>{{ conversa.company_client_number }}</strong></p>
+                  <p class="data-mensagem">{{conversa.time}}</p>
+                </div>
 
-              {% for conversa in conversas %}
-                    <div class="nome-cliente">
-                      <p class="numero-cliente"><strong>{{ conversa.company_client_number }}</strong></p>
-                      <p class="data-mensagem">{{ message.date }}</p>
-                    </div>
-                {% endfor %}
-
-            </div>
+                
+                
+              </div>
+              <!-- {% endfor %} -->
 
           </div>
 
@@ -284,7 +286,9 @@
               var id = $(this).attr('id').split('-')[1];
               console.log("Clicked contact ID: ", id);
               $(".conversation").hide();
+              $(".info-cliente").hide();
               $("#conversation-" + id).show();
+              $("#infoCliente-" + id).show();
               $(".defaultText").hide();
               $(".side-conversation").css("display", "flex");
 
@@ -342,11 +346,14 @@
 
           {% if updated_conversa_id %}
               $(".conversation").hide();
+              $(".info-cliente").hide();
               $("#conversation-{{ updated_conversa_id }}").show();
+              $("#infoCliente--{{ updated_conversa_id }}").show();
               $(".defaultText").hide();
               $(".side-conversation").css("display", "flex");
           {% else %}
               $(".conversation").hide();
+              $(".info-cliente").hide();
               $(".defaultText").show();
               $(".side-conversation").css("display", "none");
           {% endif %}
@@ -409,7 +416,9 @@
           if (activeConversaId !== null && activeConversaId !== undefined && activeConversaId !== "") {
             console.log("Trying to show conversation with ID: ", activeConversaId);
             $(".conversation").hide();
+            $(".info-cliente").hide();
             $("#conversation-" + activeConversaId).show();
+            $("#infoCliente-" + activeConversaId).show();
             $(".defaultText").hide();
             
             // Verificar se a largura da janela é menor que 768 pixels (um valor comum para telas de celular)
@@ -423,6 +432,7 @@
             scrollToBottom(activeConversaId);
         } else {
             $(".conversation").hide();
+            $(".info-cliente").hide();
             $(".defaultText").show();
             
             // Verificar se a largura da janela é menor que 768 pixels (um valor comum para telas de celular)
@@ -493,7 +503,9 @@
 
             // Oculta todas as conversas e mostra a conversa selecionada
             $(".conversation").hide();
+            $(".info-cliente").hide();
             $("#conversation-" + id).show();
+            $("#infoCliente-" + id).show();
     
             // Restaura a cor de fundo dos contatos
             $(".conteudo-contato").css("background-color", "");
@@ -504,8 +516,7 @@
             // Mostra a parte "side-conversation" e adiciona a classe "expanded"
             $(".defaultText").hide();
             $(".side-conversation").show().addClass("expanded");
-          
-
+        
         });
     });
 
@@ -526,10 +537,12 @@
 
             // Oculta todas as conversas e mostra a conversa selecionada
             $(".conversation").hide();
+            $(".info-cliente").hide();
             $("#conversation-" + id).show();
+            $("#infoCliente-" + id).show();
             $('#logo-ajudai').hide();
             $('#back-button').show();
-            $('.info-cliente').show();
+            //$('.info-cliente').show();
 
             $(this).find('.conteudo-contato').css("background-color", '#fff');
 
@@ -539,6 +552,8 @@
       });
       
     });
+
+    
     
     </script>
 
@@ -547,6 +562,7 @@
 
         $('#back-button').hide();
         $('.info-cliente').hide();
+        //$('#infoCliente-' + activeConversaId).hide();
         
         // Evento de clique no botão "Meus contatos"
         $("a[title='Meus contatos']").click(function() {
@@ -557,6 +573,7 @@
           $('#logo-ajudai').show();
           $('#back-button').hide();
           $('.info-cliente').hide();
+          //$('#infoCliente-' + activeConversaId).hide();
 
           //localStorage.setItem('backButtonHidden', 'true');
         });
