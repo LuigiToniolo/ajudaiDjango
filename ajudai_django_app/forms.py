@@ -128,7 +128,7 @@ class ChatBotForm(forms.ModelForm):
         )
     cardapio = forms.CharField(
         max_length=MAX_CHAR_INSTRUCTIONS_CHATBOT_FORM, 
-        label='Cardápio de restaurante (com nomes dos pratos, ingredientes e preços)',
+        label='Cardápio de restaurante (com nomes dos pratos, ingredientes e preços) (caso o cardápio esteja registrado na própria API, deixar em branco)',
         widget=forms.Textarea(
             attrs={
                 # 'style': 'width: {}px;'.format(ADITIONAL_INTRUCTIONS_FIELD_SIZE_IN_PX),
@@ -139,7 +139,7 @@ class ChatBotForm(forms.ModelForm):
             )
         )
     descricao_funcao_cardapio = forms.CharField(
-        label='Descrição função com informações do cardápio',
+        label='Descrição função com informações do cardápio (caso o cardápio esteja registrado na própria API, deixar em branco)',
         initial='Obtém uma informação específica, ou um conjunto de informações específicas contidas no cardápio, como nome do produto, tamanho, ingredientes e preço',
         )
     whatsapp_number = forms.CharField(
@@ -162,40 +162,40 @@ class ChatBotForm(forms.ModelForm):
     )
 
     chatbot_has_products_catalog = forms.BooleanField(
-        label='Does Chatbot have a Products Catalog?',
+        label='Você possui um cardápio (catálogo de produtos) registrado na API?',
         required=False,
     )
     
     title_text = forms.CharField(
-        label='Title Text',
+        label='Título da Mensagem de Cardápio (caso de cardápio na API)',
         widget=forms.TextInput(attrs={
             # any additional attributes you want
         })
     )
 
     body_text = forms.CharField(
-        label='Body Text',
+        label='Texto do corpo da mensagem de Cardápio (caso de cardápio na API)',
         widget=forms.Textarea(attrs={
             'rows': 4,  # adjust as necessary
         })
     )
 
     footer_text = forms.CharField(
-        label='Footer Text',
+        label='Texto do Rodapé da Mensagem  (caso de cardápio na API)',
         widget=forms.TextInput(attrs={
             # any additional attributes you want
         })
     )
 
     catalog_id = forms.CharField(
-        label='Catalog ID',
+        label='ID do catálogo registrado no FaceBook (Catalog ID)  (caso de cardápio na API)',
         widget=forms.TextInput(attrs={
             # any additional attributes you want
         })
     )
 
     sections_and_products = forms.CharField(
-        label='Sections and Products',
+        label='JSON das Seções e Produtos (respeitar o formato) (caso de cardápio na API)',
         widget=JSONInput(attrs={'cols': 80, 'rows': 20}),
         initial=json.dumps({
             "sections": [
