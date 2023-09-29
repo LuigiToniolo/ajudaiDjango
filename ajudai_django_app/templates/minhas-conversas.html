@@ -192,7 +192,7 @@
             <form id="message-form" method="post">
               {% csrf_token %}
               <div class="message-input">
-                  <input type="text" name="message" placeholder="Mensagem">
+                  <input type="text" name="message" id="message-input" placeholder="Mensagem">
                   <input type="hidden" id="conversa_id" name="conversa_id" value="{{ conversa.id }}">
                   <a class="botao-pause-chatbot"><i class="fa-solid fa-play" id="icon-pause"></i></a>
                   <button class="botao-send"><i class="fa-solid fa-paper-plane" id="icon-send"></i></button>
@@ -207,6 +207,7 @@
                     </div>
                   </div>  -->
               </div>
+              <div class="message-display" id="message-display"></div>
            </form>
           </div>
 
@@ -288,7 +289,6 @@
               $(".conversation").hide();
               $(".info-cliente").hide();
               $("#conversation-" + id).show();
-              $("#infoCliente-" + id).show();
               $(".defaultText").hide();
               $(".side-conversation").css("display", "flex");
 
@@ -348,7 +348,6 @@
               $(".conversation").hide();
               $(".info-cliente").hide();
               $("#conversation-{{ updated_conversa_id }}").show();
-              $("#infoCliente--{{ updated_conversa_id }}").show();
               $(".defaultText").hide();
               $(".side-conversation").css("display", "flex");
           {% else %}
@@ -418,7 +417,6 @@
             $(".conversation").hide();
             $(".info-cliente").hide();
             $("#conversation-" + activeConversaId).show();
-            $("#infoCliente-" + activeConversaId).show();
             $(".defaultText").hide();
             
             // Verificar se a largura da janela é menor que 768 pixels (um valor comum para telas de celular)
@@ -505,7 +503,6 @@
             $(".conversation").hide();
             $(".info-cliente").hide();
             $("#conversation-" + id).show();
-            $("#infoCliente-" + id).show();
     
             // Restaura a cor de fundo dos contatos
             $(".conteudo-contato").css("background-color", "");
@@ -539,10 +536,10 @@
             $(".conversation").hide();
             $(".info-cliente").hide();
             $("#conversation-" + id).show();
+            //Insere o número de telefone do cliente no topMenu
             $("#infoCliente-" + id).show();
             $('#logo-ajudai').hide();
             $('#back-button').show();
-            //$('.info-cliente').show();
 
             $(this).find('.conteudo-contato').css("background-color", '#fff');
 
@@ -562,7 +559,6 @@
 
         $('#back-button').hide();
         $('.info-cliente').hide();
-        //$('#infoCliente-' + activeConversaId).hide();
         
         // Evento de clique no botão "Meus contatos"
         $("a[title='Meus contatos']").click(function() {
@@ -573,9 +569,6 @@
           $('#logo-ajudai').show();
           $('#back-button').hide();
           $('.info-cliente').hide();
-          //$('#infoCliente-' + activeConversaId).hide();
-
-          //localStorage.setItem('backButtonHidden', 'true');
         });
       });
     </script>
