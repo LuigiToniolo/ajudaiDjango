@@ -132,6 +132,11 @@
       transform: scale(1.1);
     }
 
+    .fa-burger {
+      color: #a8a8a8;
+    }
+
+
     .fa-clock,
     .fa-calendar {
       color: #a8a8a8;

@@ -163,8 +163,11 @@
                   var datetimeElement = document.createElement('div');
                   datetimeElement.className = 'card-datetime';
               
-                  var calendarIcon = document.createElement('i');
-                  calendarIcon.className = 'fas fa-calendar';
+                  //var calendarIcon = document.createElement('i');
+                  //calendarIcon.className = 'fas fa-calendar';
+
+                  var orderIcon = document.createElement('i');
+                  orderIcon.className = 'fa-solid fa-burger';
               
                   var dateElement = document.createElement('span');
                   dateElement.className = 'card-date';
@@ -179,7 +182,7 @@
               
                   var iconContainer = document.createElement('div');
                   iconContainer.className = 'icon-container';
-                  iconContainer.appendChild(calendarIcon);
+                  iconContainer.appendChild(orderIcon);
                   iconContainer.appendChild(dateElement);
               
                   var timeContainer = document.createElement('div');
@@ -215,7 +218,7 @@
                 }
             }
               
-            function createPedidoCard(pedidoText, status, id, url, date, time) {
+            function createPedidoCard(pedidoText, status, id, url, date, time, resumo_do_pedido) {
                 var card = document.createElement('li');
                 card.className = 'card-kanban';
                 card.draggable = true;
@@ -239,7 +242,7 @@
                 var deleteIcon = document.createElement('i');
                 deleteIcon.className = 'fas fa-trash-alt delete-icon';
 
-                // -------------------------Dropdown para os botões
+                // -------------------------Dropdown para os botões não está funcionando (revisar) -----------------------
                 var dropdown = document.createElement('div');
                 dropdown.className = 'dropdown';
                 dropdown.style.display = 'none'; // Inicialmente, o dropdown está escondido
@@ -258,6 +261,7 @@
                 function toggleDropdown() {
                     if (dropdown.style.display === 'none') {
                         dropdown.style.display = 'block';
+                        
                     } else {
                         dropdown.style.display = 'none';
                     }
@@ -274,32 +278,42 @@
                 //-------------------------------------
 
                 // Date and Time elements
+                //Cria a div de fora "<div class="card-datetime">"
                 var datetimeElement = document.createElement('div');
                 datetimeElement.className = 'card-datetime';
 
-                var calendarIcon = document.createElement('i');
-                calendarIcon.className = 'fas fa-calendar';
+                //Cria o ícone de calendário "<i class="fas fa-calendar"></i>"
+                //var calendarIcon = document.createElement('i');
+                //calendarIcon.className = 'fas fa-calendar';
 
+                var orderIcon = document.createElement('i');
+                orderIcon.className = 'fa-solid fa-burger';
+
+                //Cria o span para colocar a data "<span class="card-date">21 de setembro</span>"
                 var dateElement = document.createElement('span');
                 dateElement.className = 'card-date';
-                dateElement.textContent = date;
+                dateElement.textContent = resumo_do_pedido;
 
+                //Cria o outro ícone de relógio "<i class="fas fa-clock"></i>"
                 var timeIcon = document.createElement('i');
                 timeIcon.className = 'fas fa-clock';
 
+                //Cria a outra tag span para colocar o dado de tempo: "<span class="card-time">16:57</span>"
                 var timeElement = document.createElement('span');
                 timeElement.className = 'card-time';
                 timeElement.textContent = time;
 
+                //Cria a div de: "<div class="icon-container">"
                 var iconContainer = document.createElement('div');
                 iconContainer.className = 'icon-container';
-                iconContainer.appendChild(calendarIcon);
-                iconContainer.appendChild(dateElement);
+                iconContainer.appendChild(orderIcon); //incluir o icone de calendario dentro da div 'icon-container'
+                iconContainer.appendChild(dateElement); //incluir o conteúdo de data dentro da div 'icon-container'
 
+                //Criar a div: "<div class="time-container">"
                 var timeContainer = document.createElement('div');
                 timeContainer.className = 'time-container';
-                timeContainer.appendChild(timeIcon);
-                timeContainer.appendChild(timeElement);
+                timeContainer.appendChild(timeIcon); //Inclui o icone de relogio
+                timeContainer.appendChild(timeElement); //Inclui o conteúdo das horas
 
                 datetimeElement.appendChild(iconContainer);
                 datetimeElement.appendChild(timeContainer);
