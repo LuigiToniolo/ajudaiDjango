@@ -68,127 +68,118 @@
   margin-left: 10px;
 }
 
-    .button-novo {
-      width: 100%;
-      border: 1px solid black;
-      border-radius: 10px;
-      background-color: transparent;
-      display: none;
-    }
-
-    .card-kanban {
-      background-color: #fff;
-      padding: 10px;
-      margin-bottom: 10px;
-      margin-top: 10px;
-      border-radius: 4px;
-      cursor: grab;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .tituloPedido {
-      font-size: 20px;
-    }
-
-    .text-container {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .text-container span {
-      color: #212D40;
-    }
-
-    .dropdownDelete {
-      /* background-color: #E6E6E6; */
-      cursor: default;
-      margin: 5px 0;
-
-    }
-
-    .linkDelete {
-      margin: 8px 0 0 0;
-      cursor: pointer;
-      font-size: 16px;
-      text-align: start;
-    }
-
-    .textoAviso {
-      margin: 0;
-      padding: 5px 0;
-      font-weight: normal !important;  
-      text-align: start !important;
-      font-size: 16px !important;
-    }
-
-    .botoesDiv {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .botao-deletar {
-      border: none;
-      border-radius: 25px;
-      background-color: #ffa0a0;
-      width: 45%;
-      font-size: 16px;
-      transition: transform 0.1s ease;
-    }
-
-    .botao-deletar:hover {
-      transform: scale(1.05);
-    }
-
-    .botao-voltar {
-      border-radius: 25px;
-      border: none;
-      background-color: #E6E6E6;
-      width: 45%;
-      font-size: 16px;
-      transition: transform 0.1s ease;
-    }
-
-    .botao-voltar:hover {
-      transform: scale(1.05);
-    }
-
-    .fa-burger {
-      color: #a8a8a8;
-    }
-
-
-    .fa-clock,
-    .fa-calendar {
-      color: #a8a8a8;
-      margin-right: 3px;
-    }
-
-    .ver-pedido-link {
-      text-decoration: none;
-      background-color: #e6e6e6;
-      border-radius: 5px;
-      text-align: center;
-      color: #000;
-      transition: transform 0.1s ease;
-      margin-top: 16px;
-    }
-
-    .ver-pedido-link:hover {
-      color: #000;
-      transform: scale(1.02);
-    }
-
-select {
-  padding: 5px;
-  background-color: #F2F2F2;
-  border-style: none;
+.button-novo {
+  width: 100%;
+  border: 1px solid black;
+  border-radius: 10px;
+  background-color: transparent;
+  display: none;
 }
 
+.card-kanban {
+  background-color: #fff;
+  padding: 10px;
+  margin-bottom: 10px;
+  margin-top: 10px;
+  border-radius: 4px;
+  cursor: grab;
+  display: flex;
+  flex-direction: column;
+}
+
+.tituloPedido {
+  font-size: 20px;
+}
+
+.text-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.text-container span {
+  color: #212D40;
+}
+
+.dropdownDelete {
+  /* background-color: #E6E6E6; */
+  cursor: default;
+  margin: 5px 0;
+
+}
+
+.linkDelete {
+  margin: 8px 0 0 0;
+  cursor: pointer;
+  font-size: 16px;
+  text-align: start;
+}
+
+.textoAviso {
+  margin: 0;
+  padding: 5px 0;
+  font-weight: normal !important;  
+  text-align: start !important;
+  font-size: 16px !important;
+}
+
+.botoesDiv {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.botao-deletar {
+  border: none;
+  border-radius: 25px;
+  background-color: #ffa0a0;
+  width: 45%;
+  font-size: 16px;
+  transition: transform 0.1s ease;
+}
+
+.botao-deletar:hover {
+  transform: scale(1.05);
+}
+
+.botao-voltar {
+  border-radius: 25px;
+  border: none;
+  background-color: #E6E6E6;
+  width: 45%;
+  font-size: 16px;
+  transition: transform 0.1s ease;
+}
+
+.botao-voltar:hover {
+  transform: scale(1.05);
+}
+
+
+.fa-clock,
+.fa-burger {
+  color: #a8a8a8;
+  margin-right: 3px;
+}
+
+.ver-pedido-link {
+  text-decoration: none;
+  background-color: #E6E6E6;
+  border-radius: 5px;
+  text-align: center;
+  color: #000;
+  transition: transform 0.1s ease;
+  margin-top: 16px;
+}
+
+.ver-pedido-link:hover {
+  color: #000;
+  transform: scale(1.02);
+}
+
+
 .card-count {
-  background-color: #E0E0E0;
+  background-color: #E6E6E6;
   padding: 0 8px;
   border-radius: 100px;
   margin-left: 5px;
@@ -208,8 +199,6 @@ select {
   border: 2px dashed #aaa;
   background-color: #f5f5f5;
 }
-
-
 
 
 .card-datetime {
@@ -237,20 +226,28 @@ select {
   .titulo-kanban {
     display: none;
   }
+  .selectColumn {
+    display: none;
+  }
 }
 
 /* Responsividade para telas menores */
 @media (max-width: 768px) {
+  .kanban {
+    display: flex;
+    flex-direction: row;
+    height: 150vh;
+  }
   .column-kanban {
     flex-basis: 100%;
-    margin-bottom: 20px;
+    margin-bottom: 50px;
   }
   .como-funciona {
     margin-top: 5vh;
   }
   
   .titulo-kanban {
-    text-align: center;
+    text-align: start;
     align-items: center;
     margin-top: 3vh;
   }
@@ -263,28 +260,54 @@ select {
   .title-column {
   padding: 0 0;
   margin-bottom: 5px;
+  margin-top: 10px;
   }
+
+  .card-datetime {
+    font-size: 18px;
+  }
+
+  .time-container {
+    margin-top: 4px;
+  }
+
+  .selectColumn {
+    margin-top: 16px;
+    padding: 8px 0;
+    background-color: #E6E6E6;
+    border-style: none;
+    border: none;
+    border-radius: 5px;
+    font-size: 18px;
+  }
+  
+  .selectColumn option:checked {
+    background-color: #007bff; /* Cor de fundo quando a opção está selecionada */
+    color: #fff; /* Cor do texto quando a opção está selecionada */
+  }
+  
 
   .linkDelete {
     margin: 16px 0 0 0;
-    font-size: 16px;
+    font-size: 18px;
   }
 
   .ver-pedido-link {
     padding: 8px 0;
+    font-size: 18px;
   }
 
   .textoAviso {
-    font-size: 16px !important;
+    font-size: 18px !important;
     margin: 8px 0;
   }
   .botao-deletar {
-    font-size: 16px !important;
+    font-size: 18px !important;
     width: 100%;
     padding: 8px 0 !important;
   }
   .botao-voltar {
-    font-size: 16px !important;
+    font-size: 18px !important;
     width: 100%;
     margin-top: 8px;
     padding: 8px 0;
@@ -292,6 +315,13 @@ select {
   .botoesDiv {
     display: flex;
     flex-direction: column;
+  }
+  .fa-clock,
+  .fa-burger {
+    color: #a8a8a8;
+    margin-right: 3px;
+    width: 30px;
+    height: auto;
   }
 }
 

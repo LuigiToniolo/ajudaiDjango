@@ -71,8 +71,6 @@
                           <h3 class="como-funciona">Como funciona o envio das mensagens de status do pedido para o cliente?</h3>
                           <p style="margin-bottom: 3vh;">Para que seu cliente fique sabendo do status do pedido "pedido realizado", "pedido em processamento", "aguardando entrega" e "pedido retirado/entregue", basta você arrastar os pedidos de uma coluna para outra que o chatbot envia mensagens automaticamente notificando o status do pedido realizado.</p>
 
-
-                          
                           
                     </div>
                 </main>
@@ -215,7 +213,7 @@
                 }
             }
               
-            function createPedidoCard(pedidoText, status, id, url, date, time, resumo_do_pedido) {
+            function createPedidoCard(pedidoText, status, id, url, date, time, pedido) {
                 console.log('Início da função createPedidoCard');
                 var card = document.createElement('li');
                 card.className = 'card-kanban';
@@ -248,8 +246,6 @@
 
                 card.appendChild(textContainer);
 
-                
-
                 // Date and Time elements
                 //Cria a div de fora "<div class="card-datetime">"
                 var datetimeElement = document.createElement('div');
@@ -265,7 +261,7 @@
                 //Cria o span para colocar a data "<span class="card-date">21 de setembro</span>"
                 var dateElement = document.createElement('span');
                 dateElement.className = 'card-date';
-                dateElement.textContent = resumo_do_pedido;
+                dateElement.textContent = pedido;
 
                 //Cria o outro ícone de relógio "<i class="fas fa-clock"></i>"
                 var timeIcon = document.createElement('i');
@@ -292,6 +288,9 @@
                 datetimeElement.appendChild(timeContainer);
 
                 card.appendChild(datetimeElement);
+
+                var select = createSelect();
+                card.appendChild(select);
 
                 // Link
                 var link = document.createElement('a');
@@ -386,6 +385,7 @@
 
             function createSelect() {
               var select = document.createElement('select');
+              select.className = "selectColumn"
               select.addEventListener('change', handleSelectChange);
         
               var options = ['todo', 'inProgress', 'waiting', 'done'];
