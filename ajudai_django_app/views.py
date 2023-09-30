@@ -28,6 +28,8 @@ from django.db.models import Case, When, Value, IntegerField
 from django.core.exceptions import ObjectDoesNotExist
 from datetime import datetime, timedelta
 from django.db.models.functions import ExtractYear, ExtractMonth
+from django.http import JsonResponse
+import requests
 
 sao_paulo_tz = pytz.timezone('America/Sao_Paulo')
 
@@ -923,9 +925,34 @@ def chatbot_creation_form(request):
                     chatbot = form.save(commit=False)
                     chatbot.user = request.user
                     chatbot.save()
-                    return redirect('user_accounts')
                 except Exception as e:
                     form.add_error(None, f"Ocorreu um erro ao tentar criar o chatbot: {str(e)}")
+
+                #GARANTINDO QUE O CATÁLOGO ESTÁ ATIVADO SE HOUVER UM
+                chatbot_has_products_catalog = form.cleaned_data['chatbot_has_products_catalog']
+                if chatbot_has_products_catalog == True:
+                    page_id = form.cleaned_data['facebook_page_id']
+                    auth_token = form.cleaned_data['whats_app_api_auth_token']
+
+                    url = f"https://graph.facebook.com/v17.0/{page_id}/whatsapp_commerce_settings"
+
+                    headers = {
+                        'Authorization': f'Bearer {auth_token}',
+                        'Content-Type': 'application/json'
+                    }
+
+                    payload = {
+                        'is_catalog_visible': True  # Set to True to make the catalog visible
+                    }
+
+                    response = requests.post(url, headers=headers, json=payload)
+
+                    if response.status_code == 200:
+                        print('XXXXXXXXXXXXXXXXXXXXXXXXXX Catalog activated successfully!')
+                    else:
+                        print(f"XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX Failed to activate the catalog. Error: {response.json()}")
+                    
+                    return redirect('user_accounts')
 
     else:
         form = ChatBotForm()
