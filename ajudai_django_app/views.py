@@ -10,7 +10,6 @@ from ajudai_django_app.models import Adesao_Purchase, ChatBot, Conversa, CustomU
 from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
 from ajudai_django_app.payments_process.sign_in import create_stripe_customer, return_adesao_checkout_session, return_checkout_session_id, return_checkout_session_url, return_setup_future_payments_checkout_session
 from ajudai_django_app.payments_process.webhooks import HTTP_PAYMENT_API_SIGNATURE, LABEL_TO_CHECKOUT_SESSION_ID, get_session_data, get_usage_payment_webhook_customer, get_webhook_event, success_payment_checkout_and_section_recovery, success_payment_usage_charge
-from ajudai_django_app.phone_integration.interactive_messages import send_products_catalog
 from ajudai_django_app.phone_integration.messages import send_response
 from constants import ADESAO_PURCHASE_STATUS_PENDING, ADESAO_PURCHASE_STATUS_PROCESSED, API_MAX_ATTEMP, ADESAO_PURCHASE_STATUS_PROCESSED, ADITIONAL_INTRUCTIONS_FIELD_ID, ADITIONAL_INTRUCTIONS_FIELD_NAME, DOMAIN, EVENT_INVALID_PAYLOAD, EVENT_INVALID_SIGNATURE, FANTASY_NAME, GPT3_MODEL_NAME, GPT3_TOKEK_LIMIT, PASSWORD_FIELD_ID, PAYMENT_METHOD_REGISTRATION_STATUS_PENDING, PRODUCT_NAME_COORPORATE, PRODUCT_NAME_PLUS, PRODUCT_NAME_PREMIUM, PRUDUCT_TYPE_ADESAO, PRUDUCT_TYPE_CONVERSA_AVULSA, SLEEP_SECONDS_INTER_AI_API_CALL, STANDART_PERIOD, STATUS_CONVERSA_EM_ANDAMENTO, STATUS_PEDIDO_EM_PROCESSO, STATUS_PEDIDO_ENTREGUE, STATUS_PEDIDO_PENDENTE_DE_ENTREGA, STATUS_PEDIDO_REALIZADO, SUPPORT_EMAIL, USER_LEVEL_ADMIN, USER_LEVEL_PREMIUM, USER_NAME_FIELD_ID, WEBHOOK_ADESAO_ID, WEBHOOK_PAYMENT_METHOD_ID, WEBHOOK_USAGE_PAYMENT_ID
 from get_secret_variables import get_secret_var
@@ -1060,16 +1059,10 @@ def process_message(data):
                             new_context = []
                             if conversation.chatbot_ativo == True and user.chatbots_on == True:
                                 if new_conversation and chatbot.chatbot_has_products_catalog:
-                                    send_products_catalog(
-                                        chatbot.facebook_page_id, 
-                                        chatbot.whats_app_api_auth_token, 
-                                        numero_cliente, 
-                                        chatbot.title_text, 
-                                        chatbot.body_text, 
-                                        chatbot.footer_text, 
-                                        chatbot.catalog_id, 
-                                        chatbot.sections_and_products.get('sections', [])
-                                        )
+                                    initial_message_before_link = chatbot.initial_message_text
+                                    catalog_link = f'https://wa.me/c/{company_number_with_DDI}'
+                                    first_message = initial_message_before_link + ": " +  catalog_link
+                                    send_response(chatbot.facebook_page_id, chatbot.whats_app_api_auth_token, numero_cliente, first_message)
                                     #TODO lidar como o contexto e os outros elementos de conversation. deve ser setado para que o bot entenda que o menu foi enviado
                                     pass
                                 #TODO AQUI, FAZER UM IF PARA LIDAR COM MENSAGENS QUE CHEGAM COMO RESPOSTA A MESAGEM INTERATIVA DE CARDÁPIO

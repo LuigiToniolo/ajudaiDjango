@@ -456,6 +456,8 @@ class ChatBot(models.Model):
     creation_time = models.TimeField(default=current_time_sao_paulo)
 
     chatbot_has_products_catalog = models.BooleanField(default=False)
+    initial_message_text = models.CharField(max_length=10000, default='Olá, seja bem-vindo! Veja nosso cardápio e selecione os itens que você deseja os adicionando no carrinho:')
+
     title_text = models.CharField(max_length=255, default='')
     body_text = models.TextField(default='')
     footer_text = models.CharField(max_length=255, default='')

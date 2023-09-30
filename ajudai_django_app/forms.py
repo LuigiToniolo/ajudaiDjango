@@ -167,60 +167,19 @@ class ChatBotForm(forms.ModelForm):
         label='Você possui um cardápio (catálogo de produtos) registrado na API?',
         required=False,
     )
-    
-    title_text = forms.CharField(
+
+    initial_message_text = forms.CharField(
+        label='Initial Message to send the catalog',
         required=False,
-        label='Título da Mensagem de Cardápio (caso de cardápio na API)',
         widget=forms.TextInput(attrs={
-            # any additional attributes you want
-        })
-    )
-
-    body_text = forms.CharField(
-        required=False,
-        label='Texto do corpo da mensagem de Cardápio (caso de cardápio na API)',
-        widget=forms.Textarea(attrs={
-            'rows': 4,  # adjust as necessary
-        })
-    )
-
-    footer_text = forms.CharField(
-        required=False,
-        label='Texto do Rodapé da Mensagem  (caso de cardápio na API)',
-        widget=forms.TextInput(attrs={
-            # any additional attributes you want
-        })
-    )
-
-    catalog_id = forms.CharField(
-        required=False,
-        label='ID do catálogo registrado no FaceBook (Catalog ID)  (caso de cardápio na API)',
-        widget=forms.TextInput(attrs={
-            # any additional attributes you want
-        })
-    )
-
-    sections_and_products = forms.CharField(
-        required=False,
-        label='JSON das Seções e Produtos (respeitar o formato) (caso de cardápio na API)',
-        widget=JSONInput(attrs={'cols': 80, 'rows': 20}),
-        initial=json.dumps({
-            "sections": [
-                {
-                    "title": "",
-                    "product_items": []
-                }
-            ]
-        }, indent=2)
+            # 'style': 'width: {}px;'.format(WHATS_APP_TOKEN_FILD_SIZE_IN_PX)
+            })
     )
 
     class Meta:
         model = ChatBot
         fields = [
-            'nome_do_chatbot', 'whatsapp_number', 'whats_app_api_auth_token', 'facebook_page_id', ADITIONAL_INTRUCTIONS_FIELD_NAME, 'cardapio', 'descricao_funcao_cardapio',
-            'chatbot_has_products_catalog', 'title_text', 'body_text', 'footer_text',
-            'catalog_id', 'sections_and_products'
-        ]
+            'nome_do_chatbot', 'whatsapp_number', 'whats_app_api_auth_token', 'facebook_page_id', ADITIONAL_INTRUCTIONS_FIELD_NAME, 'cardapio', 'descricao_funcao_cardapio', 'chatbot_has_products_catalog', 'initial_message_text']
 
     def clean_sections_and_products(self):
         data = self.cleaned_data['sections_and_products']
