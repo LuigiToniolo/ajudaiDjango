@@ -215,6 +215,13 @@
               
             function createPedidoCard(pedidoText, status, id, url, date, time, pedido) {
                 console.log('Início da função createPedidoCard');
+                console.log('pedidoText: ', pedidoText)
+                console.log('status: ', status)
+                console.log('id: ', id)
+                console.log('url: ', url)
+                console.log('date: ', date)
+                console.log('time: ', time)
+                console.log('pedido: ', pedido)
                 var card = document.createElement('li');
                 card.className = 'card-kanban';
                 card.draggable = true;
@@ -251,9 +258,6 @@
                 var datetimeElement = document.createElement('div');
                 datetimeElement.className = 'card-datetime';
 
-                //Cria o ícone de calendário "<i class="fas fa-calendar"></i>"
-                //var calendarIcon = document.createElement('i');
-                //calendarIcon.className = 'fas fa-calendar';
 
                 var orderIcon = document.createElement('i');
                 orderIcon.className = 'fa-solid fa-burger';
@@ -333,14 +337,14 @@
 
                 // Função para alternar a visibilidade do dropdown
                 function toggleDropdown() {
-                    console.log('Evento de clique no ícone de lata de lixo acionado');
+                    
                     if (dropdown.style.display === 'none' || dropdown.style.display === '') {
-                        console.log('Dropdown está oculto');
+                        
                         dropdown.style.display = 'block';
                         linkDelete.style.display = 'none';
                         
                     } else {
-                        console.log('Dropdown está visível');
+                        
                         dropdown.style.display = 'none';
                         linkDelete.style.display = 'block';
                     }
