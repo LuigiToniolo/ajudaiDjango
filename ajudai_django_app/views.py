@@ -29,6 +29,11 @@ from django.core.exceptions import ObjectDoesNotExist
 from datetime import datetime, timedelta
 from django.db.models.functions import ExtractYear, ExtractMonth
 
+# Notifications
+from notifications.models import Notification
+from .notifications import get_unread_notifications_user
+from .context_processors import notifications_list
+
 sao_paulo_tz = pytz.timezone('America/Sao_Paulo')
 
 def welcome_view(request):
@@ -1397,3 +1402,10 @@ def aviso_user_admin(request):
         {
         }
     )
+    
+def notifications(request):
+    return render(request, 'minhas-notificacoes.html')
+
+def mark_notification_as_read(request, notification_id):
+    Notification.objects.filter(id=notification_id).mark_all_as_read(recipient=request.user)
+    return redirect(reverse('notifications'))
