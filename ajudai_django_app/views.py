@@ -1055,19 +1055,16 @@ def process_message(data):
                     for entry in data['entry']:
                         if 'changes' in entry and 'messages' in entry['changes'][0]['value']:
                             numero_cliente = entry['changes'][0]['value']['messages'][0]['from']
-                            incoming_message = entry['changes'][0]['value']['messages'][0]['text']['body']
                             company_number_with_DDI =  entry['changes'][0]['value']['metadata']['display_phone_number']
                             #AQUI, COMO NO BANCO DE DADOS, O WHATSAPP EMPRESARIAL DO CLIENTE É REGISTRADO SEM O DDI (55 PARA BRASIL), ELE É PARA LOCALIZAÇÃO DO CLIENTE NO BANCO DE DADOS
                             company_number = company_number_with_DDI[2:]
                             chatbot= get_object_or_404(ChatBot, whatsapp_number=company_number)
                             user=chatbot.user
 
-                            aditional_instructions = chatbot.aditional_intructions
-                            #antes de verificar se tem uma conversa aberta em andamento, faz o fechamento daquelas que estão inativas ou esgotaram o tempo
-                            Conversa.close_conversa_if_needed(user)
-
                             if not user.usuario_adimplente_ou_tolerancia_de_uso:
                                 raise Exception(f'Usuário inadimplente:{user}')
+                            
+                            itens_pedidos = ''
 
                             # Get or create a conversation for the phone number
                             new_conversation = False
@@ -1088,42 +1085,101 @@ def process_message(data):
                                     new_conversation = True
                                 else:
                                     raise Exception(f'Usuário{user} não pode criar mensagens')
+                                
                             new_context = []
-                            if conversation.chatbot_ativo == True and user.chatbots_on == True:
-                                if new_conversation and chatbot.chatbot_has_products_catalog:
-                                    initial_message_before_link = chatbot.initial_message_text
-                                    catalog_link = f'https://wa.me/c/{company_number_with_DDI}'
-                                    first_message = initial_message_before_link + ": " +  catalog_link
-                                    send_response(chatbot.facebook_page_id, chatbot.whats_app_api_auth_token, numero_cliente, first_message)
-                                    #TODO lidar como o contexto e os outros elementos de conversation. deve ser setado para que o bot entenda que o menu foi enviado
-                                    pass
-                                #TODO AQUI, FAZER UM IF PARA LIDAR COM MENSAGENS QUE CHEGAM COMO RESPOSTA A MESAGEM INTERATIVA DE CARDÁPIO
+                            order_message = False
+
+                            try:
+                                if entry['changes'][0]['value']['messages'][0]['type'] == "order":
+                                    #TODO AQUI, LIDAR COM ITENS DO PEDIDO QUE FORAM SOLICTADO EM RESPOSTA A MENSAGEM INTERATIVA
+                                    itens_pedidos = ''
+                                    
+                                    order_message = True
+                                    pedido_em_string_para_add_ao_contexto = ''
+                                    awnser = ''
+                                    new_context.append({"role": "user", "content": pedido_em_string_para_add_ao_contexto})
+                                    new_context.append({"role": "assistant", "content": awnser})
+                                    tokens_used_on_this_request = 0
+                                    conversation.substitute_conversa_context(new_context)
+                                    tokens_used_before = conversation.total_tokens_used
+                                    conversation.total_tokens_used = tokens_used_before + tokens_used_on_this_request
+                                    conversation.last_message_shown = False
+                                    conversation.need_refresh_view = True
+                                    conversation.date = timezone.now().date()
+                                    conversation.time = timezone.now().time()
+                                    conversation.save()
+                                    return
                                 else:
-                                    role = ''
-                                    try:
-                                        gpt_response, new_context, tokens_used_on_this_request = generate_gpt_response(
-                                            incoming_message, 
-                                            conversation.context, 
-                                            role,  
-                                            aditional_instructions, 
-                                            GPT3_MODEL_NAME, 
-                                            GPT3_TOKEK_LIMIT, 
-                                            chatbot.id,
-                                            user,
-                                            conversation
-                                        )
-                                    except Exception as e:
-                                        raise Exception('Erro ao chamar função de resposta IA') from e
+                                    order_message = False
+                            except:
+                                #NÃO É UMA MENSAGEM DE COMPRA (não contém as keys)
+                                order_message = False
 
-                                    """" finalização de conversa por chamada de função
-                                    conversa_finalizada_com_pedido, resumo = pedido_confirmado(gpt_response)
-                                    if conversa_finalizada_com_pedido:
-                                        Pedido.criar_novo_pedido(user,conversation,resumo,numero_cliente) 
-                                        informar_loja_fechamento_pedido(resumo, company_number)
-                                    """
-                                    #chama função que responde o cliente da loja via integência artificial
-                                    send_response(chatbot.facebook_page_id, chatbot.whats_app_api_auth_token, numero_cliente, gpt_response)
+                            #MESAGEM QUE NÃO UM PEDIDO
+                            if order_message == False:
+                                mensagem_em_formato_de_texto = True
+                                try:
+                                    incoming_message = entry['changes'][0]['value']['messages'][0]['text']['body']
+                                except:
+                                    mensagem_em_formato_de_texto = False
+                                    incoming_message = ''
+                                
+                                if mensagem_em_formato_de_texto:
 
+                                    aditional_instructions = chatbot.aditional_intructions
+                                    #antes de verificar se tem uma conversa aberta em andamento, faz o fechamento daquelas que estão inativas ou esgotaram o tempo
+                                    Conversa.close_conversa_if_needed(user)
+
+                                    if conversation.chatbot_ativo == True and user.chatbots_on == True:
+                                        if new_conversation and chatbot.chatbot_has_products_catalog:
+                                            initial_message_before_link = chatbot.initial_message_text
+                                            catalog_link = f'https://wa.me/c/{company_number_with_DDI}'
+                                            first_message = initial_message_before_link + ": " +  catalog_link
+                                            send_response(chatbot.facebook_page_id, chatbot.whats_app_api_auth_token, numero_cliente, first_message)
+                                            #TODO lidar como o contexto e os outros elementos de conversation. deve ser setado para que o bot entenda que o menu foi enviado
+                                            pass
+                                        #TODO AQUI, FAZER UM IF PARA LIDAR COM MENSAGENS QUE CHEGAM COMO RESPOSTA A MESAGEM INTERATIVA DE CARDÁPIO
+                                        else:
+                                            role = ''
+                                            try:
+                                                gpt_response, new_context, tokens_used_on_this_request = generate_gpt_response(
+                                                    incoming_message, 
+                                                    conversation.context, 
+                                                    role,  
+                                                    aditional_instructions, 
+                                                    GPT3_MODEL_NAME, 
+                                                    GPT3_TOKEK_LIMIT, 
+                                                    chatbot.id,
+                                                    user,
+                                                    conversation
+                                                )
+                                            except Exception as e:
+                                                raise Exception('Erro ao chamar função de resposta IA') from e
+
+                                            """" finalização de conversa por chamada de função
+                                            conversa_finalizada_com_pedido, resumo = pedido_confirmado(gpt_response)
+                                            if conversa_finalizada_com_pedido:
+                                                Pedido.criar_novo_pedido(user,conversation,resumo,numero_cliente) 
+                                                informar_loja_fechamento_pedido(resumo, company_number)
+                                            """
+                                            #chama função que responde o cliente da loja via integência artificial
+                                            send_response(chatbot.facebook_page_id, chatbot.whats_app_api_auth_token, numero_cliente, gpt_response)
+
+                                            conversation.substitute_conversa_context(new_context)
+                                            tokens_used_before = conversation.total_tokens_used
+                                            conversation.total_tokens_used = tokens_used_before + tokens_used_on_this_request
+                                            conversation.last_message_shown = False
+                                            conversation.need_refresh_view = True
+                                            conversation.date = timezone.now().astimezone(sao_paulo_tz).date()
+                                            conversation.time = timezone.now().astimezone(sao_paulo_tz).time()
+                                            conversation.save()
+
+                                            return
+
+                                    #case no response was created by ai, just saves the message in the context
+                                    new_context = conversation.context
+                                    new_context.append({"role": "user", "content": incoming_message})
+                                    tokens_used_on_this_request = 0
                                     conversation.substitute_conversa_context(new_context)
                                     tokens_used_before = conversation.total_tokens_used
                                     conversation.total_tokens_used = tokens_used_before + tokens_used_on_this_request
@@ -1132,22 +1188,7 @@ def process_message(data):
                                     conversation.date = timezone.now().astimezone(sao_paulo_tz).date()
                                     conversation.time = timezone.now().astimezone(sao_paulo_tz).time()
                                     conversation.save()
-
                                     return
-
-                            #case no response was created by ai, just saves the message in the context
-                            new_context = conversation.context
-                            new_context.append({"role": "user", "content": incoming_message})
-                            tokens_used_on_this_request = 0
-                            conversation.substitute_conversa_context(new_context)
-                            tokens_used_before = conversation.total_tokens_used
-                            conversation.total_tokens_used = tokens_used_before + tokens_used_on_this_request
-                            conversation.last_message_shown = False
-                            conversation.need_refresh_view = True
-                            conversation.date = timezone.now().astimezone(sao_paulo_tz).date()
-                            conversation.time = timezone.now().astimezone(sao_paulo_tz).time()
-                            conversation.save()
-                            return
 
                         else:
                             return

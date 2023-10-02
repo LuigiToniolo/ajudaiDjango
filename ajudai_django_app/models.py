@@ -458,9 +458,6 @@ class ChatBot(models.Model):
     chatbot_has_products_catalog = models.BooleanField(default=False)
     initial_message_text = models.CharField(max_length=10000, default='Olá, seja bem-vindo! Veja nosso cardápio e selecione os itens que você deseja os adicionando no carrinho:')
 
-    title_text = models.CharField(max_length=255, default='')
-    body_text = models.TextField(default='')
-    footer_text = models.CharField(max_length=255, default='')
     catalog_id = models.CharField(max_length=255, default='')
     sections_and_products = models.JSONField(default=dict)
 

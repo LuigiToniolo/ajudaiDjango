@@ -176,10 +176,32 @@ class ChatBotForm(forms.ModelForm):
             })
     )
 
+    catalog_id = forms.CharField(
+        required=False,
+        label='ID do catálogo (conforme adicionado no WABA)',
+        widget=forms.TextInput(attrs={
+            # any additional attributes you want
+        })
+    )
+
+    sections_and_products = forms.CharField(
+        required=False,
+        label='Lista de IDs e Nomes de Produtos (conforme adicionado no WABA)',
+        widget=JSONInput(attrs={'cols': 80, 'rows': 20}),
+        initial=json.dumps({
+            "product_items": [
+                {
+                    "product_retailer_id" : "",
+                    "nome_do_produto" : ""
+                }
+            ]
+        }, indent=2)
+    )
+
     class Meta:
         model = ChatBot
         fields = [
-            'nome_do_chatbot', 'whatsapp_number', 'whats_app_api_auth_token', 'facebook_page_id', ADITIONAL_INTRUCTIONS_FIELD_NAME, 'cardapio', 'descricao_funcao_cardapio', 'chatbot_has_products_catalog', 'initial_message_text']
+            'nome_do_chatbot', 'whatsapp_number', 'whats_app_api_auth_token', 'facebook_page_id', ADITIONAL_INTRUCTIONS_FIELD_NAME, 'cardapio', 'descricao_funcao_cardapio', 'chatbot_has_products_catalog', 'initial_message_text', 'catalog_id', 'sections_and_products']
 
     def clean_sections_and_products(self):
         data = self.cleaned_data['sections_and_products']
