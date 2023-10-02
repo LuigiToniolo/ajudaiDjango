@@ -88,7 +88,33 @@
 }
 
 .tituloPedido {
-  font-size: 16px;
+  font-size: 18px;
+  margin-bottom: 0;
+}
+
+.dateTimeElement {
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+}
+
+.dateInfo,
+.timeInfo {
+  color: #a8a8a8;
+  font-weight: normal !important;
+  text-align: start !important;
+  font-size: 12px;
+  margin: 0;
+  padding: 0;
+
+}
+
+.fa-circle {
+  color: #a8a8a8;
+  margin: 0 4px;
+  width: 4px;
+  height: auto;
+
 }
 
 .text-container {
@@ -112,13 +138,14 @@
   margin: 8px 0 0 0;
   cursor: pointer;
   font-size: 16px;
-  text-align: start;
+  text-align: center;
   text-decoration: none;
-  color: #5C7AD3;
+  color: #d35c5c;
 }
 
 .linkDelete:hover {
   text-decoration: underline;
+  color: #d35c5c;
 }
 
 .textoAviso {
@@ -138,7 +165,7 @@
 .botao-deletar {
   border: none;
   border-radius: 25px;
-  background-color: #ffa0a0;
+  background-color: #d35c5c;
   width: 45%;
   font-size: 16px;
   transition: transform 0.1s ease;
@@ -151,7 +178,7 @@
 .botao-voltar {
   border-radius: 25px;
   border: none;
-  background-color: #E6E6E6;
+  background-color: #D7D7D7;
   width: 45%;
   font-size: 16px;
   transition: transform 0.1s ease;
@@ -162,24 +189,26 @@
 }
 
 
-.fa-clock,
+.fa-user,
 .fa-burger {
   color: #a8a8a8;
-  margin-right: 3px;
+  margin-right: 8px;
 }
 
 .ver-pedido-link {
   text-decoration: none;
-  background-color: #E6E6E6;
+  background-color: #5c7ad3b0;
   border-radius: 5px;
+  padding: 4px 0;
   text-align: center;
-  color: #000;
+  color: #FFF;
+  font-weight: normal;
   transition: transform 0.1s ease;
   margin-top: 16px;
 }
 
 .ver-pedido-link:hover {
-  color: #000;
+  color: #FFF;
   transform: scale(1.02);
 }
 
@@ -207,7 +236,7 @@
 }
 
 
-.card-datetime {
+.card-infoMiddle {
   align-items: flex-start;
   margin-top: 16px;
   display: flex;

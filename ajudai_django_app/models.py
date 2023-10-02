@@ -683,8 +683,6 @@ class Pedido(models.Model):
         )
     
 
-
-
     def mensagem_novo_status(self):
         mensagem = ' '
         if self.status_do_pedido == STATUS_PEDIDO_REALIZADO:
@@ -832,8 +830,22 @@ class Pedido(models.Model):
         if self.criado_manualmente == True:
             return self.nome_do_cliente
         
-        return f"Pedido de {self.nome_do_cliente}"
+        #return f"Pedido de {self.nome_do_cliente} #{self.id}"
+        return f"Pedido #{self.id}"
     
+    def get_nome_cliente(self):
+        if self.criado_manualmente == True:
+            return self.nome_do_cliente
+    
+        return f"{self.nome_do_cliente}"
+
+    
+    # def get_itens_pedido(self):
+    #     if self.criado_manualmente == True:
+    #         return self.itens_pedido
+
+    #     return f"{self.itens_pedido}"
+        
     # def __str__(self):
     #     return f"Pedido de {self.nome_do_cliente}"
 

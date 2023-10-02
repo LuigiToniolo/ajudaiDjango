@@ -70,8 +70,9 @@
                           
                           <h3 class="como-funciona">Como funciona o envio das mensagens de status do pedido para o cliente?</h3>
                           <p style="margin-bottom: 3vh;">Para que seu cliente fique sabendo do status do pedido "pedido realizado", "pedido em processamento", "aguardando entrega" e "pedido retirado/entregue", basta você arrastar os pedidos de uma coluna para outra que o chatbot envia mensagens automaticamente notificando o status do pedido realizado.</p>
-
-                          
+                          {% for pedido in pedidos %}
+                          <p>Teste: {{ pedido.get_nome_cliente }}</p>
+                          {% endfor %}
                     </div>
                 </main>
                 {% include 'includes/footer.html' %}
@@ -158,37 +159,37 @@
                   card.addEventListener('dragstart', drag);
                   card.appendChild(document.createTextNode(cardText));
 
-                  var datetimeElement = document.createElement('div');
-                  datetimeElement.className = 'card-datetime';
+                  var infoMiddleElement = document.createElement('div');
+                  infoMiddleElement.className = 'card-infoMiddle';
 
                   var orderIcon = document.createElement('i');
                   orderIcon.className = 'fa-solid fa-burger';
               
-                  var dateElement = document.createElement('span');
-                  dateElement.className = 'card-date';
-                  dateElement.textContent = cardDate;
+                  var pedidoElement = document.createElement('span');
+                  pedidoElement.className = 'card-date';
+                  pedidoElement.textContent = cardDate;
               
-                  var timeIcon = document.createElement('i');
-                  timeIcon.className = 'fas fa-clock';
+                  var userIcon = document.createElement('i');
+                  userIcon.className = 'fas fa-clock';
               
-                  var timeElement = document.createElement('span');
-                  timeElement.className = 'card-time';
-                  timeElement.textContent = cardTime;
+                  var userElement = document.createElement('span');
+                  userElement.className = 'card-time';
+                  userElement.textContent = cardTime;
               
                   var iconContainer = document.createElement('div');
                   iconContainer.className = 'icon-container';
                   iconContainer.appendChild(orderIcon);
-                  iconContainer.appendChild(dateElement);
+                  iconContainer.appendChild(pedidoElement);
               
                   var timeContainer = document.createElement('div');
                   timeContainer.className = 'time-container';
-                  timeContainer.appendChild(timeIcon);
-                  timeContainer.appendChild(timeElement);
+                  timeContainer.appendChild(userIcon);
+                  timeContainer.appendChild(userElement);
               
-                  datetimeElement.appendChild(iconContainer);
-                  datetimeElement.appendChild(timeContainer);
+                  infoMiddleElement.appendChild(iconContainer);
+                  infoMiddleElement.appendChild(timeContainer);
               
-                  card.appendChild(datetimeElement);
+                  card.appendChild(infoMiddleElement);
               
                   var select = createSelect();
                   card.appendChild(select);
@@ -213,15 +214,9 @@
                 }
             }
               
-            function createPedidoCard(pedidoText, status, id, url, date, time, pedido) {
+            function createPedidoCard(pedidoText, status, id, url, date, time, pedido, itens_pedido) {
                 console.log('Início da função createPedidoCard');
-                console.log('pedidoText: ', pedidoText)
-                console.log('status: ', status)
-                console.log('id: ', id)
-                console.log('url: ', url)
-                console.log('date: ', date)
-                console.log('time: ', time)
-                console.log('pedido: ', pedido)
+                console.log('Pedido: ', itens_pedido);
                 var card = document.createElement('li');
                 card.className = 'card-kanban';
                 card.draggable = true;
@@ -241,6 +236,28 @@
                 pedidoTextElement.textContent = pedidoText;
                 pedidoTextElement.className = "tituloPedido"
                 textContainer.appendChild(pedidoTextElement);
+
+                card.appendChild(textContainer);
+
+                var dateTimeElement = document.createElement('div');
+                dateTimeElement.className = 'dateTimeElement';
+
+                var dateInfo = document.createElement('p');
+                dateInfo.className = 'dateInfo';
+                dateInfo.textContent = date;
+                dateTimeElement.appendChild(dateInfo);
+
+                var midDot = document.createElement('i');
+                midDot.className = 'fa-solid fa-circle';
+                dateTimeElement.appendChild(midDot);
+
+                var timeInfo = document.createElement('p');
+                timeInfo.className = 'timeInfo';
+                timeInfo.textContent = time;
+                dateTimeElement.appendChild(timeInfo);
+
+
+                card.appendChild(dateTimeElement);
                 
                 // Ícone de lata de lixo
                 //var deleteIcon = document.createElement('i');
@@ -251,49 +268,45 @@
 
                 //tagDelete.appendChild(deleteIcon);
 
-                card.appendChild(textContainer);
 
                 // Date and Time elements
                 //Cria a div de fora "<div class="card-datetime">"
-                var datetimeElement = document.createElement('div');
-                datetimeElement.className = 'card-datetime';
-
+                var infoMiddleElement = document.createElement('div');
+                infoMiddleElement.className = 'card-infoMiddle';
 
                 var orderIcon = document.createElement('i');
                 orderIcon.className = 'fa-solid fa-burger';
 
-                var itensPedidoFormatted = "{{ pedido.get_formatted_itens_pedido|escapejs }}";
-
                 //Cria o span para colocar a data "<span class="card-date">21 de setembro</span>"
-                var dateElement = document.createElement('span');
-                dateElement.className = 'card-date';
-                dateElement.textContent = "Itens do pedido";
+                var pedidoElement = document.createElement('span');
+                pedidoElement.className = 'card-date';
+                pedidoElement.textContent = 'X bacon R$...';
 
                 //Cria o outro ícone de relógio "<i class="fas fa-clock"></i>"
-                var timeIcon = document.createElement('i');
-                timeIcon.className = 'fas fa-clock';
+                var userIcon = document.createElement('i');
+                userIcon.className = 'fa-solid fa-user';
 
                 //Cria a outra tag span para colocar o dado de tempo: "<span class="card-time">16:57</span>"
-                var timeElement = document.createElement('span');
-                timeElement.className = 'card-time';
-                timeElement.textContent = time;
+                var userElement = document.createElement('span');
+                userElement.className = 'card-time';
+                userElement.textContent = time;
 
                 //Cria a div de: "<div class="icon-container">"
                 var iconContainer = document.createElement('div');
                 iconContainer.className = 'icon-container';
                 iconContainer.appendChild(orderIcon); //incluir o icone de calendario dentro da div 'icon-container'
-                iconContainer.appendChild(dateElement); //incluir o conteúdo de data dentro da div 'icon-container'
+                iconContainer.appendChild(pedidoElement); //incluir o conteúdo de data dentro da div 'icon-container'
 
                 //Criar a div: "<div class="time-container">"
                 var timeContainer = document.createElement('div');
                 timeContainer.className = 'time-container';
-                timeContainer.appendChild(timeIcon); //Inclui o icone de relogio
-                timeContainer.appendChild(timeElement); //Inclui o conteúdo das horas
+                timeContainer.appendChild(userIcon); //Inclui o icone de relogio
+                timeContainer.appendChild(userElement); //Inclui o conteúdo das horas
 
-                datetimeElement.appendChild(iconContainer);
-                datetimeElement.appendChild(timeContainer);
+                infoMiddleElement.appendChild(timeContainer);
+                infoMiddleElement.appendChild(iconContainer);
 
-                card.appendChild(datetimeElement);
+                card.appendChild(infoMiddleElement);
 
                 var select = createSelect();
                 card.appendChild(select);
@@ -301,7 +314,7 @@
                 // Link
                 var link = document.createElement('a');
                 link.href = url;
-                link.textContent = 'Ver pedido';
+                link.textContent = 'Ver detalhes';
                 link.classList.add('ver-pedido-link');
                 card.appendChild(link);
 
