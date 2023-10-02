@@ -1111,8 +1111,8 @@ def process_message(data):
                                         for available_product in product_items:
                                             if available_product.get('product_retailer_id') == retailer_id:
                                                 nome_do_produto = available_product.get('nome_do_produto')
-                                                preco = ordered_product.get('preco')
-                                                itens_pedidos += f"\n{nome_do_produto} : {preco}"
+                                                preco = available_product.get('preco')
+                                                itens_pedidos += f"\n{nome_do_produto} : preço: R$ {preco}"
                                                 
                                     order_message = True
                                     pedido_em_string_para_add_ao_contexto = ''
