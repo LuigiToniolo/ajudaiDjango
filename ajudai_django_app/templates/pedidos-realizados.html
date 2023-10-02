@@ -262,10 +262,12 @@
                 var orderIcon = document.createElement('i');
                 orderIcon.className = 'fa-solid fa-burger';
 
+                var itensPedidoFormatted = "{{ pedido.get_formatted_itens_pedido|escapejs }}";
+
                 //Cria o span para colocar a data "<span class="card-date">21 de setembro</span>"
                 var dateElement = document.createElement('span');
                 dateElement.className = 'card-date';
-                dateElement.textContent = pedido;
+                dateElement.textContent = "Itens do pedido";
 
                 //Cria o outro ícone de relógio "<i class="fas fa-clock"></i>"
                 var timeIcon = document.createElement('i');

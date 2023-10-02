@@ -14,19 +14,19 @@
 }
 
 .column-kanban:nth-child(1) ul {
-  background-color: #F2F2F2;
+  background-color: #D7D7D7;
 }
 
-    .column-kanban:nth-child(2) ul {
-      background-color: #b5c7fd;
-    }
+.column-kanban:nth-child(2) ul {
+  background-color: #5C7AD3;
+}
 
 .column-kanban:nth-child(3) ul {
-  background-color: #ffc4c4;
+  background-color: #d35c5c;
 }
 
 .column-kanban:nth-child(4) ul {
-  background-color: #caffc6;
+  background-color: #69d35c;
 }
 
 .column-kanban p {
@@ -88,7 +88,7 @@
 }
 
 .tituloPedido {
-  font-size: 20px;
+  font-size: 16px;
 }
 
 .text-container {
@@ -113,6 +113,12 @@
   cursor: pointer;
   font-size: 16px;
   text-align: start;
+  text-decoration: none;
+  color: #5C7AD3;
+}
+
+.linkDelete:hover {
+  text-decoration: underline;
 }
 
 .textoAviso {

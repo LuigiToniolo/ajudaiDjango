@@ -681,6 +681,8 @@ class Pedido(models.Model):
         max_length=60,
         default='',
         )
+    
+
 
 
     def mensagem_novo_status(self):
@@ -797,6 +799,7 @@ class Pedido(models.Model):
             user=user,
             conversa=conversation,
             resumo_do_pedido = resumo_do_pedido,
+            nome_cliente=nome_cliente,
         )
 
         pedido.nome_do_cliente = nome_cliente
@@ -827,9 +830,12 @@ class Pedido(models.Model):
     
     def __str__(self):
         if self.criado_manualmente == True:
-            return self.nome_pedido_manual
+            return self.nome_do_cliente
         
-        return f"Pedido {self.id}"
+        return f"Pedido de {self.nome_do_cliente}"
+    
+    # def __str__(self):
+    #     return f"Pedido de {self.nome_do_cliente}"
 
 
 class PaymentsForUseMadde(models.Model):
