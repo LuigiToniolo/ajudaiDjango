@@ -192,7 +192,8 @@ class ChatBotForm(forms.ModelForm):
             "product_items": [
                 {
                     "product_retailer_id" : "",
-                    "nome_do_produto" : ""
+                    "nome_do_produto" : "",
+                    "preco" : 0.00,
                 }
             ]
         }, indent=2)
