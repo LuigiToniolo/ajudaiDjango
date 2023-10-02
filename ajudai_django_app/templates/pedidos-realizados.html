@@ -28,7 +28,7 @@
                         <div class="kanban">
                             <div class="column-kanban">
                                 <div class="title-column">
-                                    <h2>Realizados</h2>
+                                    <h2>Realizado</h2>
                                     <i class='fa fa-file' id="icones-kanban"></i>
                                     <span class="card-count">0</span>
                                 </div>
@@ -70,9 +70,6 @@
                           
                           <h3 class="como-funciona">Como funciona o envio das mensagens de status do pedido para o cliente?</h3>
                           <p style="margin-bottom: 3vh;">Para que seu cliente fique sabendo do status do pedido "pedido realizado", "pedido em processamento", "aguardando entrega" e "pedido retirado/entregue", basta você arrastar os pedidos de uma coluna para outra que o chatbot envia mensagens automaticamente notificando o status do pedido realizado.</p>
-                          {% for pedido in pedidos %}
-                          <p>Teste: {{ pedido.get_nome_cliente }}</p>
-                          {% endfor %}
                     </div>
                 </main>
                 {% include 'includes/footer.html' %}
@@ -214,9 +211,9 @@
                 }
             }
               
-            function createPedidoCard(pedidoText, status, id, url, date, time, pedido, itens_pedido) {
+            function createPedidoCard(pedidoText, status, id, url, date, time, nome_do_cliente, itens_pedido) {
                 console.log('Início da função createPedidoCard');
-                console.log('Pedido: ', itens_pedido);
+                console.log('Nome do cliente: ', nome_do_cliente);
                 var card = document.createElement('li');
                 card.className = 'card-kanban';
                 card.draggable = true;
@@ -244,7 +241,7 @@
 
                 var dateInfo = document.createElement('p');
                 dateInfo.className = 'dateInfo';
-                dateInfo.textContent = date;
+                dateInfo.textContent = '24/12';
                 dateTimeElement.appendChild(dateInfo);
 
                 var midDot = document.createElement('i');
@@ -278,9 +275,30 @@
                 orderIcon.className = 'fa-solid fa-burger';
 
                 //Cria o span para colocar a data "<span class="card-date">21 de setembro</span>"
+                //var pedidoElement = document.createElement('span');
+                //pedidoElement.className = 'card-date';
+                //pedidoElement.textContent = itens_pedido;
+
                 var pedidoElement = document.createElement('span');
                 pedidoElement.className = 'card-date';
-                pedidoElement.textContent = 'X bacon R$...';
+                
+                // Verifique o tamanho da tela
+                if (window.innerWidth < 780) {
+                    // Se a largura da tela for menor que 780px, mostre 20 caracteres
+                    if (itens_pedido.length > 20) {
+                        pedidoElement.textContent = itens_pedido.substring(0, 20) + '...';
+                    } else {
+                        pedidoElement.textContent = itens_pedido;
+                    }
+                } else {
+                    // Se a largura da tela for maior ou igual a 780px, mostre 15 caracteres
+                    if (itens_pedido.length > 20) {
+                        pedidoElement.textContent = itens_pedido.substring(0, 25) + '...';
+                    } else {
+                        pedidoElement.textContent = itens_pedido;
+                    }
+                }
+                
 
                 //Cria o outro ícone de relógio "<i class="fas fa-clock"></i>"
                 var userIcon = document.createElement('i');
@@ -289,7 +307,8 @@
                 //Cria a outra tag span para colocar o dado de tempo: "<span class="card-time">16:57</span>"
                 var userElement = document.createElement('span');
                 userElement.className = 'card-time';
-                userElement.textContent = time;
+                userElement.textContent = nome_do_cliente;
+                //userElement.textContent = 'teste';
 
                 //Cria a div de: "<div class="icon-container">"
                 var iconContainer = document.createElement('div');
@@ -354,12 +373,10 @@
                 function toggleDropdown() {
                     
                     if (dropdown.style.display === 'none' || dropdown.style.display === '') {
-                        
                         dropdown.style.display = 'block';
                         linkDelete.style.display = 'none';
                         
                     } else {
-                        
                         dropdown.style.display = 'none';
                         linkDelete.style.display = 'block';
                     }
@@ -437,7 +454,7 @@
 
             document.addEventListener('DOMContentLoaded', function () {
                 {% for pedido in pedidos %}
-                    createPedidoCard("{{ pedido }}", "{{ pedido.status_do_pedido }}", {{ pedido.id }}, "{% url 'resumo_pedido' pedido.id %}", "{{ pedido.date }}", "{{ pedido.time }}");
+                    createPedidoCard("{{ pedido }}", "{{ pedido.status_do_pedido }}", "{{ pedido.id }}", "{% url 'resumo_pedido' pedido.id %}", "{{ pedido.date }}", "{{ pedido.time }}", "{{ pedido.nome_do_cliente }}", "{{ pedido.itens_pedido }}");
                 {% endfor %}
             });
 
