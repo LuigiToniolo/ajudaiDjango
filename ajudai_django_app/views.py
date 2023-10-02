@@ -1092,7 +1092,9 @@ def process_message(data):
                             try:
                                 if entry['changes'][0]['value']['messages'][0]['type'] == "order":
                                     sections_and_products = chatbot.sections_and_products
-                                    product_items = sections_and_products.get('product_items', [])
+                                    sections_and_products = sections_and_products.replace("\r", "").replace("\n", "").replace("\t", "")
+                                    sections_and_products_json = json.loads(sections_and_products)
+                                    product_items = sections_and_products_json.get('product_items', [])
 
                                     order_data = entry['changes'][0]['value']['messages'][0]["order"]
                                     catalog_id = order_data['catalog_id']
@@ -1114,7 +1116,8 @@ def process_message(data):
                                                 
                                     order_message = True
                                     pedido_em_string_para_add_ao_contexto = ''
-                                    awnser = chatbot.resposta_pedido_catálogo
+                                    awnser = f"Seu pedido: {itens_pedidos}"
+                                    awnser = awnser + ' ' + chatbot.resposta_pedido_catálogo
                                     new_context.append({"role": "user", "content": pedido_em_string_para_add_ao_contexto})
                                     new_context.append({"role": "assistant", "content": awnser})
                                     tokens_used_on_this_request = 0
@@ -1126,6 +1129,7 @@ def process_message(data):
                                     conversation.date = timezone.now().date()
                                     conversation.time = timezone.now().time()
                                     conversation.save()
+                                    send_response(chatbot.facebook_page_id, chatbot.whats_app_api_auth_token, numero_cliente, awnser)
                                     return
                                 else:
                                     order_message = False
