@@ -169,7 +169,7 @@ class ChatBotForm(forms.ModelForm):
     )
 
     initial_message_text = forms.CharField(
-        label='Initial Message to send the catalog',
+        label='Mensagem inicial de envio de cardápio',
         required=False,
         widget=forms.TextInput(attrs={
             # 'style': 'width: {}px;'.format(WHATS_APP_TOKEN_FILD_SIZE_IN_PX)
