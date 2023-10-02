@@ -1143,9 +1143,6 @@ def process_message(data):
                                         catalog_link = f'https://wa.me/c/{company_number_with_DDI}'
                                         first_message = initial_message_before_link + ": " +  catalog_link
                                         send_response(chatbot.facebook_page_id, chatbot.whats_app_api_auth_token, numero_cliente, first_message)
-                                        #TODO lidar como o contexto e os outros elementos de conversation. deve ser setado para que o bot entenda que o menu foi enviado
-                                        pass
-                                    #TODO AQUI, FAZER UM IF PARA LIDAR COM MENSAGENS QUE CHEGAM COMO RESPOSTA A MESAGEM INTERATIVA DE CARDÁPIO
                                     else:
                                         role = ''
                                         try:
