@@ -1117,7 +1117,7 @@ def process_message(data):
                                     order_message = True
                                     pedido_em_string_para_add_ao_contexto = ''
                                     awnser = f"Seu pedido: {itens_pedidos}"
-                                    awnser = awnser + ' ' + chatbot.resposta_pedido_catálogo
+                                    awnser = awnser + '\n\n' + chatbot.resposta_pedido_catálogo
                                     new_context.append({"role": "user", "content": pedido_em_string_para_add_ao_contexto})
                                     new_context.append({"role": "assistant", "content": awnser})
                                     tokens_used_on_this_request = 0
