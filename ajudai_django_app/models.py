@@ -461,6 +461,8 @@ class ChatBot(models.Model):
     catalog_id = models.CharField(max_length=255, default='')
     sections_and_products = models.JSONField(default=dict)
 
+    resposta_pedido_catálogo = models.CharField(max_length=10000, default='Itens pedidos registrados com sucesso. Agora, para concluirmos o seu pedido, pedimos para informar se você quer retirar o seu pedido no balcão ou que ele seja entregue para você')
+
     def __str__(self):
         name = self.nome_do_chatbot
         return f"ChatBot {name}"
