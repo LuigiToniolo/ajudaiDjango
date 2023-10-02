@@ -7,6 +7,9 @@ from constants import AWNSER_WHEN_MESSAGE_IS_OVER_THE_LIMIT, CHAT_API_GENERAL_ER
 
 # AUTO AVALIAR
 from ajudai_django_app.ai_chatbot.AutoAvaliar.ai_extraction import ai_gpt_extrair_resposta_de_FAQ
+# NOTIFICACAO
+from notifications.signals import notify
+import sys
 
 from get_secret_variables import get_secret_var
 
@@ -49,7 +52,17 @@ def obter_resposta_faq(mensagem_usuario, chatbot_id):
         return 'Não foi possível extrair informações do FAQ'
 
 
-
+### NOTIFICAÇÃO
+def notificar_admin_problema(mensagem, chatbot_id, user, conversation):
+    try:
+        chatbot = ChatBot.objects.get(
+                    id=chatbot_id,
+                    )
+        notify.send(chatbot, recipient=user, verb={mensagem}, description=f'O cliente de numero {conversation.company_client_number} está precisando de atendimento humano.')
+        return 'Um administrador recebeu uma notificação, aguarde uns instantes'
+    except Exception as e:
+        print(f"Erro ao notificar admin {e}", file=sys.stderr)
+        return 'Não foi possivel notificar um administrador'
 
 def generate_gpt_response(prompt, context, role, aditional_instructions, model_name, model_token_limit, chatbot_id, user, conversation):
     instructions = instruction_builder(aditional_instructions, role)
@@ -164,6 +177,24 @@ def generate_gpt_response(prompt, context, role, aditional_instructions, model_n
         },
     ]
     
+    
+    # NOTIFICACAO
+    functions += [
+        {
+            "name": "notificar_admin",
+            "description": 'Notifica o administrador do chatbot sobre que um cliente teve um problema',
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "mensagem": {
+                        "type": "string",
+                        "description": 'Notificar um administrador de que um cliente precisa de algo.',
+                    },
+                },
+                "required": ["mensagem"],
+            },
+        },
+    ]
     #a mínima estrutura para a requisição será a instrução mais o prompt. Caso haja rompimento do máximo pelo contexto passado, ele será elimido até funcionar
     tokens_prompt_and_instructions = count_tokens(model_name, instructions + ' ' + prompt)
 
@@ -223,6 +254,7 @@ def generate_gpt_response(prompt, context, role, aditional_instructions, model_n
                         "obeter_precos_itens_cardapio": obeter_precos_itens_cardapio,
                         "criar_pedido_e_retornar_resumo": criar_pedido_e_retornar_resumo,
                         "obter_resposta_do_faq": obter_resposta_faq,
+                        "notificar_admin": notificar_admin_problema,
                     }
                     function_name = response_message["function_call"]["name"]
                     fuction_to_call = available_functions[function_name]
@@ -302,7 +334,32 @@ def generate_gpt_response(prompt, context, role, aditional_instructions, model_n
                         awnser = completions_after_function_response['choices'][0]['message']['content']
                         context.append({"role": "assistant", "content": awnser})
                         tokens_used = tokens_used + completions_after_function_response.usage['total_tokens']
-                            
+
+                    # NOTIFICACAO  
+                    if function_name == 'notificar_admin':
+                        function_response = fuction_to_call(
+                            mensagem=str(function_args.get("mensagem")),
+                            chatbot_id=chatbot_id,
+                            user=user,
+                            conversation=conversation,
+                        )
+                        
+                        
+                        # context.append({
+                        #     "role": "function",
+                        #     "name": function_name,
+                        #     "content": function_response,
+                        # })
+
+                        # completions_after_function_response = openai.ChatCompletion.create(
+                        #     model=model_name,
+                        #     temperature=0,
+                        #     messages=context
+                        # )
+
+                        awnser = "Iremos notificar um administrador, aguarde uns instantes!"
+                        context.append({"role": "assistant", "content": awnser})
+                        # tokens_used = tokens_used + completions_after_function_response.usage['total_tokens']
 
                 else:
                     awnser = completions['choices'][0]['message']['content']
@@ -310,6 +367,7 @@ def generate_gpt_response(prompt, context, role, aditional_instructions, model_n
 
 
             except Exception as e:
+                print(e, file=sys.stderr)
                 awnser = CHAT_API_GENERAL_ERROR_MESSAGE
                 tokens_used = 0
 
