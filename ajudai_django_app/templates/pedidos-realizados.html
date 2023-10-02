@@ -347,15 +347,20 @@
                 dropdown.className = 'dropdownDelete';
                 dropdown.style.display = 'none'; // Inicialmente, o dropdown está escondido
                 
+                var questionMark = document.createElement('i')
+                questionMark.className = "fa-solid fa-question"
+
                 // Texto de aviso
                 var textoAviso = document.createElement('p');
                 textoAviso.className = 'textoAviso'
                 textoAviso.textContent = 'Deletar pedido?';
+                textoAviso.title = '***O pedido será excluído apenas do kanban de pedidos.***'
                 dropdown.appendChild(textoAviso);
                 
                 // Botão 1
                 var botao1 = document.createElement('button');
                 botao1.className = "botao-deletar"
+                botao1.title = '***O pedido será excluído apenas do kanban de pedidos.***'
                 botao1.textContent = 'Sim';
                 
                 var botao2 = document.createElement('button');
