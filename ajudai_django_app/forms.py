@@ -176,6 +176,14 @@ class ChatBotForm(forms.ModelForm):
             })
     )
 
+    resposta_pedido_catálogo = forms.CharField(
+        label='Resposta ao envio de ordem de compra de itens do carrinho',
+        required=False,
+        widget=forms.TextInput(attrs={
+            # 'style': 'width: {}px;'.format(WHATS_APP_TOKEN_FILD_SIZE_IN_PX)
+            })
+    )
+
     catalog_id = forms.CharField(
         required=False,
         label='ID do catálogo (conforme adicionado no WABA)',
@@ -202,7 +210,7 @@ class ChatBotForm(forms.ModelForm):
     class Meta:
         model = ChatBot
         fields = [
-            'nome_do_chatbot', 'whatsapp_number', 'whats_app_api_auth_token', 'facebook_page_id', ADITIONAL_INTRUCTIONS_FIELD_NAME, 'cardapio', 'descricao_funcao_cardapio', 'chatbot_has_products_catalog', 'initial_message_text', 'catalog_id', 'sections_and_products']
+            'nome_do_chatbot', 'whatsapp_number', 'whats_app_api_auth_token', 'facebook_page_id', ADITIONAL_INTRUCTIONS_FIELD_NAME, 'cardapio', 'descricao_funcao_cardapio', 'chatbot_has_products_catalog', 'initial_message_text', 'resposta_pedido_catálogo', 'catalog_id', 'sections_and_products']
 
     def clean_sections_and_products(self):
         data = self.cleaned_data['sections_and_products']
