@@ -1093,7 +1093,14 @@ def process_message(data):
                                 if entry['changes'][0]['value']['messages'][0]['type'] == "order":
                                     sections_and_products = chatbot.sections_and_products
                                     sections_and_products = sections_and_products.replace("\r", "").replace("\n", "").replace("\t", "")
-                                    sections_and_products_json = json.loads(sections_and_products)
+                                    sections_and_products = sections_and_products.strip()
+                                    sections_and_products = sections_and_products.encode('utf-8').decode('utf-8')
+                                    sections_and_products = sections_and_products.replace("\xa0", " ")
+                                    try:
+                                        sections_and_products_json = json.loads(sections_and_products)
+                                    except json.JSONDecodeError as e:
+                                        print(f"JSON Decode Error: {e}")
+                                        return
                                     product_items = sections_and_products_json.get('product_items', [])
 
                                     order_data = entry['changes'][0]['value']['messages'][0]["order"]
