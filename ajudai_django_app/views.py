@@ -502,7 +502,7 @@ def editar_chatbot_view(request, chatbot_id):
 
     if request.method == 'POST':
         form = ChatBotForm(request.POST, instance=chatbot)
-
+        success = True
         if form.is_valid():
             instructions = form.cleaned_data[ADITIONAL_INTRUCTIONS_FIELD_NAME]
             if not instructions_under_the_limits(instructions, GPT3_MODEL_NAME, GPT3_TOKEK_LIMIT):
