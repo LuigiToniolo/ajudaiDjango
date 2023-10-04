@@ -457,7 +457,24 @@ class ChatBot(models.Model):
     def __str__(self):
         name = self.nome_do_chatbot
         return f"ChatBot {name}"
+    
+    def formatted_date(self):
+        return self.creation_date.strftime('%d/%m/%y')
+    
+    def format_phone_number(whatsapp_number):
+        # Verifique se o número de telefone tem 10 dígitos
+        if len(whatsapp_number) == 10:
+            # Formate o número de telefone
+            formatted_number = f"({whatsapp_number[:2]}) {whatsapp_number[2:7]}-{whatsapp_number[7:]}"
+            return formatted_number
+        else:
+            # Retorne uma mensagem de erro se o número de telefone não tiver 10 dígitos
+            return "Número de telefone inválido. Deve conter 10 dígitos."
 
+    # Exemplo de uso:
+    whatsapp_number = "9999999999"
+    formatted = format_phone_number(whatsapp_number)
+    
 #o uso é considerado como uma conversa inteira finalizada
 class Conversa(models.Model):
 

@@ -39,19 +39,15 @@
             </div>
             <div class="divider"></div>
 
-            <!-- <div class="card-chatbot">
-                            <h4>Ajudai Chatbot</h4>
-                            <p>Criado em</p>
-                            <p>14/03/2023</p>
-                        </div> -->
-
             <div class="grid">
                 {% for chatbot in chatbots %}
                     <div class="card-bot">
                         <a href="{% url 'chatbot_edit' chatbot.id %}" class="style-none">
                             <i class='fa fa-pencil icon'></i>
                             <h4 class="titulo-card">{{ chatbot }}</h4>
-                            <p class="data-card">Criado em: {{ chatbot.creation_date }}</p>
+                            <p class="data-card"><i class="fa-regular fa-calendar" style="margin-right: 8px; color: #212D40;"></i>Criado dia <strong>{{ chatbot.formatted_date }}</strong> às <strong>{{ chatbot.creation_time }}</strong></p>
+                            <p class="data-card"><i class="fa-solid fa-phone" style="margin-right: 8px; color: #212D40;"></i>{{ chatbot.formatted }}</p>
+                            <!-- <p class="data-card">Criado dia <strong>{{ chatbot.formatted_date }}</strong> às <strong>{{ chatbot.creation_time }}</strong></p> -->
                         </a>
                     </div>
                 {% endfor %}
