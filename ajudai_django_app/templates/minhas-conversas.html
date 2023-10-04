@@ -20,24 +20,85 @@
     <body>
 
       <div class="chat-container">
+
         <div class="menu">
+
           <!-- Conteúdo do menu lateral -->
           <div class="logo-div">
             <a href="{% url 'meus-chatbots' %}">
               <img
+              id="logo-ajudai"
               class="logo"
               src="{% static 'image/logo-branco-simples.svg' %}"
-              alt="Logotigo ajudai"
+              alt="Logotigo do Ajudai"
               />
             </a>
+            
+            <a id="back-button" title="Meus contatos" class="contato-button">
+              <div class="icons-div">
+                <i class="fa-solid fa-chevron-left" id="back-icon"></i>
+              </div>
+            </a>
+
+            
+            <!-- {% for conversa in conversas %} -->
+            <div class="info-cliente" id="infoCliente-{{ conversa.id }}">
+              <div>
+                <img
+                class="foto-perfil"
+                id="perfil-cliente"
+                src="{% static 'image/user-default.png' %}"
+                alt="Foto perfil cliente"
+                />
+              </div>
+           
+                <div class="nome-cliente">
+                  <p class="numero-cliente"><strong>{{ conversa.company_client_number }}</strong></p>
+                  <p class="data-mensagem">{{conversa.time}}</p>
+                </div>
+
+                
+                
+              </div>
+              <!-- {% endfor %} -->
+
           </div>
+
+
+          <a id="mobileMenuButton" class="mobile-menu-button">
+            <i style="color: #FFF;" class="fa-solid fa-ellipsis-vertical"></i>
+          </a>
+
+          <div id="mobileMenu" class="mobile-menu">
+            <a id="mobile-icon" href="{% url 'meus-chatbots' %}" title="Meus chatbos">
+              <div class="icons-div-mobile">
+                <i class="fas fa-robot" id="icones-menu"></i>
+                <p>Meus chatbots</p>
+              </div>
+            </a>
+
+            <a id="mobile-icon" href="{% url 'dashboard' %}" title="Home">
+              <div class="icons-div-mobile">
+                <i class="fas fa-home" id="icones-menu"></i>
+                <p>Dashboard</p>
+              </div>
+            </a>
+            <a id="mobile-icon" href="{% url 'pedidos-realizados' %}" title="Pedidos realizados">
+              <div class="icons-div-mobile">
+                <i class="fas fa-sticky-note" id="icones-menu"></i>
+                <p>Pedidos realizados</p>
+              </div>
+            </a>
+
+          </div>
+
           <div class="menu-icons">
             <a title="Meus contatos" class="contato-button">
               <div class="icons-div">
                 <i class="fa-regular fa-comments" id="icones-menu"></i>
               </div>
             </a>
-            <a href="{% url 'dashboard' %}" title="Home">
+            <!-- <a href="{% url 'dashboard' %}" title="Home"> -->
             <a href="{% url 'dashboard' %}" title="Home">
               <div class="icons-div">
                 <i class="fas fa-home" id="icones-menu"></i>
@@ -56,6 +117,7 @@
 
           </div>
         </div>
+
         <div class="contacts">
           <!-- Lista de contatos disponíveis -->
           <h2>Meus clientes</h2>
@@ -95,7 +157,7 @@
           <h1>Hey, {{ user.username }}!</h1>
           <img class="chat-img" src="{% static 'image/doodleChat.svg' %}" alt="Doodle ajudai chat">
           <h4 class="subtitulo-welcome">Escolha um cliente para ver o trabalho do seu chatbot</h4>
-      </div>
+        </div>  
         
         <div class="side-conversation">
           {% for conversa in conversas %}
@@ -130,22 +192,25 @@
             <form id="message-form" method="post">
               {% csrf_token %}
               <div class="message-input">
-                  <input type="text" name="message" placeholder="Digite sua mensagem...">
+                  <input type="text" name="message" id="message-input" placeholder="Mensagem">
                   <input type="hidden" id="conversa_id" name="conversa_id" value="{{ conversa.id }}">
-                  <button class="botao-send"><i class="fa-solid fa-paper-plane" id="icon-send"></i></button>
                   <a class="botao-pause-chatbot"><i class="fa-solid fa-play" id="icon-pause"></i></a>
+                  <button class="botao-send"><i class="fa-solid fa-paper-plane" id="icon-send"></i></button>
+                  <!-- <a class="botao-send"><i class="fa-solid fa-paper-plane" id="icon-send"></i></a> -->
                   <!-- <a class="botao-play-chatbot" onclick="mudarParaPlay()"><i class="fa-solid fa-play" id="icon-play"></i></a> -->
 
-                  <div id="dropup" class="dropup">
+                  <!-- <div id="dropup" class="dropup">
                     <p>Você deseja mesmo <strong>pausar/voltar</strong> o chatbot para essa conversa?</p>
                     <div class="botoes-acao">
                       <button class="botao-concordar">Sim, tenho certeza!</button>
                       <button class="botao-cancelar" onclick="fecharDropup()">Cancelar</button>
                     </div>
-                  </div> 
+                  </div>  -->
               </div>
+              <div class="message-display" id="message-display"></div>
            </form>
           </div>
+
         </div>
 
       </div>
@@ -215,12 +280,14 @@
 
           console.log("Retrieved activeConversaId from localStorage:", activeConversaId);
 
+
           //mostra a conversa selecionada na lateral
           $("li[id^='contact-']").click(function() {
               activeConversaId = $(this).attr('id').split('-')[1];
               var id = $(this).attr('id').split('-')[1];
               console.log("Clicked contact ID: ", id);
               $(".conversation").hide();
+              $(".info-cliente").hide();
               $("#conversation-" + id).show();
               $(".defaultText").hide();
               $(".side-conversation").css("display", "flex");
@@ -279,11 +346,13 @@
 
           {% if updated_conversa_id %}
               $(".conversation").hide();
+              $(".info-cliente").hide();
               $("#conversation-{{ updated_conversa_id }}").show();
               $(".defaultText").hide();
               $(".side-conversation").css("display", "flex");
           {% else %}
               $(".conversation").hide();
+              $(".info-cliente").hide();
               $(".defaultText").show();
               $(".side-conversation").css("display", "none");
           {% endif %}
@@ -327,33 +396,112 @@
         }, 30000); 
 
         //mostra antiga conversa ativa em caso de reload
-        if (activeConversaId !== null && activeConversaId !== undefined && activeConversaId !== "")  {
-              console.log("Trying to show conversation with ID: ", activeConversaId);
-              $(".conversation").hide();
-              $("#conversation-" + activeConversaId).show();
-              $(".defaultText").hide();
-              $(".side-conversation").css("display", "flex");
-              toggleDivBackgroundAtRefresh('contact-' + activeConversaId);
-              scrollToBottom(activeConversaId);
-          } else {
-              $(".conversation").hide();
-              $(".defaultText").show();
-              $(".side-conversation").css("display", "none");
-          }
 
+       // if (activeConversaId !== null && activeConversaId !== undefined && activeConversaId !== "")  {
+         //     console.log("Trying to show conversation with ID: ", activeConversaId);
+           //   $(".conversation").hide();
+             // $("#conversation-" + activeConversaId).show();
+            //  $(".defaultText").hide();
+             // $(".side-conversation").css("display", "flex");
+              //toggleDivBackgroundAtRefresh('contact-' + activeConversaId);
+            //  scrollToBottom(activeConversaId);
+          //} else {
+            //  $(".conversation").hide();
+            //  $(".defaultText").show();
+            //  $(".side-conversation").css("display", "none");
+         // }
+
+
+          if (activeConversaId !== null && activeConversaId !== undefined && activeConversaId !== "") {
+            console.log("Trying to show conversation with ID: ", activeConversaId);
+            $(".conversation").hide();
+            $(".info-cliente").hide();
+            $("#conversation-" + activeConversaId).show();
+            $(".defaultText").hide();
+            
+            // Verificar se a largura da janela é menor que 768 pixels (um valor comum para telas de celular)
+            if (window.innerWidth < 768) {
+                $(".side-conversation").css("display", "none");
+            } else {
+                $(".side-conversation").css("display", "flex");
+            }
+            
+            toggleDivBackgroundAtRefresh('contact-' + activeConversaId);
+            scrollToBottom(activeConversaId);
+        } else {
+            $(".conversation").hide();
+            $(".info-cliente").hide();
+            $(".defaultText").show();
+            
+            // Verificar se a largura da janela é menor que 768 pixels (um valor comum para telas de celular)
+            if (window.innerWidth < 768) {
+                $(".side-conversation").css("display", "none");
+            } else {
+                $(".side-conversation").css("display", "flex");
+            }
+        }
+      
       });
     </script>
 
     <!------------------- Scripts frond-end: ------------------>
 
     <script>
+      // Função para rolar para a parte inferior
+      function scrollToBottom() {
+        window.scrollTo({
+          top: document.body.scrollHeight,
+          behavior: 'auto'
+        });
+      }
+  
+      // Verifique a largura da tela e role para a parte inferior se for menor que um determinado ponto de interrupção (por exemplo, 768 pixels)
+      if (window.innerWidth <= 768) {
+        scrollToBottom();
+      }
+    </script>
+
+    <script>
+      // Obtenha o botão e o dropdown
+      const mobileMenuButton = document.getElementById("mobileMenuButton");
+      const mobileMenu = document.getElementById("mobileMenu");
+
+      // Adicione um ouvinte de eventos ao botão
+      mobileMenuButton.addEventListener("click", (event) => {
+        // Toggle (alternar) a classe "active" no botão para mostrar/ocultar o dropdown
+        mobileMenuButton.classList.toggle("active");
+        
+        // Impedir que o clique no botão se propague para o documento
+        event.stopPropagation();
+      });
+
+      // Adicione um ouvinte de eventos ao documento para fechar o menu ao clicar fora dele
+      document.addEventListener("click", (event) => {
+        const isClickInsideMenu = mobileMenu.contains(event.target);
+        const isClickOnButton = event.target === mobileMenuButton;
+
+        if (!isClickInsideMenu && !isClickOnButton) {
+          // Se o clique não estiver dentro do menu nem no botão, feche o menu
+          mobileMenuButton.classList.remove("active");
+        }
+      });
+
+      // Evite que o clique no menu feche o menu (opcional)
+      mobileMenu.addEventListener("click", (event) => {
+        event.stopPropagation();
+      });
+
+    </script>
+
+    <script>
       $(document).ready(function() {
         $("li[id^='contact-']").click(function() {
             var id = $(this).attr('id').split('-')[1];
             console.log("Clicked contact ID: ", id);
-    
+
             // Oculta todas as conversas e mostra a conversa selecionada
             $(".conversation").hide();
+            $(".info-cliente").hide();
             $("#conversation-" + id).show();
     
             // Restaura a cor de fundo dos contatos
@@ -365,8 +513,7 @@
             // Mostra a parte "side-conversation" e adiciona a classe "expanded"
             $(".defaultText").hide();
             $(".side-conversation").show().addClass("expanded");
-
-
+        
         });
     });
 
@@ -387,29 +534,69 @@
 
             // Oculta todas as conversas e mostra a conversa selecionada
             $(".conversation").hide();
+            $(".info-cliente").hide();
             $("#conversation-" + id).show();
+            //Insere o número de telefone do cliente no topMenu
+            $("#infoCliente-" + id).show();
+            $('#logo-ajudai').hide();
+            $('#back-button').show();
+
+            $(this).find('.conteudo-contato').css("background-color", '#fff');
 
             // Mostra a parte "side-conversation" e adiciona a classe "expanded"
             $(".side-conversation").show().addClass("expanded");
-        }
+        } 
       });
       
-      // Resto do seu código JavaScript...
     });
+
+    
     
     </script>
 
     <script>
       $(document).ready(function() {
+
+        $('#back-button').hide();
+        $('.info-cliente').hide();
+        
         // Evento de clique no botão "Meus contatos"
         $("a[title='Meus contatos']").click(function() {
           // Oculta a tela de conversação (.side-conversation)
           $(".side-conversation").hide();
           // Mostra a tela de contatos (.contacts)
           $(".contacts").show();
+          $('#logo-ajudai').show();
+          $('#back-button').hide();
+          $('.info-cliente').hide();
         });
       });
     </script>
+
+    <script>
+      window.addEventListener('DOMContentLoaded', (event) => {
+        // Função para verificar se a tela é de um dispositivo móvel
+        function isMobile() {
+          return window.innerWidth <= 768; // Ajuste esse valor conforme necessário para definir o limite entre dispositivos móveis e desktop
+        }
+      
+        // Função para aplicar o estilo à side-conversation
+        function setSideConversationDisplay() {
+          var sideConversation = document.querySelector('.side-conversation');
+          if (sideConversation && isMobile()) {
+            sideConversation.style.display = 'none';
+          }
+        }
+      
+        // Verifique o tamanho da tela na inicialização da página
+        setSideConversationDisplay();
+      
+        // Verifique o tamanho da tela ao redimensionar a janela
+        window.addEventListener('resize', setSideConversationDisplay);
+      });
+      
+    </script>
+
 
 
 </html>

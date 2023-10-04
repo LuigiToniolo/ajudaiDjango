@@ -390,9 +390,12 @@ def minhas_conversas_view(request):
             updated_conversa_id = None
     else:
         updated_conversa_id = None
-
+        
+    #Função para adicionar número do cliente no menu responsivo
+    
+   
     context = {
-        "tab_title" : 'Ajudaí - Minhas Conversas',
+        "tab_title" : 'Ajudai - Minhas Conversas',
         "meta_desciption" : '',
         'user' : user,
         'conversas' : conversas_com_tempo_das_mensagens,
@@ -406,6 +409,8 @@ def minhas_conversas_view(request):
     )
 
 @csrf_exempt
+
+
 def check_for_new_messages_to_refresh(request):
     if request.method == 'POST':
         try:

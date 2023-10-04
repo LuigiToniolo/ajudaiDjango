@@ -3,7 +3,6 @@
   flex-wrap: wrap;
   justify-content: space-between;
   height: 100vh;
-  /* overflow-x: auto; */
 
 }
 
@@ -14,24 +13,23 @@
 }
 
 .column-kanban:nth-child(1) ul {
-  background-color: #F2F2F2;
+  background-color: #D7D7D7;
 }
 
-    .column-kanban:nth-child(2) ul {
-      background-color: #b5c7fd;
-    }
+.column-kanban:nth-child(2) ul {
+  background-color: #5C7AD3;
+}
 
 .column-kanban:nth-child(3) ul {
-  background-color: #ffc4c4;
+  background-color: #d35c5c;
 }
 
 .column-kanban:nth-child(4) ul {
-  background-color: #caffc6;
+  background-color: #69d35c;
 }
 
 .column-kanban p {
   text-align: center;
-  /* margin: 0 50px; */
   font-size: 16px;
   font-weight: bold;
 }
@@ -55,34 +53,9 @@
       justify-content: center;
       padding: 3vh 0;
     }
-    @media (min-width: 780px) {
-    .titulo-kanban {
-      display: none;
-    }
-  }
 
-    @media (max-width: 780px) {
-      .como-funciona {
-        margin-top: 5vh;
-      }
 
-      .titulo-kanban {
-        text-align: center;
-        align-items: center;
-        margin-top: 3vh;
-      }
-      
-    .column-kanban ul {
-
-      max-height: 100vh; 
-      overflow-y: auto;
-    }
-    .title-column {
-      padding: 0 0;
-      margin-bottom: 5px;
-    }
-  }
-
+ 
 .title-column p {
   margin: 0;
   text-align: center;
@@ -94,102 +67,334 @@
   margin-left: 10px;
 }
 
-    .button-novo {
-      width: 100%;
-      border: 1px solid black;
-      border-radius: 10px;
-      background-color: transparent;
-      display: none;
-    }
-
-    .card-kanban {
-      background-color: #fff;
-      padding: 10px;
-      margin-bottom: 10px;
-      margin-top: 10px;
-      border-radius: 4px;
-      cursor: grab;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .fa-clock,
-    .fa-calendar {
-      color: #a8a8a8;
-      margin-right: 3px;
-    }
-
-    .ver-pedido-link {
-      text-decoration: none;
-      background-color: #e6e6e6;
-      border-radius: 5px;
-      text-align: center;
-      color: #000;
-    }
-
-    .ver-pedido-link:hover {
-      color: #000;
-      transform: scale(1.02);
-    }
-
-select {
-  padding: 5px;
-  background-color: #F2F2F2;
-  border-style: none;
+.button-novo {
+  width: 100%;
+  border: 1px solid black;
+  border-radius: 10px;
+  background-color: transparent;
+  display: none;
 }
 
+.card-kanban {
+  background-color: #fff;
+  padding: 10px;
+  margin-bottom: 10px;
+  margin-top: 10px;
+  border-radius: 10px;
+  cursor: grab;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.card-kanban:hover {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2), 4px 0 8px rgba(0, 0, 0, 0.2);
+}
+
+.card-kanban.dragging {
+  opacity: 0.5;
+  border-radius: 10px;
+}
+
+.tituloPedido {
+  font-size: 18px;
+  margin-bottom: 0;
+}
+
+.dateTimeElement {
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+  
+}
+
+.dateInfo,
+.timeInfo {
+  color: #a8a8a8;
+  font-weight: normal !important;
+  text-align: start !important;
+  font-size: 12px;
+  margin: 0;
+  padding: 0;
+
+}
+
+.fa-circle {
+  color: #a8a8a8;
+  margin: 0 4px;
+  width: 4px;
+  height: auto;
+
+}
+
+.text-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.text-container span {
+  color: #212D40;
+}
+
+.dropdownDelete {
+  /* background-color: #E6E6E6; */
+  cursor: default;
+  margin: 5px 0;
+
+}
+
+.linkDelete {
+  margin: 8px 0 0 0;
+  cursor: pointer;
+  font-size: 16px;
+  text-align: center;
+  text-decoration: none;
+  color: #d35c5c;
+}
+
+.linkDelete:hover {
+  text-decoration: underline;
+  color: #d35c5c;
+}
+
+.textoAviso {
+  margin: 0;
+  padding: 5px 0;
+  font-weight: normal !important;  
+  text-align: start !important;
+  font-size: 16px !important;
+}
+
+.botoesDiv {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.botao-deletar {
+  border: none;
+  border-radius: 25px;
+  background-color: #d35c5c;
+  width: 45%;
+  font-size: 16px;
+  transition: transform 0.1s ease;
+}
+
+.botao-deletar:hover {
+  transform: scale(1.05);
+}
+
+.botao-voltar {
+  border-radius: 25px;
+  border: none;
+  background-color: #D7D7D7;
+  width: 45%;
+  font-size: 16px;
+  transition: transform 0.1s ease;
+}
+
+.botao-voltar:hover {
+  transform: scale(1.05);
+}
+
+
+.fa-user,
+.fa-burger {
+  color: #a8a8a8;
+  margin-right: 8px;
+  margin-top: 4px;
+}
+
+.ver-pedido-link {
+  text-decoration: none;
+  background-color: #5c7ad3;
+  border-radius: 5px;
+  padding: 4px 0;
+  text-align: center;
+  color: #FFF;
+  font-weight: normal;
+  transition: transform 0.1s ease;
+  margin-top: 16px;
+}
+
+.ver-pedido-link:hover {
+  color: #FFF;
+  transform: scale(1.02);
+}
+
+
 .card-count {
-  background-color: #E0E0E0;
+  background-color: #E6E6E6;
   padding: 0 8px;
   border-radius: 100px;
   margin-left: 5px;
 }
 
-.card-datetime {
-  display: flex;
-  flex-direction: column;
-}
-
-.card-kanban:hover {
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-.card-kanban.dragging {
-  opacity: 0.5;
-}
 
 .column-kanban.dropzone {
   border: 2px dashed #aaa;
   background-color: #f5f5f5;
 }
 
-/* Responsividade para telas menores */
-@media (max-width: 768px) {
-  .column-kanban {
-    flex-basis: 100%;
-    margin-bottom: 20px;
-  }
-}
 
-
-
-.card-datetime {
-  display: flex;
+.card-infoMiddle {
   align-items: flex-start;
-  margin-top: 8px;
+  margin-top: 16px;
+  display: flex;
+  flex-direction: column;
 }
 
 .icon-container,
 .time-container {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   margin-right: 10px;
+
 }
 
 
 .icon-container i,
 .time-container i {
   margin-right: 5px;
+}
+
+@media (max-width: 768px) {
+  .column-kanban {
+    flex-basis: 100%;
+    margin-bottom: 20px;
+  }
+  
+}
+
+
+
+@media (min-width: 780px) {
+  .titulo-kanban {
+    display: none;
+  }
+  .selectColumn {
+    display: none;
+  }
+}
+
+/* Responsividade para telas menores */
+@media (max-width: 768px) {
+  .kanban {
+    display: flex;
+    flex-direction: row;
+    height: 150vh;
+  }
+  .column-kanban {
+    flex-basis: 100%;
+    margin-bottom: 50px;
+  }
+  .como-funciona {
+    margin-top: 5vh;
+  }
+  
+  .titulo-kanban {
+    text-align: start;
+    align-items: center;
+    margin-top: 3vh;
+  }
+
+  .tituloPedido {
+    font-size: 28px;
+  }
+  
+  .column-kanban ul {
+  
+  max-height: 100vh; 
+  overflow-y: auto;
+  }
+  .title-column {
+  padding: 0 0;
+  margin-bottom: 5px;
+  margin-top: 10px;
+  }
+
+  .card-datetime {
+    font-size: 18px;
+  }
+
+  .card-time,
+   .card-date{
+    font-size: 20px;
+  }
+
+  .time-container {
+    margin-top: 4px;
+  }
+
+  .icon-container,
+  .time-container {
+    display: flex;
+    align-items: center;
+    margin-right: 10px;
+  }
+
+  .selectColumn {
+    margin-top: 16px;
+    padding: 8px 0;
+    background-color: #E6E6E6;
+    border-style: none;
+    border: none;
+    border-radius: 5px;
+    font-size: 18px;
+  }
+  
+  .selectColumn option:checked {
+    background-color: #007bff; /* Cor de fundo quando a opção está selecionada */
+    color: #fff; /* Cor do texto quando a opção está selecionada */
+  }
+  
+
+  .linkDelete {
+    margin: 16px 0 0 0;
+    font-size: 18px;
+  }
+
+  .ver-pedido-link {
+    padding: 8px 0;
+    font-size: 18px;
+  }
+
+  .textoAviso {
+    font-size: 18px !important;
+    margin: 8px 0;
+  }
+  .botao-deletar {
+    font-size: 18px !important;
+    width: 100%;
+    padding: 8px 0 !important;
+  }
+  .botao-voltar {
+    font-size: 18px !important;
+    width: 100%;
+    margin-top: 8px;
+    padding: 8px 0;
+  }
+  .botoesDiv {
+    display: flex;
+    flex-direction: column;
+  }
+  .fa-user,
+  .fa-burger {
+    color: #a8a8a8;
+    margin-right: 8px;
+    width: 25px;
+    height: auto;
+  }
+
+  .dateInfo,
+  .timeInfo {
+    font-size: 18px !important;
+  }
+
+  .fa-circle {
+    width: 6px;
+  }
 }
 
 
