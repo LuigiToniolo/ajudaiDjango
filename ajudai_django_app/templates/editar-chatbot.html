@@ -37,6 +37,13 @@
                         <div class="msg-alert">
                             <form method="post" >
                                 {% csrf_token %}
+                                {% if form.non_field_errors %}
+                                    <div class="alert alert-danger">
+                                        {% for error in form.non_field_errors %}
+                                            <p>{{ error }}</p>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
                                 {{ form.as_p }}
                                 <div class="botao-acao-chatbots">
                                     <button class="botao-save-chatbot" type="submit">{{ submit_edit_chatbot_text }}</button>

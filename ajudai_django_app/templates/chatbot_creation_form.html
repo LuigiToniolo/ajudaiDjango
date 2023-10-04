@@ -63,9 +63,11 @@
                         <form method="post">
                             {% csrf_token %}
                             {% if form.non_field_errors %}
-                            <div class="alert alert-danger">
-                                <p>{{ form.non_field_errors }}</p>
-                            </div>
+                                <div class="alert alert-danger">
+                                    {% for error in form.non_field_errors %}
+                                        <p>{{ error }}</p>
+                                    {% endfor %}
+                                </div>
                             {% endif %}
                             <p>{{ form.nome_do_chatbot.label_tag }}</p>
                             <p>{{ form.nome_do_chatbot }}</p>
