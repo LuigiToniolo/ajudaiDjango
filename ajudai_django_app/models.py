@@ -479,10 +479,6 @@ class ChatBot(models.Model):
         else:
             # Retorne uma mensagem de erro se o número de telefone não tiver 10 dígitos
             return "Número de telefone inválido. Deve conter 10 dígitos."
-
-    # Exemplo de uso:
-    whatsapp_number = "9999999999"
-    formatted = format_phone_number(whatsapp_number)
     
 #o uso é considerado como uma conversa inteira finalizada
 class Conversa(models.Model):
