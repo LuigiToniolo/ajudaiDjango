@@ -472,9 +472,9 @@ class ChatBot(models.Model):
     
     def format_phone_number(whatsapp_number):
         # Verifique se o número de telefone tem 10 dígitos
-        if len(whatsapp_number) == 10:
+        if len(whatsapp_number) == 10 or len(whatsapp_number) == 11:
             # Formate o número de telefone
-            formatted_number = f"({whatsapp_number[:2]}) {whatsapp_number[2:7]}-{whatsapp_number[7:]}"
+            formatted_number = f"({whatsapp_number[:2]}) {whatsapp_number[2:6]}-{whatsapp_number[6:]}"
             return formatted_number
         else:
             # Retorne uma mensagem de erro se o número de telefone não tiver 10 dígitos
