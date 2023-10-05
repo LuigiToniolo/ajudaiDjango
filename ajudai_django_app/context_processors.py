@@ -10,11 +10,18 @@ class DateTimeEncoder(json.JSONEncoder):
         return super().default(o)
     
 def notifications_list(request):
-    unread_notifications = get_unread_notifications_user(request.user)
-    unread_notifications_dict = json.dumps(list(unread_notifications.values()), cls=DateTimeEncoder)
-    unread_notifications_count = get_unread_notifications_user_count(request.user)
-    
-    read_notifications_count = get_read_notifications_user_count(request.user)
+    # Initialize variables with default values
+    unread_notifications = None
+    unread_notifications_dict = None
+    unread_notifications_count = 0
+    read_notifications_count = 0
+
+    if request.user.is_authenticated:
+        unread_notifications = get_unread_notifications_user(request.user)
+        unread_notifications_dict = json.dumps(list(unread_notifications.values()), cls=DateTimeEncoder)
+        unread_notifications_count = get_unread_notifications_user_count(request.user)
+        read_notifications_count = get_read_notifications_user_count(request.user)
+
     return {
             'unread_notifications': unread_notifications, 
             'unread_notifications_dict': unread_notifications_dict, 
