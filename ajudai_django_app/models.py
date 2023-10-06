@@ -706,6 +706,8 @@ class Pedido(models.Model):
         default='',
         )
     
+    mostrar_kanban = models.BooleanField(default=True)
+    
 
     def mensagem_novo_status(self):
         mensagem = ' '

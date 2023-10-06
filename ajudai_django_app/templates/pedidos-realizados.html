@@ -459,7 +459,9 @@
 
             document.addEventListener('DOMContentLoaded', function () {
                 {% for pedido in pedidos %}
-                    createPedidoCard("{{ pedido }}", "{{ pedido.status_do_pedido }}", "{{ pedido.id }}", "{% url 'resumo_pedido' pedido.id %}", "{{ pedido.date }}", "{{ pedido.time }}", "{{ pedido.nome_do_cliente }}", "{{ pedido.itens_pedido }}", "{{ pedido.formatted_date }}");
+                    {% if pedido.mostrar_kanban %}
+                        createPedidoCard("{{ pedido }}", "{{ pedido.status_do_pedido }}", "{{ pedido.id }}", "{% url 'resumo_pedido' pedido.id %}", "{{ pedido.date }}", "{{ pedido.time }}", "{{ pedido.nome_do_cliente }}", "{{ pedido.itens_pedido }}", "{{ pedido.formatted_date }}");
+                    {% endif %}
                 {% endfor %}
             });
 
