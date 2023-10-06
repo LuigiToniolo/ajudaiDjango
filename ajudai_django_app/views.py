@@ -37,6 +37,10 @@ from .notifications import get_unread_notifications_user
 from .context_processors import notifications_list
 
 sao_paulo_tz = pytz.timezone('America/Sao_Paulo')
+def current_date_sao_paulo():
+    return datetime.now().astimezone(sao_paulo_tz).date()
+def current_time_sao_paulo():
+    return datetime.now().astimezone(sao_paulo_tz).time()
 
 def welcome_view(request):
     try:
@@ -595,7 +599,21 @@ def pedidos_realizados_view(request):
 
     user.finance_check(STANDART_PERIOD)
 
-    pedidos = Pedido.objects.filter(user=user)
+    now_sao_paulo = datetime.now().astimezone(sao_paulo_tz)
+    time_24_hours_ago_sao_paulo = now_sao_paulo - timedelta(days=1)
+
+    print(time_24_hours_ago_sao_paulo)
+
+    pedidos = Pedido.objects.filter(
+        user=user,
+    )
+
+    pedidos_last_24_hours = []
+    for pedido in pedidos:
+        pedido_datetime = datetime.combine(pedido.date, pedido.time).astimezone(sao_paulo_tz)
+        if pedido_datetime >= time_24_hours_ago_sao_paulo:
+            pedidos_last_24_hours.append(pedido)
+
 
     if not user.usuario_adimplente_ou_tolerancia_de_uso():
         return redirect('payment_debt_out_service')
@@ -606,7 +624,7 @@ def pedidos_realizados_view(request):
         'page_title' : 'Pedidos',
         'texto_link_para_resumo_pedido' : 'Veja o Resumo do Pedido',
         'user' : user,
-        'pedidos' : pedidos,
+        'pedidos' : pedidos_last_24_hours,
         'STATUS_PEDIDO_REALIZADO' : STATUS_PEDIDO_REALIZADO,
         'STATUS_PEDIDO_EM_PROCESSO' : STATUS_PEDIDO_EM_PROCESSO,
         'STATUS_PEDIDO_PENDENTE_DE_ENTREGA' : STATUS_PEDIDO_PENDENTE_DE_ENTREGA,
