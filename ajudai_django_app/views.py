@@ -705,6 +705,20 @@ def update_pedido_status(request):
     return JsonResponse({'status': 'error', 'message': 'Invalid request'})
 
 @csrf_exempt
+def update_mostrar_kanban(request):
+    if request.method == "POST":
+        pedido_id = request.POST.get("pedido_id")
+        try:
+            pedido = Pedido.objects.get(id=pedido_id)
+            pedido.mostrar_kanban = False
+            pedido.save()
+            return JsonResponse({"status": "success"})
+        except Pedido.DoesNotExist:
+            return JsonResponse({"status": "error", "message": "Pedido not found"})
+    else:
+        return JsonResponse({"status": "error", "message": "Bad request"})
+
+@csrf_exempt
 def create_pedido_manual(request):
     if request.method == 'POST':
         try:

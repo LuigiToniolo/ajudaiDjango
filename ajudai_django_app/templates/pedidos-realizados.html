@@ -141,6 +141,21 @@
                 xhr.send('pedido_id=' + pedidoId + '&new_status=' + newStatus);
             }
 
+            function toggleMostrarKanban(pedidoId) {
+                var xhr = new XMLHttpRequest();
+                xhr.open('POST', '{% url "update_mostrar_kanban" %}', true);
+                xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+                xhr.setRequestHeader('X-CSRFToken', '{{ csrf_token }}');
+                xhr.onreadystatechange = function() {
+                    if (xhr.readyState == 4 && xhr.status == 200) {
+                        console.log('mostrar_kanban toggled successfully');
+                    } else if (xhr.readyState == 4) {
+                        console.error('Error toggling mostrar_kanban:', xhr.statusText);
+                    }
+                };
+                xhr.send('pedido_id=' + pedidoId);
+            }
+
             function createCard() {
                 var cardText = prompt("Digite o texto do novo card:");
                 if (cardText) {
@@ -388,8 +403,16 @@
                 }
                 
 
-                // Adicionar evento de clique ao ícone de lata de lixo para mostrar/ocultar o dropdown
-                linkDelete.addEventListener('click', toggleDropdown);
+                // Ao clicar em excluir, abre a caixa de confirmação Sim e Não
+                linkDelete.addEventListener('click', function() {
+                    toggleDropdown();
+                });
+
+                // Ao clicar em Sim pós Excluir, chama o ajax de exclusão
+                botao1.addEventListener('click', function(){
+                    var pedidoId = card.getAttribute('data-id');
+                    toggleMostrarKanban(pedidoId);
+                });
 
                 // Adicione o ícone de lata de lixo e o dropdown ao textContainer
                 card.appendChild(linkDelete);
