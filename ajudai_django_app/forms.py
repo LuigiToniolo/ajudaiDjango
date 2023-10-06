@@ -170,6 +170,16 @@ class ChatBotForm(forms.ModelForm):
 
     initial_message_text = forms.CharField(
         label='Mensagem inicial de envio de cardápio',
+        initial='Olá, seja bem-vindo! Veja nosso cardápio e selecione os itens que você deseja os adicionando no carrinho:',
+        required=False,
+        widget=forms.TextInput(attrs={
+            # 'style': 'width: {}px;'.format(WHATS_APP_TOKEN_FILD_SIZE_IN_PX)
+            })
+    )
+
+    resposta_aparencia_antes_lista_produtos = forms.CharField(
+        label='Resposta ao pedido do cliente - Parte 1 (antecede a lista de itens pedido)',
+        initial='Itens do Pedido (considerar estes e desconsiderar os anteriores): ',
         required=False,
         widget=forms.TextInput(attrs={
             # 'style': 'width: {}px;'.format(WHATS_APP_TOKEN_FILD_SIZE_IN_PX)
@@ -178,6 +188,7 @@ class ChatBotForm(forms.ModelForm):
 
     resposta_pedido_catálogo = forms.CharField(
         label='Resposta ao envio de ordem de compra de itens do carrinho',
+        initial='Itens pedidos registrados com sucesso. Agora, para concluirmos o seu pedido, pedimos para informar se você quer retirar o seu pedido no balcão ou que ele seja entregue para você',
         required=False,
         widget=forms.TextInput(attrs={
             # 'style': 'width: {}px;'.format(WHATS_APP_TOKEN_FILD_SIZE_IN_PX)
@@ -210,7 +221,7 @@ class ChatBotForm(forms.ModelForm):
     class Meta:
         model = ChatBot
         fields = [
-            'nome_do_chatbot', 'whatsapp_number', 'whats_app_api_auth_token', 'facebook_page_id', ADITIONAL_INTRUCTIONS_FIELD_NAME, 'cardapio', 'descricao_funcao_cardapio', 'chatbot_has_products_catalog', 'initial_message_text', 'resposta_pedido_catálogo', 'catalog_id', 'sections_and_products']
+            'nome_do_chatbot', 'whatsapp_number', 'whats_app_api_auth_token', 'facebook_page_id', ADITIONAL_INTRUCTIONS_FIELD_NAME, 'cardapio', 'descricao_funcao_cardapio', 'chatbot_has_products_catalog', 'initial_message_text', 'resposta_aparencia_antes_lista_produtos', 'resposta_pedido_catálogo', 'catalog_id', 'sections_and_products']
 
     def clean_sections_and_products(self):
         data = self.cleaned_data['sections_and_products']

@@ -456,12 +456,14 @@ class ChatBot(models.Model):
     creation_time = models.TimeField(default=current_time_sao_paulo)
 
     chatbot_has_products_catalog = models.BooleanField(default=False)
-    initial_message_text = models.CharField(max_length=10000, default='Olá, seja bem-vindo! Veja nosso cardápio e selecione os itens que você deseja os adicionando no carrinho:')
-
+    
     catalog_id = models.CharField(max_length=255, default='')
     sections_and_products = models.JSONField(default=dict)
 
+    resposta_aparencia_antes_lista_produtos =  models.CharField(max_length=10000, default='Itens do Pedido (considerar estes e desconsiderar os anteriores): ')
     resposta_pedido_catálogo = models.CharField(max_length=10000, default='Itens pedidos registrados com sucesso. Agora, para concluirmos o seu pedido, pedimos para informar se você quer retirar o seu pedido no balcão ou que ele seja entregue para você')
+    initial_message_text = models.CharField(max_length=10000, default='Olá, seja bem-vindo! Veja nosso cardápio e selecione os itens que você deseja os adicionando no carrinho:')
+
 
     def __str__(self):
         name = self.nome_do_chatbot

@@ -1159,7 +1159,8 @@ def process_message(data):
                                             print('XXXXXXXXXXXXXX O ID DE CATÁLOGO NÃO É O MESMO CADASTRADO NO CHATBOT')
                                             return
 
-                                        itens_pedidos = 'Itens do Pedido (considerar estes e desconsiderar os anteriores): '
+                                        itens_pedidos_para_contexto = 'Itens do Pedido (considerar estes e desconsiderar os anteriores): '
+                                        itens_pedidos_para_mensagem_cliente = chatbot.resposta_aparencia_antes_lista_produtos
 
                                         for ordered_product in products_ordered:
                                             retailer_id = ordered_product.get('product_retailer_id')
@@ -1169,14 +1170,15 @@ def process_message(data):
                                                     nome_do_produto = available_product.get('nome_do_produto')
                                                     preco = available_product.get('preco')
                                                     for i in range(quantity):
-                                                        itens_pedidos += f"\n{nome_do_produto} : preço: R$ {preco}"
+                                                        itens_pedidos_para_contexto += f"\n{nome_do_produto} : preço: R$ {preco:.2f}"
+                                                        itens_pedidos_para_mensagem_cliente += f"\n{nome_do_produto} : preço: R$ {preco:.2f}"
                                                     
                                         order_message = True
                                         pedido_em_string_para_add_ao_contexto = ''
-                                        awnser = f"{itens_pedidos}"
-                                        awnser = awnser + '\n\n' + chatbot.resposta_pedido_catálogo
+                                        awnser_to_context = itens_pedidos_para_contexto + '\n\n' + chatbot.resposta_pedido_catálogo
+                                        awnser_to_user = itens_pedidos_para_mensagem_cliente + '\n\n' + chatbot.resposta_pedido_catálogo
                                         new_context.append({"role": "user", "content": pedido_em_string_para_add_ao_contexto})
-                                        new_context.append({"role": "assistant", "content": awnser})
+                                        new_context.append({"role": "assistant", "content": awnser_to_context})
                                         tokens_used_on_this_request = 0
                                         conversation.substitute_conversa_context(new_context)
                                         tokens_used_before = conversation.total_tokens_used
@@ -1186,7 +1188,8 @@ def process_message(data):
                                         conversation.date = timezone.now().date()
                                         conversation.time = timezone.now().time()
                                         conversation.save()
-                                        send_response(chatbot.facebook_page_id, chatbot.whats_app_api_auth_token, numero_cliente, awnser)
+
+                                        send_response(chatbot.facebook_page_id, chatbot.whats_app_api_auth_token, numero_cliente, awnser_to_user)
                                     except Exception as e:
                                         print(f"NÃO FOI POSSÍVEL PROCESSAR A MENSAGEM DE COMPRA: {e}")
                                     return
