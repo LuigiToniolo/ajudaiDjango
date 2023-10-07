@@ -147,8 +147,8 @@ class ChatBotForm(forms.ModelForm):
     whatsapp_number = forms.CharField(
         label='Número WhatsApp Business',
         widget=forms.TextInput(attrs={
-            # 'style': 'width: {}px;'.format(CELLPHONE_FIELD_SIZE_IN_PX)
-            })
+            'id': 'whatsapp_number'
+        })
     )
     whats_app_api_auth_token = forms.CharField(
         label='Token de Autenticação API do Whatsapp (conforme instruções)',
