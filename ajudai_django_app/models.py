@@ -814,7 +814,26 @@ class Pedido(models.Model):
                 telefone = numero_cliente,
             )
 
-    def criar_novo_pedido_ja_com_parametros(nome_cliente, endereco_cliente, itens_pedido, taxa_de_entrega, valor_total, metodo_de_pagamento, resumo_do_pedido, user, conversation):
+    def criar_novo_pedido_ja_com_parametros(
+            nome_cliente=None,
+            endereco_cliente=None,
+            itens_pedido=None,
+            taxa_de_entrega=None,
+            valor_total=None,
+            metodo_de_pagamento=None,
+            resumo_do_pedido=None,
+            user=None,
+            conversation=None
+            ):
+        
+        nome_cliente = str(nome_cliente) if nome_cliente else ""
+        endereco_cliente = str(endereco_cliente) if endereco_cliente else ""
+        itens_pedido = str(itens_pedido) if itens_pedido else ""
+        taxa_de_entrega = str(taxa_de_entrega) if taxa_de_entrega else ""
+        valor_total = str(valor_total) if valor_total else ""
+        metodo_de_pagamento = str(metodo_de_pagamento) if metodo_de_pagamento else ""
+
+
         pedido = Pedido.objects.create(
             user=user,
             conversa=conversation,

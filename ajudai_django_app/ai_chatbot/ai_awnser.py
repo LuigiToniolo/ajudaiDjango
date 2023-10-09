@@ -307,13 +307,8 @@ def generate_gpt_response(prompt, context, role, aditional_instructions, model_n
                         except Exception as e:
                             print(f'Erro ao chamar a função de fechamento de pedido: {e}')
 
-                            #ESSE TIPO DE ERRO ESTÁ APARECENDO COMO FALSO POSITIVO DE ERRO PELO FUNCTION CALLING
-                            if "value too long for type" in str(e):
-                                awnser =  'Seu pedido foi registrado com sucesso! Te informaremos por aqui de qualquer atualização. Muito obrigado!'
-                                function_response = 'Pedido feito com sucesso'
-                            else:
-                                awnser = FECHAR_PEDIDO_ERROR_MESSAGE_FUNCTION_CALL
-                                function_response = 'Não foi possível realizar o fechamento do pedido. Tente novamente ou aguarde até que um atendente humano assuma a conversa'
+                            awnser = FECHAR_PEDIDO_ERROR_MESSAGE_FUNCTION_CALL
+                            function_response = 'Não foi possível realizar o fechamento do pedido. Tente novamente ou aguarde até que um atendente humano assuma a conversa'
                             
                             context.append({
                                 "role": "function",
