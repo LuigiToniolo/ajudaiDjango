@@ -46,7 +46,7 @@
                             <i class='fa fa-pencil icon'></i>
                             <h4 class="titulo-card">{{ chatbot }}</h4>
                             <p class="data-card"><i class="fa-regular fa-calendar" style="margin-right: 8px; color: #212D40;"></i>Criado dia <strong>{{ chatbot.formatted_date }}</strong> às <strong>{{ chatbot.creation_time }}</strong></p>
-                            <p class="data-card"><i class="fa-solid fa-phone" style="margin-right: 8px; color: #212D40;"></i>{{ chatbot.formatted }}</p>
+                            <p class="data-card"><i class="fa-solid fa-phone" style="margin-right: 8px; color: #212D40;"></i>{{ chatbot.get_formatted_whatsapp_number }}</p>
                             <!-- <p class="data-card">Criado dia <strong>{{ chatbot.formatted_date }}</strong> às <strong>{{ chatbot.creation_time }}</strong></p> -->
                         </a>
                     </div>
