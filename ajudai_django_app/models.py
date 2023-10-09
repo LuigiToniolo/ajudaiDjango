@@ -838,7 +838,7 @@ class Pedido(models.Model):
             user=user,
             conversa=conversation,
             resumo_do_pedido = resumo_do_pedido,
-            nome_cliente=nome_cliente,
+            nome_do_cliente=nome_cliente, 
         )
 
         pedido.nome_do_cliente = nome_cliente
