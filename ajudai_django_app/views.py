@@ -37,6 +37,10 @@ from .notifications import get_unread_notifications_user
 from .context_processors import notifications_list
 
 sao_paulo_tz = pytz.timezone('America/Sao_Paulo')
+def current_date_sao_paulo():
+    return datetime.now().astimezone(sao_paulo_tz).date()
+def current_time_sao_paulo():
+    return datetime.now().astimezone(sao_paulo_tz).time()
 
 def welcome_view(request):
     try:
@@ -595,7 +599,21 @@ def pedidos_realizados_view(request):
 
     user.finance_check(STANDART_PERIOD)
 
-    pedidos = Pedido.objects.filter(user=user)
+    now_sao_paulo = datetime.now().astimezone(sao_paulo_tz)
+    time_24_hours_ago_sao_paulo = now_sao_paulo - timedelta(days=1)
+
+    print(time_24_hours_ago_sao_paulo)
+
+    pedidos = Pedido.objects.filter(
+        user=user,
+    )
+
+    pedidos_last_24_hours = []
+    for pedido in pedidos:
+        pedido_datetime = datetime.combine(pedido.date, pedido.time).astimezone(sao_paulo_tz)
+        if pedido_datetime >= time_24_hours_ago_sao_paulo:
+            pedidos_last_24_hours.append(pedido)
+
 
     if not user.usuario_adimplente_ou_tolerancia_de_uso():
         return redirect('payment_debt_out_service')
@@ -606,7 +624,7 @@ def pedidos_realizados_view(request):
         'page_title' : 'Pedidos',
         'texto_link_para_resumo_pedido' : 'Veja o Resumo do Pedido',
         'user' : user,
-        'pedidos' : pedidos,
+        'pedidos' : pedidos_last_24_hours,
         'STATUS_PEDIDO_REALIZADO' : STATUS_PEDIDO_REALIZADO,
         'STATUS_PEDIDO_EM_PROCESSO' : STATUS_PEDIDO_EM_PROCESSO,
         'STATUS_PEDIDO_PENDENTE_DE_ENTREGA' : STATUS_PEDIDO_PENDENTE_DE_ENTREGA,
@@ -703,6 +721,20 @@ def update_pedido_status(request):
             return JsonResponse({'status': 'error', 'message': 'Pedido not found'})
 
     return JsonResponse({'status': 'error', 'message': 'Invalid request'})
+
+@csrf_exempt
+def update_mostrar_kanban(request):
+    if request.method == "POST":
+        pedido_id = request.POST.get("pedido_id")
+        try:
+            pedido = Pedido.objects.get(id=pedido_id)
+            pedido.mostrar_kanban = False
+            pedido.save()
+            return JsonResponse({"status": "success"})
+        except Pedido.DoesNotExist:
+            return JsonResponse({"status": "error", "message": "Pedido not found"})
+    else:
+        return JsonResponse({"status": "error", "message": "Bad request"})
 
 @csrf_exempt
 def create_pedido_manual(request):
@@ -1159,7 +1191,8 @@ def process_message(data):
                                             print('XXXXXXXXXXXXXX O ID DE CATÁLOGO NÃO É O MESMO CADASTRADO NO CHATBOT')
                                             return
 
-                                        itens_pedidos = 'Itens do Pedido (considerar estes e desconsiderar os anteriores): '
+                                        itens_pedidos_para_contexto = 'Itens do Pedido (considerar estes e desconsiderar os anteriores): '
+                                        itens_pedidos_para_mensagem_cliente = chatbot.resposta_aparencia_antes_lista_produtos
 
                                         for ordered_product in products_ordered:
                                             retailer_id = ordered_product.get('product_retailer_id')
@@ -1169,14 +1202,15 @@ def process_message(data):
                                                     nome_do_produto = available_product.get('nome_do_produto')
                                                     preco = available_product.get('preco')
                                                     for i in range(quantity):
-                                                        itens_pedidos += f"\n{nome_do_produto} : preço: R$ {preco}"
+                                                        itens_pedidos_para_contexto += f"\n{nome_do_produto} : preço: R$ {preco:.2f}"
+                                                        itens_pedidos_para_mensagem_cliente += f"\n{nome_do_produto} : preço: R$ {preco:.2f}"
                                                     
                                         order_message = True
                                         pedido_em_string_para_add_ao_contexto = ''
-                                        awnser = f"{itens_pedidos}"
-                                        awnser = awnser + '\n\n' + chatbot.resposta_pedido_catálogo
+                                        awnser_to_context = itens_pedidos_para_contexto + '\n\n' + chatbot.resposta_pedido_catálogo
+                                        awnser_to_user = itens_pedidos_para_mensagem_cliente + '\n\n' + chatbot.resposta_pedido_catálogo
                                         new_context.append({"role": "user", "content": pedido_em_string_para_add_ao_contexto})
-                                        new_context.append({"role": "assistant", "content": awnser})
+                                        new_context.append({"role": "assistant", "content": awnser_to_context})
                                         tokens_used_on_this_request = 0
                                         conversation.substitute_conversa_context(new_context)
                                         tokens_used_before = conversation.total_tokens_used
@@ -1186,7 +1220,8 @@ def process_message(data):
                                         conversation.date = timezone.now().date()
                                         conversation.time = timezone.now().time()
                                         conversation.save()
-                                        send_response(chatbot.facebook_page_id, chatbot.whats_app_api_auth_token, numero_cliente, awnser)
+
+                                        send_response(chatbot.facebook_page_id, chatbot.whats_app_api_auth_token, numero_cliente, awnser_to_user)
                                     except Exception as e:
                                         print(f"NÃO FOI POSSÍVEL PROCESSAR A MENSAGEM DE COMPRA: {e}")
                                     return

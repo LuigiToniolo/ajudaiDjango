@@ -456,12 +456,14 @@ class ChatBot(models.Model):
     creation_time = models.TimeField(default=current_time_sao_paulo)
 
     chatbot_has_products_catalog = models.BooleanField(default=False)
-    initial_message_text = models.CharField(max_length=10000, default='Olá, seja bem-vindo! Veja nosso cardápio e selecione os itens que você deseja os adicionando no carrinho:')
-
+    
     catalog_id = models.CharField(max_length=255, default='')
     sections_and_products = models.JSONField(default=dict)
 
+    resposta_aparencia_antes_lista_produtos =  models.CharField(max_length=10000, default='Itens do Pedido (considerar estes e desconsiderar os anteriores): ')
     resposta_pedido_catálogo = models.CharField(max_length=10000, default='Itens pedidos registrados com sucesso. Agora, para concluirmos o seu pedido, pedimos para informar se você quer retirar o seu pedido no balcão ou que ele seja entregue para você')
+    initial_message_text = models.CharField(max_length=10000, default='Olá, seja bem-vindo! Veja nosso cardápio e selecione os itens que você deseja os adicionando no carrinho:')
+
 
     def __str__(self):
         name = self.nome_do_chatbot
@@ -470,15 +472,11 @@ class ChatBot(models.Model):
     def formatted_date(self):
         return self.creation_date.strftime('%d/%m/%y')
     
-    def format_phone_number(whatsapp_number):
-        # Verifique se o número de telefone tem 10 dígitos
-        if len(whatsapp_number) == 10 or len(whatsapp_number) == 11:
-            # Formate o número de telefone
-            formatted_number = f"({whatsapp_number[:2]}) {whatsapp_number[2:6]}-{whatsapp_number[6:]}"
-            return formatted_number
-        else:
-            # Retorne uma mensagem de erro se o número de telefone não tiver 10 dígitos
-            return "Número de telefone inválido. Deve conter 10 dígitos."
+    def get_formatted_whatsapp_number(self):
+        if len(self.whatsapp_number) == 10 or len(self.whatsapp_number) == 11:
+            return "{}-{}-{}".format(self.whatsapp_number[0:2], self.whatsapp_number[2:6], self.whatsapp_number[6:])
+        else :
+            return self.whatsapp_number
     
 #o uso é considerado como uma conversa inteira finalizada
 class Conversa(models.Model):
@@ -704,6 +702,8 @@ class Pedido(models.Model):
         default='',
         )
     
+    mostrar_kanban = models.BooleanField(default=True)
+    
 
     def mensagem_novo_status(self):
         mensagem = ' '
@@ -814,12 +814,31 @@ class Pedido(models.Model):
                 telefone = numero_cliente,
             )
 
-    def criar_novo_pedido_ja_com_parametros(nome_cliente, endereco_cliente, itens_pedido, taxa_de_entrega, valor_total, metodo_de_pagamento, resumo_do_pedido, user, conversation):
+    def criar_novo_pedido_ja_com_parametros(
+            nome_cliente=None,
+            endereco_cliente=None,
+            itens_pedido=None,
+            taxa_de_entrega=None,
+            valor_total=None,
+            metodo_de_pagamento=None,
+            resumo_do_pedido=None,
+            user=None,
+            conversation=None
+            ):
+        
+        nome_cliente = str(nome_cliente) if nome_cliente else ""
+        endereco_cliente = str(endereco_cliente) if endereco_cliente else ""
+        itens_pedido = str(itens_pedido) if itens_pedido else ""
+        taxa_de_entrega = str(taxa_de_entrega) if taxa_de_entrega else ""
+        valor_total = str(valor_total) if valor_total else ""
+        metodo_de_pagamento = str(metodo_de_pagamento) if metodo_de_pagamento else ""
+
+
         pedido = Pedido.objects.create(
             user=user,
             conversa=conversation,
             resumo_do_pedido = resumo_do_pedido,
-            nome_cliente=nome_cliente,
+            nome_do_cliente=nome_cliente, 
         )
 
         pedido.nome_do_cliente = nome_cliente

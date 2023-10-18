@@ -304,15 +304,18 @@ def generate_gpt_response(prompt, context, role, aditional_instructions, model_n
                             awnser =  'Seu pedido foi registrado com sucesso! Te informaremos por aqui de qualquer atualização. Muito obrigado!'
                             context.append({"role": "assistant", "content": awnser})
 
-                        except:
+                        except Exception as e:
+                            print(f'Erro ao chamar a função de fechamento de pedido: {e}')
+
+                            awnser = FECHAR_PEDIDO_ERROR_MESSAGE_FUNCTION_CALL
                             function_response = 'Não foi possível realizar o fechamento do pedido. Tente novamente ou aguarde até que um atendente humano assuma a conversa'
+                            
                             context.append({
                                 "role": "function",
                                 "name": function_name,
                                 "content": function_response,
                             })
 
-                            awnser = FECHAR_PEDIDO_ERROR_MESSAGE_FUNCTION_CALL
                             context.append({"role": "assistant", "content": awnser})
                     
                     # AUTO AVALIAR    
