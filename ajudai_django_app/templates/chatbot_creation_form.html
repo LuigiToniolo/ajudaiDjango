@@ -24,6 +24,8 @@
         {% load static %}
         <link href="{% static 'css/styles.css' %}" rel="stylesheet" />
         <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
     </head>
     <body>
 
@@ -63,18 +65,48 @@
                         <form method="post">
                             {% csrf_token %}
                             {% if form.non_field_errors %}
-                            <div class="alert alert-danger">
-                                <p>{{ form.non_field_errors }}</p>
-                            </div>
+                                <div class="alert alert-danger">
+                                    {% for error in form.non_field_errors %}
+                                        <p>{{ error }}</p>
+                                    {% endfor %}
+                                </div>
                             {% endif %}
                             <p>{{ form.nome_do_chatbot.label_tag }}</p>
                             <p>{{ form.nome_do_chatbot }}</p>
+                            {% if form.nome_do_chatbot.errors %}
+                                <div class="alert alert-danger">
+                                {% for error in form.nome_do_chatbot.errors %}
+                                    <p>{{ error }}</p>
+                                {% endfor %}
+                                </div>
+                            {% endif %}
                             <p>{{ form.whatsapp_number.label_tag }}</p>
                             <p>{{ form.whatsapp_number }}</p>
+                            {% if form.whatsapp_number.errors %}
+                                <div class="alert alert-danger">
+                                {% for error in form.whatsapp_number.errors %}
+                                    <p>{{ error }}</p>
+                                {% endfor %}
+                                </div>
+                            {% endif %}
                             <p>{{ form.whats_app_api_auth_token.label_tag }}</p>
                             <p>{{ form.whats_app_api_auth_token }}</p>
+                            {% if form.whats_app_api_auth_token.errors %}
+                                <div class="alert alert-danger">
+                                {% for error in form.whats_app_api_auth_token.errors %}
+                                    <p>{{ error }}</p>
+                                {% endfor %}
+                                </div>
+                            {% endif %}
                             <p>{{ form.facebook_page_id.label_tag }}</p>
                             <p>{{ form.facebook_page_id }}</p>
+                            {% if form.facebook_page_id.errors %}
+                                <div class="alert alert-danger">
+                                {% for error in form.facebook_page_id.errors %}
+                                    <p>{{ error }}</p>
+                                {% endfor %}
+                                </div>
+                            {% endif %}
                             <p>{{ form.aditional_intructions.label_tag }}</p>
                             <p>{{ form.aditional_intructions }}</p>
                             {% if form.aditional_intructions.errors %}
@@ -95,7 +127,26 @@
                             {% endif %}
                             <p>{{ form.descricao_funcao_cardapio.label_tag }}</p>
                             <p>{{ form.descricao_funcao_cardapio }}</p>
-                            <button type="submit" class="botao-save-chatbot">{{ submit_button_text }}</button>
+                            <p>{{ form.chatbot_has_products_catalog.label_tag }}</p>
+                            <p>{{ form.chatbot_has_products_catalog }}</p>
+                            <p>{{ form.initial_message_text.label_tag }}</p>
+                            <p>{{ form.initial_message_text }}</p>
+                            <p>{{ form.resposta_aparencia_antes_lista_produtos.label_tag }}</p>
+                            <p>{{ form.resposta_aparencia_antes_lista_produtos }}</p>
+                            <p>{{ form.resposta_pedido_catálogo.label_tag }}</p>
+                            <p>{{ form.resposta_pedido_catálogo }}</p>
+                            <p>{{ form.catalog_id.label_tag }}</p>
+                            <p>{{ form.catalog_id }}</p>
+                            <p>{{ form.sections_and_products.label_tag }}</p>
+                            <p>{{ form.sections_and_products }}</p>
+                            {% if form.sections_and_products.errors %}
+                                <div class="alert alert-danger">
+                                {% for error in form.sections_and_products.errors %}
+                                    <p>{{ error }}</p>
+                                {% endfor %}
+                                </div>
+                            {% endif %}
+                            <button type="submit" class="botao-save-chatbot" method="post" action="{% url 'chatbot_creation_form' %}">{{ submit_button_text }}</button>
                         </form>    
                         
                       </div>
@@ -133,5 +184,28 @@
             element.style.height = Math.min(element.scrollHeight, maxHeight) + 'px';
           }
       </script>
+
+        <script type="text/javascript">
+            $(document).ready(function(){
+                var SPMaskBehavior = function (val) {
+                    return val.replace(/\D/g, '').length === 11 ? '00-00000-0000' : '00-0000-00009';
+                },
+                spOptions = {
+                    onKeyPress: function(val, e, field, options) {
+                        field.mask(SPMaskBehavior.apply({}, arguments), options);
+                    }
+                };
+
+                $('#whatsapp_number').mask(SPMaskBehavior, spOptions);
+
+                $('form').submit(function() {
+                    var cleanNumber = $('#whatsapp_number').val().replace(/\D/g, '');
+                    $('#whatsapp_number').val(cleanNumber);
+                });
+            });
+        </script>
+
+
+
     </body> 
 </html>

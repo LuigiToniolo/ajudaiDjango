@@ -54,4 +54,7 @@ urlpatterns = [
     path('update_conversation_limit/', views.update_conversation_limit, name='update_conversation_limit'),
     path('update_chatbots_on_off/', views.update_chatbots_on_off, name='update_chatbots_on_off'),
     path('aviso-usuario-admin/', views.aviso_user_admin, name='aviso_user_admin'),
+    path('notifications/', views.notifications, name="notifications"),
+    path('mark_notification_as_read/<notification_id>/', views.mark_notification_as_read, name="mark_notification_as_read"),
+    path('update_mostrar_kanban/', views.update_mostrar_kanban, name='update_mostrar_kanban'),
 ]

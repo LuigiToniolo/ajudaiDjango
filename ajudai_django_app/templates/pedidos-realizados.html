@@ -24,21 +24,21 @@
             <div id="layoutSidenav_content">
                 <main>
                     <div class="container-fluid px-4">
+                        <h2 class="titulo-kanban">Pedidos de {{ user.username }}</h2>
                         <div class="kanban">
                             <div class="column-kanban">
                                 <div class="title-column">
-                                    <p>Pedidos realizados</p>
+                                    <h2>Realizado</h2>
                                     <i class='fa fa-file' id="icones-kanban"></i>
                                     <span class="card-count">0</span>
-
                                 </div>
                                 <ul id="todo" class="dropzone" ondrop="drop(event)" ondragover="allowDrop(event)">
-                                  <button onclick="createCard()" class="button-novo" style="display: none;">+ Novo pedido</button>
+                                  <!-- <button onclick="createCard()" class="button-novo">+ Novo pedido</button> -->
                                 </ul>
                             </div>
                             <div class="column-kanban">
                                 <div class="title-column">
-                                    <p>Pedidos em processo</p>
+                                    <h2>Processo</h2>
                                     <i class="fa-solid fa-rotate" id="icones-kanban"></i>
                                     <span class="card-count">0</span>
                                 </div>
@@ -48,7 +48,7 @@
                             </div>
                             <div class="column-kanban">
                                 <div class="title-column">
-                                    <p>Aguardando Entrega</p>
+                                    <h2>Entrega</h2>
                                     <i class="fa-solid fa-truck" id="icones-kanban"></i>
                                     <span class="card-count">0</span>
                                 </div>
@@ -58,7 +58,7 @@
                             </div>
                             <div class="column-kanban">
                                 <div class="title-column">
-                                    <p>Retirado / entregue</p>
+                                    <h2>Entregue</h2>
                                     <i class="fa-solid fa-circle-check" id="icones-kanban"></i>
                                     <span class="card-count">0</span>
                                 </div>
@@ -68,7 +68,7 @@
                             </div>
                           </div>
                           
-                          <h3>Como funciona o envio das mensagens de status do pedido para o cliente?</h3>
+                          <h3 class="como-funciona">Como funciona o envio das mensagens de status do pedido para o cliente?</h3>
                           <p style="margin-bottom: 3vh;">Para que seu cliente fique sabendo do status do pedido "pedido realizado", "pedido em processamento", "aguardando entrega" e "pedido retirado/entregue", basta você arrastar os pedidos de uma coluna para outra que o chatbot envia mensagens automaticamente notificando o status do pedido realizado.</p>
 
                     </div>
@@ -142,6 +142,21 @@
                 xhr.send('pedido_id=' + pedidoId + '&new_status=' + newStatus);
             }
 
+            function toggleMostrarKanban(pedidoId) {
+                var xhr = new XMLHttpRequest();
+                xhr.open('POST', '{% url "update_mostrar_kanban" %}', true);
+                xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+                xhr.setRequestHeader('X-CSRFToken', '{{ csrf_token }}');
+                xhr.onreadystatechange = function() {
+                    if (xhr.readyState == 4 && xhr.status == 200) {
+                        console.log('mostrar_kanban toggled successfully');
+                    } else if (xhr.readyState == 4) {
+                        console.error('Error toggling mostrar_kanban:', xhr.statusText);
+                    }
+                };
+                xhr.send('pedido_id=' + pedidoId);
+            }
+
             function createCard() {
                 var cardText = prompt("Digite o texto do novo card:");
                 if (cardText) {
@@ -156,38 +171,38 @@
                   card.draggable = true;
                   card.addEventListener('dragstart', drag);
                   card.appendChild(document.createTextNode(cardText));
+
+                  var infoMiddleElement = document.createElement('div');
+                  infoMiddleElement.className = 'card-infoMiddle';
+
+                  var orderIcon = document.createElement('i');
+                  orderIcon.className = 'fa-solid fa-burger';
               
-                  var datetimeElement = document.createElement('div');
-                  datetimeElement.className = 'card-datetime';
+                  var pedidoElement = document.createElement('span');
+                  pedidoElement.className = 'card-date';
+                  pedidoElement.textContent = cardDate;
               
-                  var calendarIcon = document.createElement('i');
-                  calendarIcon.className = 'fas fa-calendar';
+                  var userIcon = document.createElement('i');
+                  userIcon.className = 'fas fa-clock';
               
-                  var dateElement = document.createElement('span');
-                  dateElement.className = 'card-date';
-                  dateElement.textContent = cardDate;
-              
-                  var timeIcon = document.createElement('i');
-                  timeIcon.className = 'fas fa-clock';
-              
-                  var timeElement = document.createElement('span');
-                  timeElement.className = 'card-time';
-                  timeElement.textContent = cardTime;
+                  var userElement = document.createElement('span');
+                  userElement.className = 'card-time';
+                  userElement.textContent = cardTime;
               
                   var iconContainer = document.createElement('div');
                   iconContainer.className = 'icon-container';
-                  iconContainer.appendChild(calendarIcon);
-                  iconContainer.appendChild(dateElement);
+                  iconContainer.appendChild(orderIcon);
+                  iconContainer.appendChild(pedidoElement);
               
                   var timeContainer = document.createElement('div');
                   timeContainer.className = 'time-container';
-                  timeContainer.appendChild(timeIcon);
-                  timeContainer.appendChild(timeElement);
+                  timeContainer.appendChild(userIcon);
+                  timeContainer.appendChild(userElement);
               
-                  datetimeElement.appendChild(iconContainer);
-                  datetimeElement.appendChild(timeContainer);
+                  infoMiddleElement.appendChild(iconContainer);
+                  infoMiddleElement.appendChild(timeContainer);
               
-                  card.appendChild(datetimeElement);
+                  card.appendChild(infoMiddleElement);
               
                   var select = createSelect();
                   card.appendChild(select);
@@ -212,7 +227,9 @@
                 }
             }
               
-            function createPedidoCard(pedidoText, status, id, url, date, time) {
+            function createPedidoCard(pedidoText, status, id, url, date, time, nome_do_cliente, itens_pedido, formatted_date ) {
+                console.log('Início da função createPedidoCard');
+                console.log('Nome do cliente: ', nome_do_cliente);
                 var card = document.createElement('li');
                 card.className = 'card-kanban';
                 card.draggable = true;
@@ -220,47 +237,197 @@
                 card.setAttribute('data-id', id); // Set data-id attribute with the id
                 
                 card.addEventListener('dragstart', drag);
-                card.appendChild(document.createTextNode(pedidoText));
+
+                //card.appendChild(document.createTextNode(pedidoText));
+
+                // Container para o texto do pedido e o ícone de lata de lixo
+                var textContainer = document.createElement('div');
+                textContainer.className = 'text-container';
+
+                // Texto do pedido
+                var pedidoTextElement = document.createElement('h4');
+                pedidoTextElement.textContent = pedidoText;
+                pedidoTextElement.className = "tituloPedido"
+                textContainer.appendChild(pedidoTextElement);
+
+                card.appendChild(textContainer);
+
+                var dateTimeElement = document.createElement('div');
+                dateTimeElement.className = 'dateTimeElement';
+
+                var dateInfo = document.createElement('p');
+                dateInfo.className = 'dateInfo';
+                dateInfo.textContent = formatted_date ;
+                dateTimeElement.appendChild(dateInfo);
+
+                var midDot = document.createElement('i');
+                midDot.className = 'fa-solid fa-circle';
+                dateTimeElement.appendChild(midDot);
+
+                var timeInfo = document.createElement('p');
+                timeInfo.className = 'timeInfo';
+                timeInfo.textContent = time;
+                dateTimeElement.appendChild(timeInfo);
+
+
+                card.appendChild(dateTimeElement);
+                
+                // Ícone de lata de lixo
+                //var deleteIcon = document.createElement('i');
+                //deleteIcon.className = 'fas fa-trash-alt delete-icon';
+                
+                //var tagDelete = document.createElement('a');
+                //tagDelete.className = 'tagDelete'
+
+                //tagDelete.appendChild(deleteIcon);
+
 
                 // Date and Time elements
-                var datetimeElement = document.createElement('div');
-                datetimeElement.className = 'card-datetime';
+                //Cria a div de fora "<div class="card-datetime">"
+                var infoMiddleElement = document.createElement('div');
+                infoMiddleElement.className = 'card-infoMiddle';
 
-                var calendarIcon = document.createElement('i');
-                calendarIcon.className = 'fas fa-calendar';
+                var orderIcon = document.createElement('i');
+                orderIcon.className = 'fa-solid fa-burger';
 
-                var dateElement = document.createElement('span');
-                dateElement.className = 'card-date';
-                dateElement.textContent = date;
+                //Cria o span para colocar a data "<span class="card-date">21 de setembro</span>"
+                //var pedidoElement = document.createElement('span');
+                //pedidoElement.className = 'card-date';
+                //pedidoElement.textContent = itens_pedido;
 
-                var timeIcon = document.createElement('i');
-                timeIcon.className = 'fas fa-clock';
+                var pedidoElement = document.createElement('span');
+                pedidoElement.className = 'card-date';
+                
+                // Verifique o tamanho da tela
+                if (window.innerWidth < 780) {
+                    // Se a largura da tela for menor que 780px, mostre 20 caracteres
+                    if (itens_pedido.length > 20) {
+                        pedidoElement.textContent = itens_pedido.substring(0, 20) + '...';
+                    } else {
+                        pedidoElement.textContent = itens_pedido;
+                    }
+                } else {
+                    // Se a largura da tela for maior ou igual a 780px, mostre 15 caracteres
+                    if (itens_pedido.length > 20) {
+                        pedidoElement.textContent = itens_pedido.substring(0, 25) + '...';
+                    } else {
+                        pedidoElement.textContent = itens_pedido;
+                    }
+                }
+                
 
-                var timeElement = document.createElement('span');
-                timeElement.className = 'card-time';
-                timeElement.textContent = time;
+                //Cria o outro ícone de relógio "<i class="fas fa-clock"></i>"
+                var userIcon = document.createElement('i');
+                userIcon.className = 'fa-solid fa-user';
 
+                //Cria a outra tag span para colocar o dado de tempo: "<span class="card-time">16:57</span>"
+                var userElement = document.createElement('span');
+                userElement.className = 'card-time';
+                userElement.textContent = nome_do_cliente;
+                //userElement.textContent = 'teste';
+
+                //Cria a div de: "<div class="icon-container">"
                 var iconContainer = document.createElement('div');
                 iconContainer.className = 'icon-container';
-                iconContainer.appendChild(calendarIcon);
-                iconContainer.appendChild(dateElement);
+                iconContainer.appendChild(orderIcon); //incluir o icone de calendario dentro da div 'icon-container'
+                iconContainer.appendChild(pedidoElement); //incluir o conteúdo de data dentro da div 'icon-container'
 
+                //Criar a div: "<div class="time-container">"
                 var timeContainer = document.createElement('div');
                 timeContainer.className = 'time-container';
-                timeContainer.appendChild(timeIcon);
-                timeContainer.appendChild(timeElement);
+                timeContainer.appendChild(userIcon); //Inclui o icone de relogio
+                timeContainer.appendChild(userElement); //Inclui o conteúdo das horas
 
-                datetimeElement.appendChild(iconContainer);
-                datetimeElement.appendChild(timeContainer);
+                infoMiddleElement.appendChild(timeContainer);
+                infoMiddleElement.appendChild(iconContainer);
 
-                card.appendChild(datetimeElement);
+                card.appendChild(infoMiddleElement);
+
+                var select = createSelect();
+                card.appendChild(select);
 
                 // Link
                 var link = document.createElement('a');
                 link.href = url;
-                link.textContent = 'Ver pedido';
+                link.textContent = 'Ver detalhes';
                 link.classList.add('ver-pedido-link');
                 card.appendChild(link);
+
+                var linkDelete = document.createElement('a');
+                linkDelete.className = 'linkDelete'
+                linkDelete.textContent = 'Excluir'
+                card.appendChild(linkDelete);
+
+                // -------------------------Dropdown para os botões não está funcionando (revisar) -----------------------
+                var dropdown = document.createElement('div');
+                dropdown.className = 'dropdownDelete';
+                dropdown.style.display = 'none'; // Inicialmente, o dropdown está escondido
+                
+                var questionMark = document.createElement('i')
+                questionMark.className = "fa-solid fa-question"
+
+                // Texto de aviso
+                var textoAviso = document.createElement('p');
+                textoAviso.className = 'textoAviso'
+                textoAviso.textContent = 'Deletar pedido?';
+                textoAviso.title = '***O pedido será excluído apenas do kanban de pedidos.***'
+                dropdown.appendChild(textoAviso);
+                
+                // Botão 1
+                var botao1 = document.createElement('button');
+                botao1.className = "botao-deletar"
+                botao1.title = '***O pedido será excluído apenas do kanban de pedidos.***'
+                botao1.textContent = 'Sim';
+                
+                var botao2 = document.createElement('button');
+                botao2.className = "botao-voltar"
+                botao2.textContent = 'Não';
+                
+                var botoesDiv = document.createElement('div');
+                botoesDiv.className = 'botoesDiv'
+                
+                botoesDiv.appendChild(botao1);
+                botoesDiv.appendChild(botao2);
+                dropdown.appendChild(botoesDiv);
+
+                // Função para alternar a visibilidade do dropdown
+                function toggleDropdown() {
+                    
+                    if (dropdown.style.display === 'none' || dropdown.style.display === '') {
+                        dropdown.style.display = 'block';
+                        linkDelete.style.display = 'none';
+                        
+                    } else {
+                        dropdown.style.display = 'none';
+                        linkDelete.style.display = 'block';
+                    }
+                }
+                
+
+                // Ao clicar em excluir, abre a caixa de confirmação Sim e Não
+                linkDelete.addEventListener('click', function() {
+                    toggleDropdown();
+                });
+
+                // Ao clicar em Sim pós Excluir, chama o ajax de exclusão
+                botao1.addEventListener('click', function(){
+                    var pedidoId = card.getAttribute('data-id');
+                    toggleMostrarKanban(pedidoId);
+                    location.reload();
+                });
+
+                // Adicione o ícone de lata de lixo e o dropdown ao textContainer
+                card.appendChild(linkDelete);
+                
+                card.appendChild(dropdown);
+
+                botao2.addEventListener('click', function() {
+                    console.log('Botão "Não" clicado');
+                    dropdown.style.display = 'none'; // Oculta o dropdown ao clicar em "Não"
+                    linkDelete.style.display = 'block';
+                });
+
+                //-------------------------------------
 
                 var dropzone;
                 switch (status) {
@@ -284,6 +451,7 @@
 
             function createSelect() {
               var select = document.createElement('select');
+              select.className = "selectColumn"
               select.addEventListener('change', handleSelectChange);
         
               var options = ['todo', 'inProgress', 'waiting', 'done'];
@@ -316,13 +484,15 @@
 
             document.addEventListener('DOMContentLoaded', function () {
                 {% for pedido in pedidos %}
-                    createPedidoCard("{{ pedido }}", "{{ pedido.status_do_pedido }}", {{ pedido.id }}, "{% url 'resumo_pedido' pedido.id %}", "{{ pedido.date }}", "{{ pedido.time }}");
+                    {% if pedido.mostrar_kanban %}
+                        createPedidoCard("{{ pedido }}", "{{ pedido.status_do_pedido }}", "{{ pedido.id }}", "{% url 'resumo_pedido' pedido.id %}", "{{ pedido.date }}", "{{ pedido.time }}", "{{ pedido.nome_do_cliente }}", "{{ pedido.itens_pedido }}", "{{ pedido.formatted_date }}");
+                    {% endif %}
                 {% endfor %}
             });
 
         </script>
 
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
-        <!-- <script src="{% static 'js/scripts.js' %}"></script> -->
+        <script src="{% static 'js/scripts.js' %}"></script>
     </body>
 </html>

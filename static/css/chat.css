@@ -49,7 +49,6 @@ body {
     height: 40px;
     margin: 10px;
     cursor: pointer;
-    
 }
 
 .menu-icons {
@@ -85,7 +84,7 @@ body {
     margin: 0;
     text-align: start;
     /* border: 1px solid black; */
-    padding: 10px 0;
+    padding: 3px 0;
     /* display: flex; */
 
 }
@@ -134,16 +133,6 @@ body {
 }
 
 .defaultText {
-  /* display: none; */
-
-  /* position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  text-align: center; */
-
-  /* flex: 4; */
-  /* width: 68vw; */
   width: 107%;
   padding-top: 20vh;
   text-align: center;
@@ -178,7 +167,8 @@ body {
   display: none;
   flex-direction: column;
   /* width: 68vw; */
-  width: 107%;
+  width: 100%;
+
 }
 
 .message-client {
@@ -241,19 +231,13 @@ body {
 
 .message-input input[type="text"] {
   width: 100%;
-  border: none;
+  border: 1px solid #f2f2f2;
+  border-radius: 25px;
   outline: none;
+  padding-left: 10px;
+  font-size: 14px;
 }
 
-/* .botao-send {
-  padding: 10px 15px;
-  background-color: #5C7AD3;
-  border-style: none;
-  border-radius: 50px;
-  cursor: pointer;
-  width: 50px;
-  height: auto;
-} */
 
 .botao-send {
     width: 50px;
@@ -265,6 +249,8 @@ body {
     align-items: center; /* Centraliza verticalmente */
     cursor: pointer;
     border: none; /* Remove a borda padrão */
+
+    padding: 0;
 }
 
 .botao-send:active {
@@ -291,6 +277,7 @@ body {
     margin-right: 10px;
     width: 50px;
     height: 50px;
+    padding: 0;
 }
 .botao-play-chatbot  {
     background-color: #ff9696;
@@ -335,7 +322,7 @@ body {
 
 /* Estilização da barra de rolagem no Chrome e Safari */
 ::-webkit-scrollbar {
-width: 10px;
+width: 5px;
 }
 
 ::-webkit-scrollbar-track {
@@ -360,7 +347,7 @@ scrollbar-color: #212D40 #f1f1f1;
 }
 
 .scrollbar::-webkit-scrollbar {
-width: 10px;
+width: 5px;
 }
 
 .scrollbar::-webkit-scrollbar-track {
@@ -434,7 +421,7 @@ background-color: #555;
 }
 
 
-
+/* 
 
 .dropup {
   display: none;
@@ -489,5 +476,292 @@ background-color: #555;
   display: flex;
   flex-direction: row;
   justify-content: flex-end;
+} */
+
+
+/* Estilos para a versão desktop (tamanhos de tela maiores que 780px) */
+@media (min-width: 781px) {
+  .contato-button {
+    display: none;
+  }
+  .menu-icons {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  /* Restaure os estilos originais dos ícones do menu */
+  .menu-icons i {
+    font-size: 24px;
+    text-align: center;
+  }
+
+  /* Esconda o botão de menu móvel */
+  .mobile-menu-button {
+    display: none;
+  }
+
+  /* Certifique-se de que o dropdown móvel esteja oculto */
+  .mobile-menu {
+    display: none;
+
+  }
+
+  .info-cliente {
+    display: none;
+  }
+
+
+}
+
+
+
+@media (max-width: 780px) {
+  html body {
+  margin: 0;
+  padding: 0;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", "Liberation Sans", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  /* height: 100%; */
+}
+
+.conversation {
+  padding: 11vh 10px 8vh 10px;
+
+}
+
+.message-client {
+  max-width: 90%;
+}
+.message-response {
+  max-width: 90%;
+}
+
+.chat-container {
+  display: flex;
+  flex-direction: column; 
+  height: 100%;
+}
+
+
+.icons-div-mobile {
+  display: flex;
+  flex-direction: row;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+
+.icons-div-mobile:active {
+  background-color: rgb(221, 221, 221);
+}
+
+#back-icon {
+  color: #FFF; 
+  font-size: 24px; 
+  margin: 10px;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+#back-icon:active {
+  background-color: rgba(221, 221, 221, 0.466);
+  border-radius: 50px;
+  margin: 10px;
+}
+
+.icons
+
+.icons-div-mobile p {
+  margin: 0;
+}
+
+
+.menu-icons {
+    display: none;
+}
+
+.foto-perfil {
+    width: 40px;
+    height: 40px;
+    margin: 10px;
+    cursor: pointer;
+}
+
+.mobile-menu-button {
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 24px;
+    cursor: pointer;
+    margin-right: 10px;
+    align-items: center;
+    display: flex;
+}
+
+
+
+/* Estilos para o dropdown de ícones */
+.mobile-menu {
+    display: none;
+    position: absolute;
+    top: 9vh; /* Ajuste a posição conforme necessário */
+    right: 0;
+    background-color: #fff;
+    border-radius: 10px;
+    padding: 10px;
+    z-index: 99999;
+    width: 50%;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2), 0px 0px 1px rgba(0, 0, 0, 0.2);
+}
+
+/* Estilos para os ícones do dropdown */
+.mobile-menu a {
+    color: #212D40;
+    text-decoration: none;
+    display: block;
+    margin-bottom: 1vh;
+}
+
+.mobile-menu a:last-child {
+  margin-bottom: 0;
+}
+
+
+/* Mostrar o dropdown quando o botão for clicado */
+.mobile-menu-button.active + .mobile-menu {
+    display: block;
+}
+
+.menu-icons i {
+  font-size: 24px;
+  text-align: center;
+}
+
+#icones-menu {
+  margin-top: 0;
+  width: 25px;
+  margin-right: 5vw;
+  color: #212D40;
+}
+
+
+.menu {
+  background-color: #5C7AD3;
+  padding: 10px; 
+  width: 100%;
+  height: 10vh;
+  max-width: 100%;
+  display: flex;
+  justify-content: space-between;
+  z-index: 99999;
+  position: fixed;
+}
+
+.contacts {
+  flex: 1; 
+  background-color: #FFFFFF;
+  padding: 10px;
+  border-right: 1px solid #f2f2f2;
+  padding-top: 10vh;
+}
+
+
+.info-cliente {
+  margin-left: 10px;
+  display: flex;
+  flex-direction: row;
+}
+
+.nome-cliente {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.numero-cliente {
+  margin: 0;
+  padding: 0;
+  font-size: 16px;
+  color: #212D40;
+}
+
+.data-mensagem {
+  margin: -5px 0 ;
+  padding: 0;
+  font-size: 12px;
+  color: #212D40;
+}
+
+.side-conversation {
+  flex: 1; 
+  display: none;
+  flex-direction: column;
+  scroll-behavior: smooth;
+}
+
+/* Adicione a classe "expanded" à "side-conversation" para expandi-la */
+.side-conversation.expanded {
+  flex: 1;
+}
+
+.message-input {
+  z-index: 999999;
+  position: fixed;
+  bottom: 0;
+  height: 8vh;
+  background: transparent;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px;
+  /* padding: 10px 0px 10px 10px; */
+}
+
+.message-input input[type="text"] {
+  flex: 7;
+  font-size: 16px;
+  background-color: #FFF;
+  border-radius: 50px;
+  padding: 10px;
+
+}
+
+
+.botao-send {
+    flex: 1;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%; 
+    margin: 0 5px;
+    padding: 0;
+}
+
+.botao-pause-chatbot  {
+    border-radius: 50%;
+    margin-left: 5px;
+    margin-right: 5px;
+    width: 50px;
+    height: 50px;
+    padding: 0;
+}
+
+.botao-pause-chatbot  {
+    /* margin-left: 10px;
+    margin-right: 10px; */
+    flex: 1;
+    margin: 0 5px;
+}
+
+#icon-send {
+    color: #FFFFFF; /* Cor do ícone */
+    font-size: 20px; /* Tamanho do ícone */
+    
+}    
+
+#icon-pause {
+    color: #FFFFFF; /* Cor do ícone */
+    font-size: 20px; /* Tamanho do ícone */
+}    
+
+
 }
 

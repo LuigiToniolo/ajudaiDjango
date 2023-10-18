@@ -68,11 +68,13 @@ function toggleNotificationMenu() {
   
   // Exemplo de adição de notificações à lista (pode ser alterado)
   var notificationList = document.getElementById('notification-list');
-  for (var i = 1; i <= 5; i++) {
+  const notifications = JSON.parse('{{ unread_notifications_dict|escapejs }}');
+
+  for (var i = 0; i < notifications.length; i++) {
     var notification = document.createElement('li');
-    notification.textContent = 'Notificação ' + i;
+    notification.textContent = notifications[i].verb;
     notificationList.appendChild(notification);
-  }
+  } 
 
   //Fazer contagem de notificações de acordo com as <li>'s
 
@@ -83,6 +85,7 @@ function toggleNotificationMenu() {
     notificationCount.textContent = itemCount;
   }
   
+  document.addEventListener('click', closeNotificationMenu);
   // Exemplo de adição de notificações à lista (pode ser alterado)
   // Atualiza o contador de notificações inicialmente
   updateNotificationCount();

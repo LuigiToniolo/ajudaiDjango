@@ -28,8 +28,19 @@ from django.db.models import Case, When, Value, IntegerField
 from django.core.exceptions import ObjectDoesNotExist
 from datetime import datetime, timedelta
 from django.db.models.functions import ExtractYear, ExtractMonth
+from django.http import JsonResponse
+import requests
+
+# Notifications
+from notifications.models import Notification
+from .notifications import get_unread_notifications_user
+from .context_processors import notifications_list
 
 sao_paulo_tz = pytz.timezone('America/Sao_Paulo')
+def current_date_sao_paulo():
+    return datetime.now().astimezone(sao_paulo_tz).date()
+def current_time_sao_paulo():
+    return datetime.now().astimezone(sao_paulo_tz).time()
 
 def welcome_view(request):
     try:
@@ -383,9 +394,12 @@ def minhas_conversas_view(request):
             updated_conversa_id = None
     else:
         updated_conversa_id = None
-
+        
+    #Função para adicionar número do cliente no menu responsivo
+    
+   
     context = {
-        "tab_title" : 'Ajudaí - Minhas Conversas',
+        "tab_title" : 'Ajudai - Minhas Conversas',
         "meta_desciption" : '',
         'user' : user,
         'conversas' : conversas_com_tempo_das_mensagens,
@@ -399,6 +413,8 @@ def minhas_conversas_view(request):
     )
 
 @csrf_exempt
+
+
 def check_for_new_messages_to_refresh(request):
     if request.method == 'POST':
         try:
@@ -495,10 +511,46 @@ def editar_chatbot_view(request, chatbot_id):
 
     if request.method == 'POST':
         form = ChatBotForm(request.POST, instance=chatbot)
-
+        success = True
         if form.is_valid():
-            form.save()
-            return redirect('meus-chatbots')
+            instructions = form.cleaned_data[ADITIONAL_INTRUCTIONS_FIELD_NAME]
+            if not instructions_under_the_limits(instructions, GPT3_MODEL_NAME, GPT3_TOKEK_LIMIT):
+                form.add_error(ADITIONAL_INTRUCTIONS_FIELD_NAME, instructions_over_limit_error_messages(GPT3_MODEL_NAME, instructions, GPT3_TOKEK_LIMIT))
+                success = False
+
+            #GARANTINDO QUE O CATÁLOGO ESTÁ ATIVADO SE HOUVER UM
+            chatbot_has_products_catalog = form.cleaned_data['chatbot_has_products_catalog']
+            if chatbot_has_products_catalog == True:
+                page_id = form.cleaned_data['facebook_page_id']
+                auth_token = form.cleaned_data['whats_app_api_auth_token']
+
+                url = f"https://graph.facebook.com/v17.0/{page_id}/whatsapp_commerce_settings"
+
+                headers = {
+                    'Authorization': f'Bearer {auth_token}',
+                    'Content-Type': 'application/json'
+                }
+
+                payload = {
+                    'is_catalog_visible': True  # Set to True to make the catalog visible
+                }
+
+                response = requests.post(url, headers=headers, json=payload)
+
+                if response.status_code == 200:
+                    print('XXXXXXXXXXXXXXXXXXXXXXXXXX Catalog activated successfully!')
+                else:
+                    print(f"XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX Failed to activate the catalog. Error: {response.json()}")
+                    form.add_error(None, f"Failed to activate the catalog. Error: {response.json()}")
+                    success = False
+
+            if success == True:
+                try:
+                    form.save()
+                    return redirect('meus-chatbots')
+                except Exception as e:
+                    form.add_error(None, f"Ocorreu um erro ao tentar criar o chatbot: {str(e)}")
+
     else:
         form = ChatBotForm(instance=chatbot)
 
@@ -547,7 +599,21 @@ def pedidos_realizados_view(request):
 
     user.finance_check(STANDART_PERIOD)
 
-    pedidos = Pedido.objects.filter(user=user)
+    now_sao_paulo = datetime.now().astimezone(sao_paulo_tz)
+    time_24_hours_ago_sao_paulo = now_sao_paulo - timedelta(days=1)
+
+    print(time_24_hours_ago_sao_paulo)
+
+    pedidos = Pedido.objects.filter(
+        user=user,
+    )
+
+    pedidos_last_24_hours = []
+    for pedido in pedidos:
+        pedido_datetime = datetime.combine(pedido.date, pedido.time).astimezone(sao_paulo_tz)
+        if pedido_datetime >= time_24_hours_ago_sao_paulo:
+            pedidos_last_24_hours.append(pedido)
+
 
     if not user.usuario_adimplente_ou_tolerancia_de_uso():
         return redirect('payment_debt_out_service')
@@ -558,7 +624,7 @@ def pedidos_realizados_view(request):
         'page_title' : 'Pedidos',
         'texto_link_para_resumo_pedido' : 'Veja o Resumo do Pedido',
         'user' : user,
-        'pedidos' : pedidos,
+        'pedidos' : pedidos_last_24_hours,
         'STATUS_PEDIDO_REALIZADO' : STATUS_PEDIDO_REALIZADO,
         'STATUS_PEDIDO_EM_PROCESSO' : STATUS_PEDIDO_EM_PROCESSO,
         'STATUS_PEDIDO_PENDENTE_DE_ENTREGA' : STATUS_PEDIDO_PENDENTE_DE_ENTREGA,
@@ -655,6 +721,20 @@ def update_pedido_status(request):
             return JsonResponse({'status': 'error', 'message': 'Pedido not found'})
 
     return JsonResponse({'status': 'error', 'message': 'Invalid request'})
+
+@csrf_exempt
+def update_mostrar_kanban(request):
+    if request.method == "POST":
+        pedido_id = request.POST.get("pedido_id")
+        try:
+            pedido = Pedido.objects.get(id=pedido_id)
+            pedido.mostrar_kanban = False
+            pedido.save()
+            return JsonResponse({"status": "success"})
+        except Pedido.DoesNotExist:
+            return JsonResponse({"status": "error", "message": "Pedido not found"})
+    else:
+        return JsonResponse({"status": "error", "message": "Bad request"})
 
 @csrf_exempt
 def create_pedido_manual(request):
@@ -914,18 +994,48 @@ def chatbot_creation_form(request):
 
     if request.method == 'POST':
         form = ChatBotForm(request.POST)
+        success = True
         if form.is_valid():
             instructions = form.cleaned_data[ADITIONAL_INTRUCTIONS_FIELD_NAME]
             if not instructions_under_the_limits(instructions, GPT3_MODEL_NAME, GPT3_TOKEK_LIMIT):
                 form.add_error(ADITIONAL_INTRUCTIONS_FIELD_NAME, instructions_over_limit_error_messages(GPT3_MODEL_NAME, instructions, GPT3_TOKEK_LIMIT))
-            else:
+                success = False
+
+            #GARANTINDO QUE O CATÁLOGO ESTÁ ATIVADO SE HOUVER UM
+            chatbot_has_products_catalog = form.cleaned_data['chatbot_has_products_catalog']
+            if chatbot_has_products_catalog == True:
+                page_id = form.cleaned_data['facebook_page_id']
+                auth_token = form.cleaned_data['whats_app_api_auth_token']
+
+                url = f"https://graph.facebook.com/v17.0/{page_id}/whatsapp_commerce_settings"
+
+                headers = {
+                    'Authorization': f'Bearer {auth_token}',
+                    'Content-Type': 'application/json'
+                }
+
+                payload = {
+                    'is_catalog_visible': True  # Set to True to make the catalog visible
+                }
+
+                response = requests.post(url, headers=headers, json=payload)
+
+                if response.status_code == 200:
+                    print('XXXXXXXXXXXXXXXXXXXXXXXXXX Catalog activated successfully!')
+                else:
+                    print(f"XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX Failed to activate the catalog. Error: {response.json()}")
+                    form.add_error(None, f"Failed to activate the catalog. Error: {response.json()}")
+                    success = False
+
+            if success == True:
                 try:
                     chatbot = form.save(commit=False)
                     chatbot.user = request.user
                     chatbot.save()
-                    return redirect('user_accounts')
+                    return redirect('meus-chatbots')
                 except Exception as e:
                     form.add_error(None, f"Ocorreu um erro ao tentar criar o chatbot: {str(e)}")
+                    
 
     else:
         form = ChatBotForm()
@@ -1023,21 +1133,19 @@ def process_message(data):
                     for entry in data['entry']:
                         if 'changes' in entry and 'messages' in entry['changes'][0]['value']:
                             numero_cliente = entry['changes'][0]['value']['messages'][0]['from']
-                            incoming_message = entry['changes'][0]['value']['messages'][0]['text']['body']
                             company_number_with_DDI =  entry['changes'][0]['value']['metadata']['display_phone_number']
                             #AQUI, COMO NO BANCO DE DADOS, O WHATSAPP EMPRESARIAL DO CLIENTE É REGISTRADO SEM O DDI (55 PARA BRASIL), ELE É PARA LOCALIZAÇÃO DO CLIENTE NO BANCO DE DADOS
                             company_number = company_number_with_DDI[2:]
                             chatbot= get_object_or_404(ChatBot, whatsapp_number=company_number)
                             user=chatbot.user
 
-                            aditional_instructions = chatbot.aditional_intructions
-                            #antes de verificar se tem uma conversa aberta em andamento, faz o fechamento daquelas que estão inativas ou esgotaram o tempo
-                            Conversa.close_conversa_if_needed(user)
-
                             if not user.usuario_adimplente_ou_tolerancia_de_uso:
                                 raise Exception(f'Usuário inadimplente:{user}')
+                            
+                            itens_pedidos = ''
 
                             # Get or create a conversation for the phone number
+                            new_conversation = False
                             try:
                                 conversation = Conversa.objects.get(
                                     company_client_number=numero_cliente,
@@ -1052,59 +1160,151 @@ def process_message(data):
                                         creation_date=timezone.now().astimezone(sao_paulo_tz).date(),
                                         creation_time=timezone.now().astimezone(sao_paulo_tz).time(),
                                     )
+                                    new_conversation = True
                                 else:
                                     raise Exception(f'Usuário{user} não pode criar mensagens')
+                                
                             new_context = []
-                            if conversation.chatbot_ativo == True and user.chatbots_on == True:
-                                role = ''
+                            order_message = False
+
+                            try:
+                                if entry['changes'][0]['value']['messages'][0]['type'] == "order":
+                                    sections_and_products = chatbot.sections_and_products
+                                    sections_and_products = sections_and_products.replace("\r", "").replace("\n", "").replace("\t", "")
+                                    sections_and_products = sections_and_products.strip()
+                                    sections_and_products = sections_and_products.encode('utf-8').decode('utf-8')
+                                    sections_and_products = sections_and_products.replace("\xa0", " ")
+                                    try:
+                                        sections_and_products_json = json.loads(sections_and_products)
+                                    except json.JSONDecodeError as e:
+                                        print(f"JSON Decode Error: {e}")
+                                        return
+                                    
+                                    try:
+                                        product_items = sections_and_products_json.get('product_items', [])
+
+                                        order_data = entry['changes'][0]['value']['messages'][0]["order"]
+                                        catalog_id = order_data['catalog_id']
+                                        products_ordered = order_data['product_items']
+
+                                        if catalog_id != chatbot.catalog_id:
+                                            print('XXXXXXXXXXXXXX O ID DE CATÁLOGO NÃO É O MESMO CADASTRADO NO CHATBOT')
+                                            return
+
+                                        itens_pedidos_para_contexto = 'Itens do Pedido (considerar estes e desconsiderar os anteriores): '
+                                        itens_pedidos_para_mensagem_cliente = chatbot.resposta_aparencia_antes_lista_produtos
+
+                                        for ordered_product in products_ordered:
+                                            retailer_id = ordered_product.get('product_retailer_id')
+                                            quantity = ordered_product.get('quantity')
+                                            for available_product in product_items:
+                                                if available_product.get('product_retailer_id') == retailer_id:
+                                                    nome_do_produto = available_product.get('nome_do_produto')
+                                                    preco = available_product.get('preco')
+                                                    for i in range(quantity):
+                                                        itens_pedidos_para_contexto += f"\n{nome_do_produto} : preço: R$ {preco:.2f}"
+                                                        itens_pedidos_para_mensagem_cliente += f"\n{nome_do_produto} : preço: R$ {preco:.2f}"
+                                                    
+                                        order_message = True
+                                        pedido_em_string_para_add_ao_contexto = ''
+                                        awnser_to_context = itens_pedidos_para_contexto + '\n\n' + chatbot.resposta_pedido_catálogo
+                                        awnser_to_user = itens_pedidos_para_mensagem_cliente + '\n\n' + chatbot.resposta_pedido_catálogo
+                                        new_context.append({"role": "user", "content": pedido_em_string_para_add_ao_contexto})
+                                        new_context.append({"role": "assistant", "content": awnser_to_context})
+                                        tokens_used_on_this_request = 0
+                                        conversation.substitute_conversa_context(new_context)
+                                        tokens_used_before = conversation.total_tokens_used
+                                        conversation.total_tokens_used = tokens_used_before + tokens_used_on_this_request
+                                        conversation.last_message_shown = False
+                                        conversation.need_refresh_view = True
+                                        conversation.date = timezone.now().date()
+                                        conversation.time = timezone.now().time()
+                                        conversation.save()
+
+                                        send_response(chatbot.facebook_page_id, chatbot.whats_app_api_auth_token, numero_cliente, awnser_to_user)
+                                    except Exception as e:
+                                        print(f"NÃO FOI POSSÍVEL PROCESSAR A MENSAGEM DE COMPRA: {e}")
+                                    return
+                                else:
+                                    order_message = False
+                            except:
+                                #NÃO É UMA MENSAGEM DE COMPRA (não contém as keys)
+                                order_message = False
+
+                            #MESAGEM QUE NÃO UM PEDIDO
+                            if order_message == False:
+                                mensagem_em_formato_de_texto = True
                                 try:
-                                    gpt_response, new_context, tokens_used_on_this_request = generate_gpt_response(
-                                        incoming_message, 
-                                        conversation.context, 
-                                        role,  
-                                        aditional_instructions, 
-                                        GPT3_MODEL_NAME, 
-                                        GPT3_TOKEK_LIMIT, 
-                                        chatbot.id,
-                                        user,
-                                        conversation
-                                    )
-                                except Exception as e:
-                                    raise Exception('Erro ao chamar função de resposta IA') from e
+                                    incoming_message = entry['changes'][0]['value']['messages'][0]['text']['body']
+                                except:
+                                    mensagem_em_formato_de_texto = False
+                                    incoming_message = ''
+                                
+                                if mensagem_em_formato_de_texto:
 
-                                """" finalização de conversa por chamada de função
-                                conversa_finalizada_com_pedido, resumo = pedido_confirmado(gpt_response)
-                                if conversa_finalizada_com_pedido:
-                                    Pedido.criar_novo_pedido(user,conversation,resumo,numero_cliente) 
-                                    informar_loja_fechamento_pedido(resumo, company_number)
-                                """
-                                #chama função que responde o cliente da loja via integência artificial
-                                send_response(chatbot.facebook_page_id, chatbot.whats_app_api_auth_token, numero_cliente, gpt_response)
+                                    aditional_instructions = chatbot.aditional_intructions
+                                    #antes de verificar se tem uma conversa aberta em andamento, faz o fechamento daquelas que estão inativas ou esgotaram o tempo
+                                    Conversa.close_conversa_if_needed(user)
 
-                                conversation.substitute_conversa_context(new_context)
-                                tokens_used_before = conversation.total_tokens_used
-                                conversation.total_tokens_used = tokens_used_before + tokens_used_on_this_request
-                                conversation.last_message_shown = False
-                                conversation.need_refresh_view = True
-                                conversation.date = timezone.now().astimezone(sao_paulo_tz).date()
-                                conversation.time = timezone.now().astimezone(sao_paulo_tz).time()
-                                conversation.save()
+                                    if conversation.chatbot_ativo == True and user.chatbots_on == True:
+                                        if new_conversation and chatbot.chatbot_has_products_catalog:
+                                            initial_message_before_link = chatbot.initial_message_text
+                                            catalog_link = f'https://wa.me/c/{company_number_with_DDI}'
+                                            first_message = initial_message_before_link + ": " +  catalog_link
+                                            send_response(chatbot.facebook_page_id, chatbot.whats_app_api_auth_token, numero_cliente, first_message)
+                                            #TODO lidar como o contexto e os outros elementos de conversation. deve ser setado para que o bot entenda que o menu foi enviado
+                                            pass
+                                        #TODO AQUI, FAZER UM IF PARA LIDAR COM MENSAGENS QUE CHEGAM COMO RESPOSTA A MESAGEM INTERATIVA DE CARDÁPIO
+                                        else:
+                                            role = ''
+                                            try:
+                                                gpt_response, new_context, tokens_used_on_this_request = generate_gpt_response(
+                                                    incoming_message, 
+                                                    conversation.context, 
+                                                    role,  
+                                                    aditional_instructions, 
+                                                    GPT3_MODEL_NAME, 
+                                                    GPT3_TOKEK_LIMIT, 
+                                                    chatbot.id,
+                                                    user,
+                                                    conversation
+                                                )
+                                            except Exception as e:
+                                                raise Exception('Erro ao chamar função de resposta IA') from e
 
-                                return
+                                            """" finalização de conversa por chamada de função
+                                            conversa_finalizada_com_pedido, resumo = pedido_confirmado(gpt_response)
+                                            if conversa_finalizada_com_pedido:
+                                                Pedido.criar_novo_pedido(user,conversation,resumo,numero_cliente) 
+                                                informar_loja_fechamento_pedido(resumo, company_number)
+                                            """
+                                            #chama função que responde o cliente da loja via integência artificial
+                                            send_response(chatbot.facebook_page_id, chatbot.whats_app_api_auth_token, numero_cliente, gpt_response)
 
-                            #case no response was created by ai, just saves the message in the context
-                            new_context = conversation.context
-                            new_context.append({"role": "user", "content": incoming_message})
-                            tokens_used_on_this_request = 0
-                            conversation.substitute_conversa_context(new_context)
-                            tokens_used_before = conversation.total_tokens_used
-                            conversation.total_tokens_used = tokens_used_before + tokens_used_on_this_request
-                            conversation.last_message_shown = False
-                            conversation.need_refresh_view = True
-                            conversation.date = timezone.now().astimezone(sao_paulo_tz).date()
-                            conversation.time = timezone.now().astimezone(sao_paulo_tz).time()
-                            conversation.save()
-                            return
+                                            conversation.substitute_conversa_context(new_context)
+                                            tokens_used_before = conversation.total_tokens_used
+                                            conversation.total_tokens_used = tokens_used_before + tokens_used_on_this_request
+                                            conversation.last_message_shown = False
+                                            conversation.need_refresh_view = True
+                                            conversation.date = timezone.now().astimezone(sao_paulo_tz).date()
+                                            conversation.time = timezone.now().astimezone(sao_paulo_tz).time()
+                                            conversation.save()
+
+                                            return
+
+                                    #case no response was created by ai, just saves the message in the context
+                                    new_context = conversation.context
+                                    new_context.append({"role": "user", "content": incoming_message})
+                                    tokens_used_on_this_request = 0
+                                    conversation.substitute_conversa_context(new_context)
+                                    tokens_used_before = conversation.total_tokens_used
+                                    conversation.total_tokens_used = tokens_used_before + tokens_used_on_this_request
+                                    conversation.last_message_shown = False
+                                    conversation.need_refresh_view = True
+                                    conversation.date = timezone.now().astimezone(sao_paulo_tz).date()
+                                    conversation.time = timezone.now().astimezone(sao_paulo_tz).time()
+                                    conversation.save()
+                                    return
 
                         else:
                             return
@@ -1386,3 +1586,38 @@ def aviso_user_admin(request):
         {
         }
     )
+    
+def notifications(request):
+    try:
+        user = CustomUser.getUser(request)
+    except:
+        return redirect('database_error')
+
+    if not request.user.is_authenticated:
+        return redirect('login')
+
+    if not user.userIsPremium():
+        return redirect('planos_disponiveis')
+
+    if not user.usuario_adimplente_ou_tolerancia_de_uso():
+        return redirect('payment_debt_out_service')
+
+    user.finance_check(STANDART_PERIOD)
+
+    # Conversa.close_conversa_if_needed(user)
+    
+    context = {
+    "tab_title" : 'Notificações',
+    'user' : user,
+    'userIsPremium' : user.userIsPremium(),
+    }
+    
+    return render(
+        request,
+        'minhas-notificacoes.html',  # Path from the 'templates' folder inside the app folder
+        context,
+    )
+
+def mark_notification_as_read(request, notification_id):
+    Notification.objects.filter(id=notification_id).mark_all_as_read(recipient=request.user)
+    return redirect(reverse('notifications'))

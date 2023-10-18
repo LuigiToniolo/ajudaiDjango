@@ -2,10 +2,17 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.core.exceptions import ValidationError
 from django.contrib.auth.forms import PasswordChangeForm
+import json
 
 from ajudai_django_app.models import ChatBot, CustomUser
 from constants import ADITIONAL_INTRUCTIONS_FIELD_ID, ADITIONAL_INTRUCTIONS_FIELD_NAME, ADITIONAL_INTRUCTIONS_FIELD_ROWS, ADITIONAL_INTRUCTIONS_FIELD_SIZE_IN_PX, CELLPHONE_FIELD_SIZE_IN_PX, CHATBOT_NAME_FIELD_SIZE_IN_PX, COMPANY_NAME_FIELD_SIZE_IN_PX, FACEBOOK_PAG_ID_FIELD_SIZE_IN_PX, FULL_NAME_FIELD_SIZE_IN_PX, MAX_CHAR_INSTRUCTIONS_CHATBOT_FORM, PASSWORD_FIELD_ID, REGISTER_EMAIL_FIELD_SIZE_IN_PX, REGISTER_FIELD_STANDART_SIZE_IN_PX, USER_NAME_FIELD_ID, WHATS_APP_TOKEN_FILD_SIZE_IN_PX
 
+class JSONInput(forms.Textarea):
+    def render(self, name, value, attrs=None, renderer=None):
+        if value:
+            value = json.dumps(value, indent=2)
+        return super().render(name, value, attrs, renderer)
+    
 class CustomUserCreationForm(UserCreationForm):
     email = forms.EmailField(
         label='Email corporativo',
@@ -79,8 +86,8 @@ class LoginForm(forms.Form):
             attrs={
                 'name': USER_NAME_FIELD_ID, 
                 'id': USER_NAME_FIELD_ID, 
-                'style': 
-                'width: {}px;'.format(REGISTER_FIELD_STANDART_SIZE_IN_PX)
+                # 'style': 
+                # 'width: {}px;'.format(REGISTER_FIELD_STANDART_SIZE_IN_PX)
                 }
             )
         )
@@ -90,7 +97,7 @@ class LoginForm(forms.Form):
             attrs={
                 'name': PASSWORD_FIELD_ID, 
                 'id': PASSWORD_FIELD_ID, 
-                'style': 'width: {}px;'.format(REGISTER_FIELD_STANDART_SIZE_IN_PX)
+                # 'style': 'width: {}px;'.format(REGISTER_FIELD_STANDART_SIZE_IN_PX)
                 }
             )
         )
@@ -120,8 +127,9 @@ class ChatBotForm(forms.ModelForm):
             )
         )
     cardapio = forms.CharField(
+        required=False,
         max_length=MAX_CHAR_INSTRUCTIONS_CHATBOT_FORM, 
-        label='Cardápio de restaurante (com nomes dos pratos, ingredientes e preços)',
+        label='Cardápio de restaurante (com nomes dos pratos, ingredientes e preços) (caso o cardápio esteja registrado na própria API, deixar em branco)',
         widget=forms.Textarea(
             attrs={
                 # 'style': 'width: {}px;'.format(ADITIONAL_INTRUCTIONS_FIELD_SIZE_IN_PX),
@@ -132,14 +140,15 @@ class ChatBotForm(forms.ModelForm):
             )
         )
     descricao_funcao_cardapio = forms.CharField(
-        label='Descrição função com informações do cardápio',
+        required=False,
+        label='Descrição função com informações do cardápio (caso o cardápio esteja registrado na própria API, deixar em branco)',
         initial='Obtém uma informação específica, ou um conjunto de informações específicas contidas no cardápio, como nome do produto, tamanho, ingredientes e preço',
         )
     whatsapp_number = forms.CharField(
         label='Número WhatsApp Business',
         widget=forms.TextInput(attrs={
-            # 'style': 'width: {}px;'.format(CELLPHONE_FIELD_SIZE_IN_PX)
-            })
+            'id': 'whatsapp_number'
+        })
     )
     whats_app_api_auth_token = forms.CharField(
         label='Token de Autenticação API do Whatsapp (conforme instruções)',
@@ -153,11 +162,76 @@ class ChatBotForm(forms.ModelForm):
             # 'style': 'width: {}px;'.format(FACEBOOK_PAG_ID_FIELD_SIZE_IN_PX)
             })
     )
-    
+
+    chatbot_has_products_catalog = forms.BooleanField(
+        label='Você possui um cardápio (catálogo de produtos) registrado na API?',
+        required=False,
+    )
+
+    initial_message_text = forms.CharField(
+        label='Mensagem inicial de envio de cardápio',
+        initial='Olá, seja bem-vindo! Veja nosso cardápio e selecione os itens que você deseja os adicionando no carrinho:',
+        required=False,
+        widget=forms.TextInput(attrs={
+            # 'style': 'width: {}px;'.format(WHATS_APP_TOKEN_FILD_SIZE_IN_PX)
+            })
+    )
+
+    resposta_aparencia_antes_lista_produtos = forms.CharField(
+        label='Resposta ao pedido do cliente - Parte 1 (antecede a lista de itens pedido)',
+        initial='Itens do Pedido (considerar estes e desconsiderar os anteriores): ',
+        required=False,
+        widget=forms.TextInput(attrs={
+            # 'style': 'width: {}px;'.format(WHATS_APP_TOKEN_FILD_SIZE_IN_PX)
+            })
+    )
+
+    resposta_pedido_catálogo = forms.CharField(
+        label='Resposta ao envio de ordem de compra de itens do carrinho',
+        initial='Itens pedidos registrados com sucesso. Agora, para concluirmos o seu pedido, pedimos para informar se você quer retirar o seu pedido no balcão ou que ele seja entregue para você',
+        required=False,
+        widget=forms.TextInput(attrs={
+            # 'style': 'width: {}px;'.format(WHATS_APP_TOKEN_FILD_SIZE_IN_PX)
+            })
+    )
+
+    catalog_id = forms.CharField(
+        required=False,
+        label='ID do catálogo (conforme adicionado no WABA)',
+        widget=forms.TextInput(attrs={
+            # any additional attributes you want
+        })
+    )
+
+    sections_and_products = forms.CharField(
+        required=False,
+        label='Lista de IDs e Nomes de Produtos (conforme adicionado no WABA)',
+        widget=JSONInput(attrs={'cols': 80, 'rows': 20}),
+        initial=json.dumps({
+            "product_items": [
+                {
+                    "product_retailer_id" : "",
+                    "nome_do_produto" : "",
+                    "preco" : 0.00,
+                }
+            ]
+        }, indent=2)
+    )
+
     class Meta:
         model = ChatBot
-        fields = ['nome_do_chatbot', 'whatsapp_number', 'whats_app_api_auth_token', 'facebook_page_id', ADITIONAL_INTRUCTIONS_FIELD_NAME, 'cardapio', 'descricao_funcao_cardapio',]
+        fields = [
+            'nome_do_chatbot', 'whatsapp_number', 'whats_app_api_auth_token', 'facebook_page_id', ADITIONAL_INTRUCTIONS_FIELD_NAME, 'cardapio', 'descricao_funcao_cardapio', 'chatbot_has_products_catalog', 'initial_message_text', 'resposta_aparencia_antes_lista_produtos', 'resposta_pedido_catálogo', 'catalog_id', 'sections_and_products']
 
+    def clean_sections_and_products(self):
+        data = self.cleaned_data['sections_and_products']
+        try:
+            parsed_data = json.loads(data)
+        except json.JSONDecodeError:
+            raise ValidationError("Invalid JSON format")
+
+        return parsed_data
+    
     def clean(self):
         cleaned_data = super().clean()
         return cleaned_data

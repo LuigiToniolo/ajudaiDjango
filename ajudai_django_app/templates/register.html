@@ -9,12 +9,12 @@
     </head>
     <body>
       <h1>Registre-se!</h1>
-      <h3 class="subtitulo">Seja membro do Ajudai e alavanque seu negócio com a nossa poderosa ferramenta</h3>
+      <h3 class="subtitulo">Seja membro do Ajudai e alavanque seu negócio com a nossa poderosa ferramenta!</h3>
       <div class="container">
         <form method="post" action="{% url 'register' %}" class="inputs">
           {% csrf_token %}
           {{ form.as_p }}
-          <p class="termos-de-uso">Ao criar a sua conta, você aceita nossos <a href="{% url 'termos_e_condicoes' %}">Termos de Uso</a> e <a href="{% url 'privacidade' %}">Política de Privacidade</a>.</p>
+          <p class="termos-de-uso">Ao criar a sua conta, você aceita nossos <a href="{% url 'termos_e_condicoes' %}">Termos de Uso</a> e <a href="https://ajudai.io/politica-de-privacidade/">Política de Privacidade</a>.</p>
           <div class="botao-div">
 
             <div id="menu">
