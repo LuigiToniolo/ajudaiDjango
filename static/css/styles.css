@@ -11035,7 +11035,7 @@ body {
 .sb-sidenav-dark .sb-sidenav-menu .nav-link {
   color: rgba(255, 255, 255, 0.5);
 }
-.sb-sidenav-dark .sb-sidenav-menu .nav-link .sb-nav-link-icon {
+.sb-sidenav-dark .sb-sidenav-menu .nav-link .sb-nav-link-icon  {
   color: rgba(255, 255, 255, 0.25);
 }
 .sb-sidenav-dark .sb-sidenav-menu .nav-link .sb-sidenav-collapse-arrow {
@@ -12390,12 +12390,17 @@ outline: none;
   border-bottom: none;
 }
 
-.fa-bell {
+#notification-sign {
   color: #999;
 }
 
-.fa-bell:hover {
+#notification-sign:hover {
   color: #555;
+}
+
+#notification-side {
+  display: flex;
+  align-items: center;
 }
 
 
