@@ -71,7 +71,7 @@
                             <div class="plan">
                                 <img class="standard-img" src="{% static 'image/coin.png' %}" alt="standard plans ajudai">
                                 <h3 class="title">Standard</h3>
-                                <p class="price"><span class="moeda">R$</span>0,20<span class="moeda1">/Conversa</span></p>
+                                <p class="price"><span class="moeda">R$</span>0,55<span class="moeda1">/Conversa</span></p>
                                 <p class="conversas-qnt">Usando <strong>0 a 1500</strong><span class="moeda1">/mês</span></p>
                         </div>
                         
@@ -98,7 +98,7 @@
                         <div class="plan">
                             <img class="standard-img" src="{% static 'image/money.png' %}" alt="advanced plans ajudai">
                             <h3 class="title">Plus</h3>
-                            <p class="price-pop"><span class="moeda">R$</span>0,18<span class="moeda1">/Conversa</span></p>
+                            <p class="price-pop"><span class="moeda">R$</span>0,50<span class="moeda1">/Conversa</span></p>
                             <p class="conversas-qnt">Usando <strong>1501 a 2500</strong><span class="moeda1">/mês</span></p>
                         </div>
 
@@ -123,7 +123,7 @@
                             <div class="plan">
                                 <img class="standard-img" src="{% static 'image/premium.png' %}" alt="premium plans ajudai">
                                 <h2 class="title">Premium</h2>
-                                <p class="price"><span class="moeda">R$</span>0,16<span class="moeda1">/Conversa</span></p>
+                                <p class="price"><span class="moeda">R$</span>0,45<span class="moeda1">/Conversa</span></p>
                                 <p class="conversas-qnt">Usando <strong>2501 a 4500</strong><span class="moeda1">/mês</span></p>
                             </div>
 
@@ -149,7 +149,7 @@
                             <div class="plan">
                                 <img class="standard-img" src="{% static 'image/rocket.png' %}" alt="business vip plan ajudai">
                                 <h2 class="title">Corporativo VIP</h2>
-                                <p class="price"><span class="moeda">R$</span>0,12<span class="moeda1">/Conversa</span></p>
+                                <p class="price"><span class="moeda">R$</span>0,40<span class="moeda1">/Conversa</span></p>
                                 <p class="conversas-qnt">Usando <strong>4501 a 20000</strong><span class="moeda1">/mês</span></p>
                             </div>
                           </div>
@@ -275,13 +275,13 @@
                   var valorPrecificacao;
               
                   if (quantidadeConversas >= 0 && quantidadeConversas <= 1500) {
-                    valorPrecificacao = 0.20;
+                    valorPrecificacao = 0.55;
                   } else if (quantidadeConversas >= 1501 && quantidadeConversas <= 2500) {
-                    valorPrecificacao = 0.18;
+                    valorPrecificacao = 0.50;
                   } else if (quantidadeConversas >= 2501 && quantidadeConversas <= 4500) {
-                    valorPrecificacao = 0.16;
+                    valorPrecificacao = 0.45;
                   } else if (quantidadeConversas >= 4501 && quantidadeConversas <= 20000) {
-                    valorPrecificacao = 0.12;
+                    valorPrecificacao = 0.40;
                   } else {
                     valorPrecificacao = "N/A";
                   }
@@ -311,6 +311,7 @@
           const progressNext = document.getElementById("progress-next");
           const progressPrev = document.getElementById("progress-prev");
           const steps = document.querySelectorAll(".stepx");
+          const plans = document.querySelectorAll(".plan")
           let active = 1;
 
           document.addEventListener("DOMContentLoaded", () => {
@@ -346,6 +347,14 @@
               updateCardHighlight(index); // Chamada à função para destacar o card correspondente
             });
           });
+
+          plans.forEach((plan, index) => {
+            plan.addEventListener("click", () => {
+              active = index + 1;
+              updateProgress();
+              updateCardHighlight(index);
+            });
+          });          
 
           const updateCardHighlight = (activeIndex) => {
             const planContainers = document.querySelectorAll(".plan-container .plan");
