@@ -1588,7 +1588,35 @@ def aviso_user_admin(request):
     )
     
 def notifications(request):
-    return render(request, 'minhas-notificacoes.html')
+    try:
+        user = CustomUser.getUser(request)
+    except:
+        return redirect('database_error')
+
+    if not request.user.is_authenticated:
+        return redirect('login')
+
+    if not user.userIsPremium():
+        return redirect('planos_disponiveis')
+
+    if not user.usuario_adimplente_ou_tolerancia_de_uso():
+        return redirect('payment_debt_out_service')
+
+    user.finance_check(STANDART_PERIOD)
+
+    # Conversa.close_conversa_if_needed(user)
+    
+    context = {
+    "tab_title" : 'Notificações',
+    'user' : user,
+    'userIsPremium' : user.userIsPremium(),
+    }
+    
+    return render(
+        request,
+        'minhas-notificacoes.html',  # Path from the 'templates' folder inside the app folder
+        context,
+    )
 
 def mark_notification_as_read(request, notification_id):
     Notification.objects.filter(id=notification_id).mark_all_as_read(recipient=request.user)
