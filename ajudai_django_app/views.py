@@ -612,6 +612,7 @@ def pedidos_realizados_view(request):
     for pedido in pedidos:
         pedido_datetime = datetime.combine(pedido.date, pedido.time).astimezone(sao_paulo_tz)
         if pedido_datetime >= time_24_hours_ago_sao_paulo:
+            pedido.itens_pedido = pedido.itens_pedido.replace('\n', ' ')
             pedidos_last_24_hours.append(pedido)
 
 

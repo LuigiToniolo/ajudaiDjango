@@ -8,6 +8,7 @@
         <meta name="author" content="" />
         <title>{{ tab_title }}</title>
         {% load static %}
+        <link rel="icon" href="{% static 'image/logo-ajudai-circulo.png' %}">
         <link href="{% static 'css/styles.css' %}" rel="stylesheet" />
         <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -123,10 +124,10 @@
                                 {% endif %}
                                 <div class="botao-acao-chatbots">
                                     <button class="botao-save-chatbot" type="submit">{{ submit_edit_chatbot_text }}</button>
-                                    <form method="post" action="{% url 'chatbot_delete' chatbot.id %}">
+                                    <!-- <form method="post" action="{% url 'chatbot_delete' chatbot.id %}">
                                         {% csrf_token %}
                                         <input class="botao-deletar-chatbot" type="submit" value="{{ delete_edit_chatbot_text }}" onclick="return confirm('Você tem certeza que deseja deletar esse Chatbot? Essa ação não pode ser desfeita!');">
-                                    </form>
+                                    </form> -->
                                 </div>
                             </form>
                         </div>
