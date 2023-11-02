@@ -31,6 +31,12 @@ from django.db.models.functions import ExtractYear, ExtractMonth
 from django.http import JsonResponse
 import requests
 
+# Releases
+import hmac
+import hashlib
+import subprocess
+import git
+from urllib.parse import parse_qs
 # Notifications
 from notifications.models import Notification
 from .notifications import get_unread_notifications_user
@@ -1621,3 +1627,70 @@ def notifications(request):
 def mark_notification_as_read(request, notification_id):
     Notification.objects.filter(id=notification_id).mark_all_as_read(recipient=request.user)
     return redirect(reverse('notifications'))
+
+# GITHUB WEBHOOK FOR UPDATING CODE IN THE SERVER
+@csrf_exempt
+def github_deploy_webhook(request):
+    if(request.method == 'POST'):
+        secret_key = get_secret_var('GITHUB_WEBHOOK_SECRET_KEY')
+        signature = request.META.get('HTTP_X_HUB_SIGNATURE')
+        if not signature:
+            return JsonResponse({'message': 'No signature found in request'}, status=400)
+
+        sha_name, signature = signature.split('=')
+        if sha_name != 'sha1':
+            return JsonResponse({'message': 'Invalid signature type'}, status=400)
+
+        mac = hmac.new(secret_key.encode(), msg=request.body, digestmod=hashlib.sha1)
+        if not hmac.compare_digest(str(mac.hexdigest()), str(signature)):
+            return JsonResponse({'message': 'Invalid signature'}, status=400)
+        
+        
+        payload = parse_qs(request.body.decode()).get('payload', [''])[0]
+        content = json.loads(payload)
+        
+        # Get repo
+        repo = git.Repo('.')
+        # Fetch latest changes
+        repo.remotes.origin.fetch()
+        
+        def checkout_to_latest_release_tag(tag_to_exclude=None):
+            # Get the list of releases sorted by their creation date in descending order
+            releases = sorted(repo.tags, key=lambda r: r.commit.committed_date, reverse=True)
+
+            if releases:
+                if tag_to_exclude:
+                    releases = [r for r in releases if r.name != tag_to_exclude]
+
+                if releases:
+                    latest_release_tag = releases[0].name
+                    repo.git.checkout(latest_release_tag)
+                    print(f"Checked out to the latest release tag: {latest_release_tag}")
+                else:
+                    print("No suitable release tags found in the repository.")
+            else:
+                print("No release tags found in the repository.")
+
+        def checkout_to_tag(tag_name2):
+            if tag_name2 in [tag.name for tag in repo.tags]:
+                # Checkout to the desired tag
+                repo.git.checkout(tag_name2)
+                print(f"Checked out to tag: {tag_name2}")
+            else:
+                print(f"Tag {tag_name} does not exist in the repository")
+
+        release = content.get('release')
+        tag_name = release.get('tag_name')
+        
+        try:
+            if content['action'] == 'released':
+                if content.get('release'):
+                    print(f"A release was created: {tag_name}")
+                    checkout_to_tag(tag_name)
+            elif content['action'] == 'deleted':
+                print(f"A release was deleted {tag_name}")
+                checkout_to_latest_release_tag(tag_name)
+        except Exception as e:
+            return JsonResponse({'message': f"Ocorreu um problema ao atualizar o repositório, tente novamente de maneira manual: {e}"})        
+        
+        return JsonResponse({'message': 'Repositório atualizado com sucesso'})

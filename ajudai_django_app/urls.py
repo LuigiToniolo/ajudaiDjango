@@ -57,4 +57,5 @@ urlpatterns = [
     path('notifications/', views.notifications, name="notifications"),
     path('mark_notification_as_read/<notification_id>/', views.mark_notification_as_read, name="mark_notification_as_read"),
     path('update_mostrar_kanban/', views.update_mostrar_kanban, name='update_mostrar_kanban'),
+    path('github_deploy/', views.github_deploy_webhook, name='github_deploy'),
 ]
