@@ -378,6 +378,20 @@ def minhas_conversas_view(request):
             # handle the case when the lengths don't match, e.g., log an error or raise an exception
             pass
 
+    chats_grouped_by_client_phone_number = []
+    for index, conversa in enumerate(conversas_com_tempo_das_mensagens):
+        already_inserted = False
+        if(not conversa in chats_grouped_by_client_phone_number):
+            for i in range(len(chats_grouped_by_client_phone_number)):
+                print(chats_grouped_by_client_phone_number, index)
+                grouped_chat = chats_grouped_by_client_phone_number[i]
+                # If already exists a chat with the current chatbot and cellphone number, just append one context in another
+                if(grouped_chat.chatbot == conversa.chatbot and grouped_chat.company_client_number == conversa.company_client_number):
+                    grouped_chat.context.extend(entry for entry in conversa.context if entry['role'] in ('user', 'assistant'))
+                    already_inserted = True
+                    continue
+            if(not already_inserted):
+                chats_grouped_by_client_phone_number.append(conversa)
 
     if request.method == 'POST':
         form = MessageForm(request.POST)
@@ -402,7 +416,7 @@ def minhas_conversas_view(request):
         "tab_title" : 'Ajudai - Minhas Conversas',
         "meta_desciption" : '',
         'user' : user,
-        'conversas' : conversas_com_tempo_das_mensagens,
+        'conversas' : chats_grouped_by_client_phone_number,
         'updated_conversa_id': updated_conversa_id,
         'userIsPremium' : user.userIsPremium(),
     }
