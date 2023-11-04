@@ -172,7 +172,11 @@
                   {% if message.role == "user" %}
                       <div class="dialog-client">
                           <div class="message-client">
-                          <span class="sender">Cliente ({{ conversa.company_client_number }})</span>
+                            {% if  conversa.client_name %}
+                              <span class="sender">Cliente ({{ conversa.client_name }})</span> 
+                            {% else %}
+                              <span class="sender">Cliente ({{ conversa.company_client_number }})</span> 
+                            {% endif %}
                           <p>{{ message.content }}</p>
                           <span class="timestamp">{{ message.date }} {{ message.time }}</span>
                           </div>
