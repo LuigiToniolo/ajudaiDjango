@@ -135,7 +135,11 @@
                     />
                   </div>
                   <div class="conteudo-texto-contato">
-                    <p class="texto-contato"><strong>{{ conversa.company_client_number }}</strong></p>
+                    {% if conversa.client_name %}
+                      <p class="texto-contato"><strong>{{ conversa.client_name }}</strong></p>
+                    {% else %}
+                      <p class="texto-contato"><strong>{{ conversa.company_client_number }}</strong></p>
+                    {% endif %}
                     <p class="texto-contato">Status: {{ conversa.get_status_da_conversa_display }}</p>
                   </div>  
                 </div>

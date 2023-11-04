@@ -24,7 +24,7 @@ import json
 from django.shortcuts import get_object_or_404
 from django_q.tasks import async_task
 from django.utils import timezone
-from django.db.models import Case, When, Value, IntegerField
+from django.db.models import Case, When, Value, IntegerField, Subquery, OuterRef
 from django.core.exceptions import ObjectDoesNotExist
 from datetime import datetime, timedelta
 from django.db.models.functions import ExtractYear, ExtractMonth
@@ -361,7 +361,13 @@ def minhas_conversas_view(request):
             output_field=IntegerField(),
         )
     ).order_by('status_order', 'date', 'time')
-
+    
+    subquery = DadosClienteCadatrado.objects.filter(
+        telefone=OuterRef('company_client_number')
+    ).values('nome')[:1]
+    
+    conversas = conversas.annotate(client_name=Subquery(subquery))
+    
     conversas_com_tempo_das_mensagens = []
     for conversa in conversas:
         if len(conversa.context) == len(conversa.messages_display_time):
@@ -377,13 +383,13 @@ def minhas_conversas_view(request):
         else:
             # handle the case when the lengths don't match, e.g., log an error or raise an exception
             pass
-
+        
+    # Group chats that have the same client number and chatbot
     chats_grouped_by_client_phone_number = []
-    for index, conversa in enumerate(conversas_com_tempo_das_mensagens):
+    for conversa in conversas_com_tempo_das_mensagens:
         already_inserted = False
         if(not conversa in chats_grouped_by_client_phone_number):
             for i in range(len(chats_grouped_by_client_phone_number)):
-                print(chats_grouped_by_client_phone_number, index)
                 grouped_chat = chats_grouped_by_client_phone_number[i]
                 # If already exists a chat with the current chatbot and cellphone number, just append one context in another
                 if(grouped_chat.chatbot == conversa.chatbot and grouped_chat.company_client_number == conversa.company_client_number):
@@ -408,9 +414,8 @@ def minhas_conversas_view(request):
             updated_conversa_id = None
     else:
         updated_conversa_id = None
-        
-    #Função para adicionar número do cliente no menu responsivo
     
+    #Função para adicionar número do cliente no menu responsivo
    
     context = {
         "tab_title" : 'Ajudai - Minhas Conversas',
