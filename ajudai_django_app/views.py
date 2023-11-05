@@ -394,6 +394,8 @@ def minhas_conversas_view(request):
                 # If already exists a chat with the current chatbot and cellphone number, just append one context in another
                 if(grouped_chat.chatbot == conversa.chatbot and grouped_chat.company_client_number == conversa.company_client_number):
                     grouped_chat.context.extend(entry for entry in conversa.context if entry['role'] in ('user', 'assistant'))
+                    if(not conversa.last_message_shown):
+                        grouped_chat.last_message_shown = conversa.last_message_shown
                     already_inserted = True
                     continue
             if(not already_inserted):
