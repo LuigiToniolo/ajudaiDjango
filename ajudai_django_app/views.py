@@ -399,6 +399,26 @@ def minhas_conversas_view(request):
             if(not already_inserted):
                 chats_grouped_by_client_phone_number.append(conversa)
 
+           
+    # Sorting conversations by messages date and time - BUTTON
+    # Get the current ordering direction from the URL, default to 'desc'
+    current_order = request.GET.get('order', 'desc')
+    # Toggle the ordering direction
+    if current_order == 'asc':
+        new_order = 'desc'
+    else:
+        new_order = 'asc'
+    chats_grouped_by_client_phone_number.sort(
+        key=lambda c: 
+            datetime.combine(
+                datetime.strptime(c.context[-1]['date'], '%d/%m/%Y'), 
+                datetime.time(
+                    datetime.strptime(c.context[-1]['time'], '%H:%M')
+                )
+            ), 
+            reverse=current_order == 'desc'
+    )
+    
     if request.method == 'POST':
         form = MessageForm(request.POST)
         if form.is_valid():
@@ -422,6 +442,7 @@ def minhas_conversas_view(request):
         "meta_desciption" : '',
         'user' : user,
         'conversas' : chats_grouped_by_client_phone_number,
+        'conversas_order': new_order,
         'updated_conversa_id': updated_conversa_id,
         'userIsPremium' : user.userIsPremium(),
     }

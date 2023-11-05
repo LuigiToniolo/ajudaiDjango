@@ -120,7 +120,15 @@
 
         <div class="contacts">
           <!-- Lista de contatos disponíveis -->
-          <h2>Meus clientes</h2>
+          <h2>Meus clientes </h2>
+          <a href="{% url 'minhas-conversas' %}?order={{ conversas_order }}" id="toggleOrder" class="btn btn-link fs-5">
+            {% if conversas_order == 'asc' %}
+              Ordenar pelo mais antigo
+            {% else %}
+              Ordenar pelo mais recente
+            {% endif %}
+          
+          </a>
           <ul>
             {% for conversa in conversas %}
             <li id="contact-{{ conversa.id }}" onclick="toggleDivBackground(this)">
@@ -580,7 +588,7 @@
         });
       });
     </script>
-
+    
     <script>
       window.addEventListener('DOMContentLoaded', (event) => {
         // Função para verificar se a tela é de um dispositivo móvel
