@@ -360,7 +360,7 @@ def minhas_conversas_view(request):
             default=Value(2),
             output_field=IntegerField(),
         )
-    ).order_by('status_order', 'date', 'time')
+    ).order_by('status_order', '-date', 'time')
     
     subquery = DadosClienteCadatrado.objects.filter(
         telefone=OuterRef('company_client_number')
