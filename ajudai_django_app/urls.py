@@ -10,6 +10,7 @@ urlpatterns = [
     path('dashboard/', views.dashboard_view, name="dashboard"),  
     path('planos-disponiveis/', views.planos_disponiveis_view, name="planos_disponiveis"),    
     path('minhas-conversas/', views.minhas_conversas_view, name='minhas-conversas'),
+    path('get_chat/<int:id>/', views.get_chat, name='get_chat'),
     path('check_for_new_messages_to_refresh/', views.check_for_new_messages_to_refresh, name='check_for_new_messages_to_refresh'),
     path('update_last_message_shown/<int:conversa_id>/', views.update_last_message_shown, name='update_last_message_shown'),
     path('contato/', views.contato_view, name="contato"),
