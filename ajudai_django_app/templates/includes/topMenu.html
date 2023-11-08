@@ -1,5 +1,5 @@
 {% load static %}
-
+<link rel="stylesheet" type="text/css" href="{% static 'ajudai_django_app/css/notifications.css' %}" />
 <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
     <!-- Navbar Brand-->
     <!-- <a class="navbar-brand ps-3" href="index.html">Start Bootstrap</a> -->
@@ -72,7 +72,8 @@ function toggleNotificationMenu() {
 
   for (var i = 0; i < notifications.length; i++) {
     var notification = document.createElement('li');
-    notification.textContent = notifications[i].verb;
+    notification.classList.add('notification-popup-item');
+    notification.textContent = `${notifications[i].verb}`;
     notificationList.appendChild(notification);
   } 
 

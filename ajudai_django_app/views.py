@@ -454,7 +454,8 @@ def get_chat(request, id):
         return JsonResponse({'status': 'success', 'data': {
             'mensagens': conversas[0].context,
             'nome_do_cliente': conversas[0].client_name,
-            'numero_do_cliente': conversas[0].company_client_number
+            'numero_do_cliente': conversas[0].company_client_number,
+            'id_conversa': conversas[0].id
             
         }})
     else:
@@ -1667,4 +1668,7 @@ def notifications(request):
 
 def mark_notification_as_read(request, notification_id):
     Notification.objects.filter(id=notification_id).mark_all_as_read(recipient=request.user)
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return HttpResponse(200)
+    
     return redirect(reverse('notifications'))

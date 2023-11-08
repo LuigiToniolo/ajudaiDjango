@@ -13,6 +13,7 @@
     <title>Meus chatbots - Ajudai</title>
     <link rel="icon" href="{% static 'image/logo-ajudai-circulo.png' %}">
     <link href="{% static 'css/styles.css' %}" rel="stylesheet" />
+    <link rel="stylesheet" type="text/css" href="{% static 'ajudai_django_app/css/notifications.css' %}" />
     <script
       src="https://use.fontawesome.com/releases/v6.3.0/js/all.js"
       crossorigin="anonymous"
@@ -43,7 +44,8 @@
       
             <div class="grid">
                 {% for notification in unread_notifications %}
-                    <div class="card" style="width: 22rem;">
+                    <div class="card notification-card" id="notification-{{notification.target.id}}" 
+                        onclick="handleNotificationClick('{{notification.target.id}}', '{{notification.id}}')" style="width: 22rem;">
                       <div class="card-body">
                         <h5 class="card-title">{{notification.verb}}</h5>
                         <h6 class="card-subtitle mb-2 text-muted">De: {{notification.actor}}</h6>
@@ -64,6 +66,45 @@
         {% include 'includes/footer.html' %}
       </div>
     </div>
+
+    <script>
+       
+      function handleNotificationClick(activeConversaId, notificationId) {
+        fetch(`/mark_notification_as_read/${notificationId}/`, { 
+          method: 'POST' ,
+          headers: {
+            'X-CSRFToken': '{{ csrf_token }}'
+          }
+        }).catch(error => {
+          
+        });
+        
+        fetch(`/get_chat/${activeConversaId}/`)
+          .then(response => {
+              if (response.status === 200) {
+                  return response.json();
+              } else {
+                  console.error('Conversation does not exist.');
+              }
+          })
+          .then(data => {
+              if (data) {
+                  // Data contains the response body as JSON
+                  data = data.data;
+                  var curent_conversation_id = data.id_conversa;
+                  // Set the 'activeConversaId' in localStorage
+                  localStorage.setItem('activeConversaId', curent_conversation_id);
+                  // Redirect to '/minhas-conversas/' in there, the activeConversaId will be used to open the correct conversa
+                  window.location.href = '/minhas-conversas/';
+              }
+          })
+          .catch(error => {
+              console.error('An error occurred while checking the conversation:', error);
+          });
+    }
+
+    </script>
+
     <script
       src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"
       crossorigin="anonymous"
