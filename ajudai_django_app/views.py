@@ -455,6 +455,7 @@ def get_chat(request, id):
             'mensagens': conversas[0].context,
             'nome_do_cliente': conversas[0].client_name,
             'numero_do_cliente': conversas[0].company_client_number,
+            'nome_do_chatbot': conversas[0].chatbot.nome_do_chatbot,
             'id_conversa': conversas[0].id
             
         }})

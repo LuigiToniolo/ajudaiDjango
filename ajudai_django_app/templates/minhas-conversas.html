@@ -321,7 +321,8 @@
                         var mensagens = response.data.mensagens;
                         var nome_do_cliente = response.data.nome_do_cliente;
                         var numero_do_cliente = response.data.numero_do_cliente;
-                        
+                        var nome_do_chatbot = response.data.nome_do_chatbot;
+
                         $('#conversation-' + activeConversaId).html('');
                         mensagens.forEach(function(message) {
                             var message_html = '';
@@ -349,7 +350,7 @@
                                 <div class="dialog-response">
                                   <div class="message-response">
                                     <span class="sender">
-                                      Chatbot ou Você
+                                      ${nome_do_chatbot} ou Você
                                     </span>
                                     <p>
                                       ${message.content}
