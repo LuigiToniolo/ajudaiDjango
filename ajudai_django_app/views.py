@@ -360,7 +360,7 @@ def minhas_conversas_view(request):
             default=Value(2),
             output_field=IntegerField(),
         )
-    ).order_by('status_order', '-date', 'time')
+    ).order_by('status_order', 'date', 'time')
     
     subquery = DadosClienteCadatrado.objects.filter(
         telefone=OuterRef('company_client_number')
@@ -396,6 +396,7 @@ def minhas_conversas_view(request):
                     grouped_chat.context.extend(entry for entry in conversa.context if entry['role'] in ('user', 'assistant'))
                     if(not conversa.last_message_shown):
                         grouped_chat.last_message_shown = conversa.last_message_shown
+                        grouped_chat.id = conversa.id
                     already_inserted = True
                     continue
             if(not already_inserted):
@@ -410,6 +411,19 @@ def minhas_conversas_view(request):
         new_order = 'desc'
     else:
         new_order = 'asc'
+    
+    # Ordena mensagens em cada chat
+    for chat in chats_grouped_by_client_phone_number:
+        chat.context.sort(
+            key=lambda m:
+                datetime.combine(
+                    datetime.strptime(m['date'], '%d/%m/%Y'),
+                    datetime.time(
+                        datetime.strptime(m['time'], '%H:%M')
+                    )
+                )
+        )
+    # Ordena chats pela ultima mensagem
     chats_grouped_by_client_phone_number.sort(
         key=lambda c: 
             datetime.combine(
