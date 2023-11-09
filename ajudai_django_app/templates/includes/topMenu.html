@@ -70,21 +70,57 @@ function toggleNotificationMenu() {
   var notificationList = document.getElementById('notification-list');
   const notifications = JSON.parse('{{ unread_notifications_dict|escapejs }}');
 
-  for (var i = 0; i < notifications.length; i++) {
+  for (let i = 0; i < notifications.length; i++) {
     var notification = document.createElement('li');
     notification.classList.add('notification-popup-item');
     notification.textContent = `${notifications[i].verb}`;
+    notification.addEventListener("click", ()=>{
+      handleNotificationClick(notifications[i].target_object_id, notifications[i].id);
+    })
     notificationList.appendChild(notification);
   } 
 
   //Fazer contagem de notificações de acordo com as <li>'s
-
   function updateNotificationCount() {
     var notificationCount = document.getElementById('notification-count');
     var notificationList = document.getElementById('notification-list');
     var itemCount = notificationList.getElementsByTagName('li').length;
     notificationCount.textContent = itemCount;
   }
+
+  function handleNotificationClick(targetConversaId, notificationId) {
+    fetch(`/mark_notification_as_read/${notificationId}/`, { 
+      method: 'POST' ,
+      headers: {
+        'X-CSRFToken': '{{ csrf_token }}'
+      }
+    }).catch(error => {
+      
+    });
+    
+    fetch(`/get_chat/${targetConversaId}/`)
+      .then(response => {
+          if (response.status === 200) {
+              return response.json();
+          } else {
+              console.error('Conversation does not exist.');
+          }
+      })
+      .then(data => {
+          if (data) {
+              // Data contains the response body as JSON
+              data = data.data;
+              var curent_conversation_id = data.id_conversa;
+              // Set the 'activeConversaId' in localStorage
+              localStorage.setItem('activeConversaId', curent_conversation_id);
+              // Redirect to '/minhas-conversas/' in there, the activeConversaId will be used to open the correct conversa
+              window.location.href = '/minhas-conversas/';
+          }
+      })
+      .catch(error => {
+          console.error('An error occurred while checking the conversation:', error);
+      });
+    }
   
   document.addEventListener('click', closeNotificationMenu);
   // Exemplo de adição de notificações à lista (pode ser alterado)

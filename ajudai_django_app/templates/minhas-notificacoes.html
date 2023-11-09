@@ -68,8 +68,9 @@
     </div>
 
     <script>
-       
-      function handleNotificationClick(activeConversaId, notificationId) {
+      // Recebe o ID a qual conversa a notificação se refere, e o ID da notificação
+      function handleNotificationClick(targetConversaId, notificationId) {
+        // Marca notificação como lida
         fetch(`/mark_notification_as_read/${notificationId}/`, { 
           method: 'POST' ,
           headers: {
@@ -78,8 +79,8 @@
         }).catch(error => {
           
         });
-        
-        fetch(`/get_chat/${activeConversaId}/`)
+        // Pega a conversa referente a notificação e define ela como conversa ativa
+        fetch(`/get_chat/${targetConversaId}/`)
           .then(response => {
               if (response.status === 200) {
                   return response.json();

@@ -451,12 +451,13 @@ def get_chat(request, id):
         conversas = group_and_sort_messages(conversas, 'asc')
         
         # Return a JsonResponse with the data
+        conversa = conversas[0]
         return JsonResponse({'status': 'success', 'data': {
-            'mensagens': conversas[0].context,
-            'nome_do_cliente': conversas[0].client_name,
-            'numero_do_cliente': conversas[0].company_client_number,
-            'nome_do_chatbot': conversas[0].chatbot.nome_do_chatbot,
-            'id_conversa': conversas[0].id
+            'mensagens': conversa.context,
+            'nome_do_cliente': conversa.client_name,
+            'numero_do_cliente': conversa.company_client_number,
+            'nome_do_chatbot': conversa.chatbot.nome_do_chatbot,
+            'id_conversa': conversa.id
             
         }})
     else:
