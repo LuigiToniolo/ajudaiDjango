@@ -74,3 +74,5 @@ Para rodar o projeto, no venv, execute:
 python manage.py runserver
 
 
+# Com Docker
+Basta ter o Docker e o docker-compose instalado na sua maquina e na pasta raiz do projeto, rodar `sudo docker-compose up --build`
