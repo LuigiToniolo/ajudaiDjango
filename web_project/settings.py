@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 from pathlib import Path
+import dj_database_url
 import environ
 import os
 
@@ -27,12 +28,16 @@ env.read_env(env_file)
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = env("SECRET_KEY")
+SECRET_KEY = os.environ.get('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
+#DEBUG = 'RENDER' not in os.environ
 DEBUG = True
-
 ALLOWED_HOSTS = ["*"]
+
+RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
+if RENDER_EXTERNAL_HOSTNAME:
+    ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
 
 
 # Application definition
@@ -57,6 +62,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
 ROOT_URLCONF = 'web_project.urls'
@@ -85,14 +91,10 @@ WSGI_APPLICATION = 'web_project.wsgi.application'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': env('DBNAME'),
-        'USER': env('DBUSER'),
-        'PASSWORD': env('DATABASE_KEY'),
-        'HOST': env('DBADRESS'),
-        'PORT': env('DBPORT'),
-    }
+    'default': dj_database_url.config(
+        default=os.environ.get('DATABASE_URL'),
+        conn_max_age=600
+    )
 }
 
 # Password validation
@@ -132,9 +134,10 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 #PARA QUANDO HOUVER VARIAS PASTAS E SUBPASATAS DENTRO DO STATIC (??)
-STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static'),]
+#STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static'),]
 #PARA UM UNICO ROOT:
-#STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 #FIM PARA PRODUÇÃO
 
 # Default primary key field type
