@@ -7,6 +7,7 @@ from ajudai_django_app.ai_chatbot.ai_tools import instructions_over_limit_error_
 from ajudai_django_app.fechamento_de_pedido.procedimento_de_fechamento import informar_loja_fechamento_pedido
 from ajudai_django_app.forms import CustomUserCreationForm, LoginForm
 from ajudai_django_app.models import Adesao_Purchase, ChatBot, Conversa, CustomUser, DadosClienteCadatrado, PaymentsForUseMadde, Pedido, Premium_User_Payment_Method_Registration, Product, register_adesao_purchase_after_webhook_confirm, register_payment_method_success_after_webhook_confirm, update_conversa_objects
+from ajudai_django_app.utils import merge_context_and_display_time, group_and_sort_messages
 from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
 from ajudai_django_app.payments_process.sign_in import create_stripe_customer, return_adesao_checkout_session, return_checkout_session_id, return_checkout_session_url, return_setup_future_payments_checkout_session
 from ajudai_django_app.payments_process.webhooks import HTTP_PAYMENT_API_SIGNATURE, LABEL_TO_CHECKOUT_SESSION_ID, get_session_data, get_usage_payment_webhook_customer, get_webhook_event, success_payment_checkout_and_section_recovery, success_payment_usage_charge
@@ -24,7 +25,7 @@ import json
 from django.shortcuts import get_object_or_404
 from django_q.tasks import async_task
 from django.utils import timezone
-from django.db.models import Case, When, Value, IntegerField
+from django.db.models import Case, When, Value, IntegerField, Subquery, OuterRef
 from django.core.exceptions import ObjectDoesNotExist
 from datetime import datetime, timedelta
 from django.db.models.functions import ExtractYear, ExtractMonth
@@ -361,24 +362,27 @@ def minhas_conversas_view(request):
             output_field=IntegerField(),
         )
     ).order_by('status_order', 'date', 'time')
+    
+    subquery = DadosClienteCadatrado.objects.filter(
+        telefone=OuterRef('company_client_number')
+    ).values('nome')[:1]
+    
+    conversas = conversas.annotate(client_name=Subquery(subquery))
+    
+    conversas_com_tempo_das_mensagens = merge_context_and_display_time(conversas)
+           
+    # Sorting conversations by messages date and time - BUTTON
+    # Get the current ordering direction from the URL, default to 'desc'
+    current_order = request.GET.get('order', 'desc')
+    # Toggle the ordering direction
+    if current_order == 'asc':
+        new_order = 'desc'
+    else:
+        new_order = 'asc'
+    
+    conversas = group_and_sort_messages(conversas=conversas_com_tempo_das_mensagens, sort_order=current_order)
 
-    conversas_com_tempo_das_mensagens = []
-    for conversa in conversas:
-        if len(conversa.context) == len(conversa.messages_display_time):
-            merged_context = []
-            for i in range(len(conversa.context)):
-                # Merge dictionaries at the same index
-                merged_item = {**conversa.context[i], **conversa.messages_display_time[i]}
-                merged_context.append(merged_item)
-            # Replace the original context with the merged context
-            conversa.context = merged_context
-            # Append the updated conversa object to the new list
-            conversas_com_tempo_das_mensagens.append(conversa)
-        else:
-            # handle the case when the lengths don't match, e.g., log an error or raise an exception
-            pass
-
-
+    
     if request.method == 'POST':
         form = MessageForm(request.POST)
         if form.is_valid():
@@ -394,15 +398,15 @@ def minhas_conversas_view(request):
             updated_conversa_id = None
     else:
         updated_conversa_id = None
-        
-    #Função para adicionar número do cliente no menu responsivo
     
+    #Função para adicionar número do cliente no menu responsivo
    
     context = {
         "tab_title" : 'Ajudai - Minhas Conversas',
         "meta_desciption" : '',
         'user' : user,
-        'conversas' : conversas_com_tempo_das_mensagens,
+        'conversas': conversas,
+        'conversas_order': new_order,
         'updated_conversa_id': updated_conversa_id,
         'userIsPremium' : user.userIsPremium(),
     }
@@ -413,8 +417,53 @@ def minhas_conversas_view(request):
     )
 
 @csrf_exempt
+def get_chat(request, id):
+    if request.method == 'GET':
+        try:
+            user = CustomUser.getUser(request)
+        except:
+            return JsonResponse({"error": "Unauthorized access"}, status=401)
 
+        if not request.user.is_authenticated:
+            return JsonResponse({"error": "Unauthorized access"}, status=401)
+        
+        # Get chat
+        conversa = get_object_or_404(Conversa, id=id)
+        
+        # Get all chats with same number and chatbot
+        chatbot = conversa.chatbot
+        conversas = Conversa.objects.filter(chatbot=chatbot).filter(company_client_number=conversa.company_client_number).annotate(
+            status_order=Case(
+                When(status_da_conversa=STATUS_CONVERSA_EM_ANDAMENTO, then=Value(1)),
+                default=Value(2),
+                output_field=IntegerField(),
+            )
+        ).order_by('status_order', 'date', 'time')
+        
+        # Get client name
+        subquery = DadosClienteCadatrado.objects.filter(
+            telefone=OuterRef('company_client_number')
+        ).values('nome')[:1]
+        conversas = conversas.annotate(client_name=Subquery(subquery))
+        
+        # Merging and displaying time
+        conversas = merge_context_and_display_time(conversas)
+        conversas = group_and_sort_messages(conversas, 'asc')
+        
+        # Return a JsonResponse with the data
+        conversa = conversas[0]
+        return JsonResponse({'status': 'success', 'data': {
+            'mensagens': conversa.context,
+            'nome_do_cliente': conversa.client_name,
+            'numero_do_cliente': conversa.company_client_number,
+            'nome_do_chatbot': conversa.chatbot.nome_do_chatbot,
+            'id_conversa': conversa.id
+            
+        }})
+    else:
+        return JsonResponse({'status': 'error', 'message': 'Invalid request method'})
 
+@csrf_exempt
 def check_for_new_messages_to_refresh(request):
     if request.method == 'POST':
         try:
@@ -1621,4 +1670,7 @@ def notifications(request):
 
 def mark_notification_as_read(request, notification_id):
     Notification.objects.filter(id=notification_id).mark_all_as_read(recipient=request.user)
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return HttpResponse(200)
+    
     return redirect(reverse('notifications'))
