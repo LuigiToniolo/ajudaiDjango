@@ -58,7 +58,7 @@ def notificar_admin_problema(mensagem, chatbot_id, user, conversation):
         chatbot = ChatBot.objects.get(
                     id=chatbot_id,
                     )
-        notify.send(chatbot, recipient=user, verb={mensagem}, description=f'O cliente de numero {conversation.company_client_number} está precisando de atendimento humano.')
+        notify.send(chatbot, recipient=user, verb=mensagem, target=conversation, description=f'O cliente de numero {conversation.company_client_number} está precisando de atendimento humano.')
         return 'Um administrador recebeu uma notificação, aguarde uns instantes'
     except Exception as e:
         print(f"Erro ao notificar admin {e}", file=sys.stderr)

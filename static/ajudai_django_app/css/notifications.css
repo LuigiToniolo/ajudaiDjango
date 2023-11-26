@@ -1,0 +1,13 @@
+.notification-card:hover{
+    transform: scale(1.025);
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+.notification-popup-item:hover{
+    background-color: #5C7AD3;
+    color: white;
+    cursor: pointer;
+    border-radius: 3px;
+    transition: transform 0.3s ease;
+}
