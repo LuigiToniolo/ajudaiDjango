@@ -15,7 +15,7 @@ git config --global --add safe.directory /usr/src/app
 
 set -o errexit
 
-#python manage.py collectstatic --no-input
+# python manage.py collectstatic --no-input
 python manage.py migrate
 
 exec "$@"
