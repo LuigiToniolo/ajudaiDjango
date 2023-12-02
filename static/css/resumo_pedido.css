@@ -7,8 +7,12 @@
   .button-block{
     display: flex;
     justify-content: space-around; 
+    gap: 20px;
   }
   .botao-voltar, .botao-ir-para-conversa {
+    display: flex;
+    justify-content: center;
+    align-items: center;
     border-radius: 15px;
     width: 20em;
     background-color: #5C7AD3;
