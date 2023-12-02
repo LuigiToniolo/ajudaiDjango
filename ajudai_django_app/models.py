@@ -656,7 +656,7 @@ class DadosClienteCadatrado(models.Model):
 
 class Pedido(models.Model):
     STATUS_CHOICES = (
-        (STATUS_PEDIDO_REALIZADO , 'Pendido realizado'),
+        (STATUS_PEDIDO_REALIZADO , 'Pedido realizado'),
         (STATUS_PEDIDO_EM_PROCESSO , 'Pedido em processo'),
         (STATUS_PEDIDO_PENDENTE_DE_ENTREGA , 'Pendente de Entrega'),
         (STATUS_PEDIDO_ENTREGUE , 'Pedido Entregue'),
