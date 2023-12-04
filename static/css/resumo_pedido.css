@@ -3,9 +3,18 @@
       padding: 20px;
       border-radius: 10px;
   }
-
-  .botao-voltar {
+  
+  .button-block{
+    display: flex;
+    justify-content: space-around; 
+    gap: 20px;
+  }
+  .botao-voltar, .botao-ir-para-conversa {
+    display: flex;
+    justify-content: center;
+    align-items: center;
     border-radius: 15px;
+    width: 20em;
     background-color: #5C7AD3;
     color: #FFFFFF;
     padding: 10px;
@@ -14,13 +23,18 @@
     text-decoration: none;
     text-align: center;
     margin-top: 3vh;
+    transition: all 0.3s ease-in;
   }
 
-  .botao-voltar:hover {
+  .botao-voltar:hover, .botao-ir-para-conversa:hover {
     transform: scale(1.05);
     color: #FFFFFF;
   }
-
+  
+  .botao-ir-para-conversa {
+    background-color: #00a884;
+  }
+  
   h1 {
     text-align: center;
     margin-bottom: 3vh;

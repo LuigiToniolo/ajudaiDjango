@@ -703,7 +703,11 @@ def resumo_pedido(request, pedido_id):
     if not user.usuario_adimplente_ou_tolerancia_de_uso():
         return redirect('payment_debt_out_service')
 
-    pedido = get_object_or_404(Pedido, id=pedido_id)
+    #pedido = get_object_or_404(Pedido, id=pedido_id, user=user)
+    try:
+        pedido = Pedido.objects.get(id=pedido_id, user=user)
+    except Pedido.DoesNotExist:
+        return redirect('pedidos-realizados')
     conversa = pedido.conversa
 
     if pedido.criado_manualmente == False:
