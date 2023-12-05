@@ -27,6 +27,7 @@ def obeter_precos_itens_cardapio(itens_do_cardapio, chatbot_id):
 
 def criar_pedido_e_retornar_resumo(
         nome_cliente,
+        cpf_cliente,
         endereco_cliente,
         itens_pedido,
         taxa_de_entrega,
@@ -35,8 +36,8 @@ def criar_pedido_e_retornar_resumo(
         user,
         conversation
     ):
-    resumo_do_pedido = f"Seu pedido foi confirmado! \nResumo do Pedido:\n - Nome do Cliente: {nome_cliente} \n - Itens do pedido: {itens_pedido} \n - Total do pedido: {valor_total} \n - Método de Pagamento: {metodo_de_pagamento} - Endereço: {endereco_cliente}"
-    Pedido.criar_novo_pedido_ja_com_parametros(nome_cliente, endereco_cliente, itens_pedido, taxa_de_entrega, valor_total, metodo_de_pagamento, resumo_do_pedido, user, conversation)
+    resumo_do_pedido = f"Seu pedido foi confirmado! \nResumo do Pedido:\n - Nome do Cliente: {nome_cliente} \n - CPF do cliente: {cpf_cliente} \n - Itens do pedido: {itens_pedido} \n - Total do pedido: {valor_total} \n - Método de Pagamento: {metodo_de_pagamento} - Endereço: {endereco_cliente}"
+    Pedido.criar_novo_pedido_ja_com_parametros(nome_cliente, cpf_cliente, endereco_cliente, itens_pedido, taxa_de_entrega, valor_total, metodo_de_pagamento, resumo_do_pedido, user, conversation)
     return 'Pedido feito com sucesso'
 
 
@@ -95,6 +96,10 @@ def generate_gpt_response(prompt, context, role, aditional_instructions, model_n
                             "type": "string",
                             "description": 'Nome do cliente',
                         },
+                        "cpf_cliente": {
+                            "type": "string",
+                            "description": 'CPF do cliente',
+                        },
                         "endereco_cliente": {
                             "type": "string",
                             "description": 'Caso a opção seja por entrega, fornecer o Endereço do cliente completo, inclusive com o CEP. Caso a opção seja por retirada no balção, fornecer o endereço do Estbelecimento',
@@ -116,7 +121,7 @@ def generate_gpt_response(prompt, context, role, aditional_instructions, model_n
                             "description": 'Método de pagamento escolhido pelo cliente (por exemplo: pix)',
                         },
                     },
-                    "required": ["nome_cliente", "endereco_cliente", "itens_pedido"],
+                    "required": ["nome_cliente", "cpf_cliente", "endereco_cliente", "itens_pedido"],
                 },
             },
         ]
@@ -133,6 +138,10 @@ def generate_gpt_response(prompt, context, role, aditional_instructions, model_n
                             "type": "string",
                             "description": 'Nome do cliente',
                         },
+                        "cpf_cliente": {
+                            "type": "string",
+                            "description": 'CPF do cliente',
+                        },
                         "endereco_cliente": {
                             "type": "string",
                             "description": 'Caso a opção seja por entrega, fornecer o Endereço do cliente completo, inclusive com o CEP. Caso a opção seja por retirada no balção, fornecer o endereço do Estbelecimento',
@@ -154,7 +163,7 @@ def generate_gpt_response(prompt, context, role, aditional_instructions, model_n
                             "description": 'Método de pagamento escolhido pelo cliente (por exemplo: pix)',
                         },
                     },
-                    "required": ["nome_cliente", "endereco_cliente", "itens_pedido"],
+                    "required": ["nome_cliente", "cpf_cliente", "endereco_cliente", "itens_pedido"],
                 },
             },
         ]
@@ -287,6 +296,7 @@ def generate_gpt_response(prompt, context, role, aditional_instructions, model_n
                         try:
                             function_response = fuction_to_call(
                                 nome_cliente = str(function_args.get("nome_cliente")),
+                                cpf_cliente = str(function_args.get("cpf_cliente")),
                                 endereco_cliente = str(function_args.get("endereco_cliente")),
                                 itens_pedido = str(function_args.get("itens_pedido")),
                                 taxa_de_entrega = str(function_args.get("taxa_de_entrega")),
