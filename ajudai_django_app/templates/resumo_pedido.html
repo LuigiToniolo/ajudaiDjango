@@ -57,7 +57,7 @@
                           <div class="grid-container">
                             {% if not pedido.criado_manualmente %}
                               <div class="grid-item">
-                                <p class="title-card">Nome do cliente:</p>
+                                <p class="title-card">Nome do cliente</p>
                                 {% if dados_cliente %}
                                   <p>{{ dados_cliente.nome }}</p>
                                 {% else %}
@@ -65,50 +65,55 @@
                                 {% endif %}
                               </div>
                               <div class="grid-item">
-                                <p class="title-card">Número Whatsapp do Cliente: :</p>
+                                <p class="title-card">Número Whatsapp do cliente</p>
                                 <p>{{ numero_cliente_pedido }}</p>
                               </div>
                               <div class="grid-item">
-                                <p class="title-card">Status do Pedido: </p>
+                                <p class="title-card">Status do Pedido</p>
                                 <p>{{ pedido.status_do_pedido }}</p>
                               </div>
                               <div class="grid-item">
-                                <p class="title-card">CPF do cliente: </p>
+                                <p class="title-card">CPF do cliente</p>
                                 {% if dados_cliente %}
                                 <p>{{ dados_cliente.cpf }}</p>
                                 {% else %}
                                   <p>CPF não coletado para esse pedido.</p>
                                 {% endif %}
                               </div>
-                              <div class="grid-item full-width">
-                                <p class="title-card">Itens do pedido: </p>
+                              <div class="grid-item ">
+                                <p class="title-card">Serviço solicitado</p>
                                 <p>{{ itens_do_pedido }}</p>
                               </div>
-                              <div class="grid-item">
-                                <p class="title-card">Taxa de entrega</p>
-                                <p>{{ taxa_de_entrega }}</p>
+                                                            <div class="grid-item">
+                                <p class="title-card">Data de Agendamento</p>
+                                <!-- <p>{{ taxa_de_entrega }}</p> -->
+                                {% if dados_cliente %}
+                                  <p>{{ dados_cliente.data_1 }}</p>
+                                {% else %}
+                                  <p>Data de agendamento não coletado para esse pedido.</p>
+                                {% endif %}
                               </div>
                               {% if dados_cliente %}
                                 <div class="grid-item">
-                                  <p class="title-card">Endereço do cliente: </p>
+                                  <p class="title-card">Endereço do cliente</p>
                                   <p>{{ dados_cliente.endereco }}</p>
                                 </div>
                                 <div class="grid-item">
-                                  <p class="title-card">Método de pagamento: </p>
+                                  <p class="title-card">Método de pagamento</p>
                                   <p>{{ dados_cliente.metodo_pagamento }}</p>
                                 </div>
                                 {% else %}
                                 <div class="grid-item">
-                                  <p class="title-card">Endereço de entrega: </p>
+                                  <p class="title-card">Endereço de entrega</p>
                                   <p>Não coletado para esse pedido.</p>
                                 </div>
                                 <div class="grid-item">
-                                  <p class="title-card">Método de pagamento: </p>
+                                  <p class="title-card">Método de pagamento</p>
                                   <p>Não coletado para esse pedido.</p>
                                 </div>
                               {% endif %}
                               <div class="grid-item">
-                                <p class="title-card">Total do pedido: </p>
+                                <p class="title-card">Total do pedido</p>
                                 <p>{{ valor_total_pedido }}</p>
                               </div>
                             {% endif %}
@@ -127,6 +132,7 @@
                           <a class="botao-ir-para-conversa" onclick="redirectToConversation('{{pedido.conversa.id}}')"><i style="margin-right: 5px;" class="fa-solid fa-comment"></i>Ir para conversa</a>
                         </div>  
                       </div>
+
 
                     </div>
                 </main>
