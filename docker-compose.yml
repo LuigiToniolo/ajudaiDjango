@@ -40,23 +40,23 @@ services:
     networks:
       - ajudai_network
 
-  ngrok:
-    container_name: ngrok
-    image: ngrok/ngrok:latest
-   # restart: unless-stopped
-    command:
-      - "http"
-      - "ajudai_web:8000"
-      - "--domain=grossly-ideal-giraffe.ngrok-free.app"
-    ports:
-      - 4040:4040
-    depends_on:
-      - ajudai_web
-    networks:
-      - ajudai_network
-    environment:
-      - DOMAIN=grossly-ideal-giraffe.ngrok-free.app
-      - NGROK_AUTHTOKEN=2X4f4FEqdjckKwTHscARKQYCZ6s_5HrnKf4kGzAknE1kHJe1r
+  # ngrok:
+  #   container_name: ngrok
+  #   image: ngrok/ngrok:latest
+  #  # restart: unless-stopped
+  #   command:
+  #     - "http"
+  #     - "ajudai_web:8000"
+  #     - "--domain=grossly-ideal-giraffe.ngrok-free.app"
+  #   ports:
+  #     - 4040:4040
+  #   depends_on:
+  #     - ajudai_web
+  #   networks:
+  #     - ajudai_network
+  #   environment:
+  #     - DOMAIN=grossly-ideal-giraffe.ngrok-free.app
+  #     - NGROK_AUTHTOKEN=2X4f4FEqdjckKwTHscARKQYCZ6s_5HrnKf4kGzAknE1kHJe1r
 
 networks:
   ajudai_network:

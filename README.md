@@ -75,4 +75,12 @@ python manage.py runserver
 
 
 # Com Docker
-Basta ter o Docker e o docker-compose instalado na sua maquina e na pasta raiz do projeto, rodar `sudo docker-compose up --build`
+Necessário ter o Docker e o docker-compose instalado na sua maquina. 
+
+Utilize o arquivo .env.development como base para criar um .env.
+
+Por padrão o banco de dados já irá configurado, caso algum erro seja acusado sobre faltar alguma variável de ambiente(pode acontecer com as das apis STRIPE, WHATSAPP, OPENAI), vá preenchendo com valores aleatórios ou coloque os reais, caso desejar.
+
+Feito isso, basta ir na pasta raiz do projeto, rodar `sudo docker-compose up --build`.
+
+Aguarde alguns segundos e o projeto estará UP em localhost:8000
