@@ -120,15 +120,34 @@
 
         <div class="contacts">
           <!-- Lista de contatos disponíveis -->
-          <h2>Meus clientes </h2>
-          <a href="{% url 'minhas-conversas' %}?order={{ conversas_order }}" id="toggleOrder" class="btn btn-link fs-5">
-            {% if conversas_order == 'asc' %}
-              Ordenar pelo mais antigo
-            {% else %}
-              Ordenar pelo mais recente
-            {% endif %}
-          
-          </a>
+          <h2 style="margin-left: 10px">Meus clientes </h2>
+          <div class="container-pesquisa">
+            <div class="input-pesquisa">
+              <button class="search-button">
+                <i class="fa-solid fa-magnifying-glass"></i>
+              </button>
+              <input type="text" class="search-input" placeholder="Pesquisar contato...">
+            </div>
+            
+            <a href="{% url 'minhas-conversas' %}?order={{ conversas_order }}" id="toggleOrder" class="btn btn-link fs-5">
+              {% if conversas_order == 'asc' %}
+              <!-- Ordenar pelo mais antigo -->
+              <img
+              class="icon-filter"
+              src="{% static 'image/descending_icon.png' %}"
+              alt="icone descendente ajudai"
+              />
+              {% else %}
+              <!-- Ordenar pelo mais recente  -->
+              <img
+              class="icon-filter"
+              src="{% static 'image/ascending_icon.png' %}"
+              alt="icone ascendente ajudai"
+              />
+              {% endif %}
+            </a>
+
+          </div>
           <ul>
             {% for conversa in conversas %}
             <li id="contact-{{ conversa.id }}" onclick="toggleDivBackground(this)">
