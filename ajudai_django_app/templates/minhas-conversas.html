@@ -172,7 +172,11 @@
                 </div>
 
                 <div class="texto-tempo-div">
-                  <p class="texto-tempo">{{ conversa.time }}</p>
+                  {% if data_atual == conversa.date %}
+                    <p class="texto-tempo">{{ conversa.time }}</p>
+                  {% else %}
+                    <p class="texto-tempo">{{ conversa.date }}</p>
+                  {% endif %}
                   <div style="display: flex; justify-content: center;">
                     {% if not conversa.last_message_shown %}<div class="notification-dot"></div>{% endif %}
                   </div>
