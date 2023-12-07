@@ -57,7 +57,7 @@
                           <div class="grid-container">
                             {% if not pedido.criado_manualmente %}
                               <div class="grid-item">
-                                <p class="title-card">Nome do cliente:</p>
+                                <p class="title-card">Nome do cliente</p>
                                 {% if dados_cliente %}
                                   <p>{{ dados_cliente.nome }}</p>
                                 {% else %}
@@ -143,6 +143,7 @@
                           <a class="botao-ir-para-conversa" onclick="redirectToConversation('{{pedido.conversa.id}}')"><i style="margin-right: 5px;" class="fa-solid fa-comment"></i>Ir para conversa</a>
                         </div>  
                       </div>
+
 
                     </div>
                 </main>

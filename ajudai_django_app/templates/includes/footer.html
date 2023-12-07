@@ -14,7 +14,14 @@
     </div>
 </footer>
 
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var data = new Date();
+        var anoAtual = data.getFullYear();
 
-
-
-
+        var copyrightElement = document.querySelector("#footer .text-muted");
+        if (copyrightElement) {
+            copyrightElement.innerHTML = "Copyright © " + anoAtual + " Ajudai. Todos os direitos reservados.";
+        }
+    });
+</script>
