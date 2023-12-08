@@ -638,6 +638,19 @@ class DadosClienteCadatrado(models.Model):
         max_length=60,
         default='',
     )
+    cpf = models.CharField(
+        max_length=60,
+        default='',
+    )
+    data_1 = models.CharField(
+        max_length=60,
+        default='',
+    )
+    email_1 = models.CharField(
+        max_length=60,
+        default='',
+        null=True,
+    )
     endereco = models.CharField(
         max_length=60,
         default='',
@@ -645,7 +658,7 @@ class DadosClienteCadatrado(models.Model):
     telefone = models.CharField(
         max_length=20,
         default='',
-        )
+    )
     metodo_pagamento = models.CharField(
         max_length=60,
         default='',
@@ -684,6 +697,19 @@ class Pedido(models.Model):
     nome_do_cliente = models.CharField(
         max_length=60,
         default='',
+        )
+    cpf_do_cliente = models.CharField(
+        max_length=60,
+        default='',
+        )
+    data_de_agendamento = models.CharField(
+        max_length=60,
+        default='',
+        )
+    email_do_cliente = models.CharField(
+        max_length=60,
+        default='',
+        null=True,
         )
     itens_pedido = models.CharField(
         max_length=12000,
@@ -753,6 +779,24 @@ class Pedido(models.Model):
         except:
             return 'Não foi possível extrair o nome do cliente da conversa'
     
+    def extrair_cpf_cliente_do_resumo(self):
+        try:
+            return ai_gpt_extrair_dado_do_resumo('cpf do cliente' ,self.resumo_do_pedido)
+        except:
+            return 'Não foi possível extrair o CPF do cliente da conversa'
+    
+    def extrair_email_cliente_do_resumo(self):
+        try:
+            return ai_gpt_extrair_dado_do_resumo('email do cliente' ,self.resumo_do_pedido)
+        except:
+            return 'Não foi possível extrair o Email do cliente da conversa'
+    
+    def extrair_data_agendamento_do_resumo(self):
+        try:
+            return ai_gpt_extrair_dado_do_resumo('cpf do cliente' ,self.resumo_do_pedido)
+        except:
+            return 'Não foi possível extrair a data de agendamento da conversa'
+    
     def extrair_itens_do_pedido_do_resumo(self):
         try:
             return ai_gpt_extrair_dado_do_resumo('itens do pedido, incluindo o item, quantidade (1x, 2x, 3x...) e preço do item' ,self.resumo_do_pedido)
@@ -774,11 +818,17 @@ class Pedido(models.Model):
             resumo_do_pedido = resumo,
         )
         attempt_count = 0
-        success_pedido_register = False
+        success_pedido_register = False   
         while attempt_count < API_MAX_ATTEMP and success_pedido_register == False:
             try:
                 time.sleep(SLEEP_SECONDS_INTER_AI_API_CALL)
                 nome_cliente = pedido.extrair_nome_cliente_do_resumo()
+                time.sleep(SLEEP_SECONDS_INTER_AI_API_CALL)
+                cpf_cliente = pedido.extrair_cpf_cliente_do_resumo()
+                time.sleep(SLEEP_SECONDS_INTER_AI_API_CALL)
+                data_agendamento = pedido.extrair_data_agendamento_do_resumo()
+                time.sleep(SLEEP_SECONDS_INTER_AI_API_CALL)
+                email_cliente = pedido.extrair_email_cliente_do_resumo()
                 time.sleep(SLEEP_SECONDS_INTER_AI_API_CALL)
                 endereco_cliente = pedido.extrair_endereco_cliente_do_resumo()
                 time.sleep(SLEEP_SECONDS_INTER_AI_API_CALL)
@@ -786,11 +836,21 @@ class Pedido(models.Model):
                 time.sleep(SLEEP_SECONDS_INTER_AI_API_CALL)
                 itens_pedido = pedido.extrair_itens_do_pedido_do_resumo()
                 pedido.nome_do_cliente = nome_cliente
+                pedido.cpf_do_cliente = cpf_cliente
+                pedido.data_de_agendamento = data_agendamento
+                pedido.email_do_cliente = email_cliente
                 pedido.endereco_entrega=endereco_cliente
                 pedido.valor_total=valor_total
                 pedido.itens_pedido = itens_pedido
                 pedido.save()
                 success_pedido_register = True
+                print('Objetos pegos da função criar_novo_pedido:')
+                print(nome_cliente)
+                print(cpf_cliente)
+                print(data_agendamento)
+                print(email_cliente)
+                print(endereco_cliente)
+                print(itens_pedido)
             except:
                  time.sleep(SLEEP_SECONDS_INTER_AI_API_CALL)
 
@@ -801,6 +861,9 @@ class Pedido(models.Model):
             # If the object is found, update the fields
             dados_cliente.ultima_conversa = conversation
             dados_cliente.nome = nome_cliente
+            dados_cliente.cpf = cpf_cliente
+            dados_cliente.data_1 = data_agendamento
+            dados_cliente.email_1 = email_cliente
             dados_cliente.endereco = endereco_cliente
             dados_cliente.metodo_pagamento = pedido.extrair_metodo_pagamento_do_resumo()
             dados_cliente.save()
@@ -809,6 +872,9 @@ class Pedido(models.Model):
             dados_cliente = DadosClienteCadatrado.objects.create(
                 ultima_conversa=conversation,
                 nome=nome_cliente,
+                cpf=cpf_cliente,
+                data_1=data_agendamento,
+                email_1=email_cliente,
                 endereco=endereco_cliente,
                 metodo_pagamento = pedido.extrair_metodo_pagamento_do_resumo(),
                 telefone = numero_cliente,
@@ -816,6 +882,9 @@ class Pedido(models.Model):
 
     def criar_novo_pedido_ja_com_parametros(
             nome_cliente=None,
+            cpf_cliente=None,
+            data_agendamento=None,
+            email_cliente=None,
             endereco_cliente=None,
             itens_pedido=None,
             taxa_de_entrega=None,
@@ -827,6 +896,9 @@ class Pedido(models.Model):
             ):
         
         nome_cliente = str(nome_cliente) if nome_cliente else ""
+        cpf_cliente = str(cpf_cliente) if cpf_cliente else ""
+        data_agendamento = str(data_agendamento) if data_agendamento else ""
+        email_cliente = str(email_cliente) if email_cliente else ""
         endereco_cliente = str(endereco_cliente) if endereco_cliente else ""
         itens_pedido = str(itens_pedido) if itens_pedido else ""
         taxa_de_entrega = str(taxa_de_entrega) if taxa_de_entrega else ""
@@ -839,9 +911,15 @@ class Pedido(models.Model):
             conversa=conversation,
             resumo_do_pedido = resumo_do_pedido,
             nome_do_cliente=nome_cliente, 
+            cpf_do_cliente=cpf_cliente, 
+            data_de_agendamento=data_agendamento, 
+            email_do_cliente=email_cliente,
         )
 
         pedido.nome_do_cliente = nome_cliente
+        pedido.cpf_do_cliente = cpf_cliente
+        pedido.data_de_agendamento = data_agendamento
+        pedido.email_do_cliente = email_cliente
         pedido.endereco_entrega=endereco_cliente
         pedido.valor_total=valor_total
         pedido.itens_pedido = itens_pedido
@@ -854,14 +932,29 @@ class Pedido(models.Model):
             # If the object is found, update the fields
             dados_cliente.ultima_conversa = conversation
             dados_cliente.nome = nome_cliente
+            dados_cliente.cpf = cpf_cliente
+            dados_cliente.data_1 = data_agendamento
+            dados_cliente.email_1 = email_cliente
             dados_cliente.endereco = endereco_cliente
             dados_cliente.metodo_pagamento = metodo_de_pagamento
             dados_cliente.save()
+            
+            print('Objetos pegos da função criar_novo_pedido_ja_com_parametros:')
+            print(nome_cliente)
+            print(cpf_cliente)
+            print(data_agendamento)
+            print(email_cliente)
+            print(endereco_cliente)
+            print(itens_pedido)
+            print(taxa_de_entrega)
         #se os dados do cliente ainda nao existem, cria-se novo objeto
         except ObjectDoesNotExist:
             dados_cliente = DadosClienteCadatrado.objects.create(
                 ultima_conversa=conversation,
                 nome=nome_cliente,
+                cpf=cpf_cliente,
+                data_1=data_agendamento,
+                email_1=email_cliente,
                 endereco=endereco_cliente,
                 metodo_pagamento = metodo_de_pagamento,
                 telefone = conversation.company_client_number,
