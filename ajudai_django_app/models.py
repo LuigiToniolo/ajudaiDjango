@@ -844,13 +844,7 @@ class Pedido(models.Model):
                 pedido.itens_pedido = itens_pedido
                 pedido.save()
                 success_pedido_register = True
-                print('Objetos pegos da função criar_novo_pedido:')
-                print(nome_cliente)
-                print(cpf_cliente)
-                print(data_agendamento)
-                print(email_cliente)
-                print(endereco_cliente)
-                print(itens_pedido)
+                
             except:
                  time.sleep(SLEEP_SECONDS_INTER_AI_API_CALL)
 
@@ -939,14 +933,7 @@ class Pedido(models.Model):
             dados_cliente.metodo_pagamento = metodo_de_pagamento
             dados_cliente.save()
             
-            print('Objetos pegos da função criar_novo_pedido_ja_com_parametros:')
-            print(nome_cliente)
-            print(cpf_cliente)
-            print(data_agendamento)
-            print(email_cliente)
-            print(endereco_cliente)
-            print(itens_pedido)
-            print(taxa_de_entrega)
+            
         #se os dados do cliente ainda nao existem, cria-se novo objeto
         except ObjectDoesNotExist:
             dados_cliente = DadosClienteCadatrado.objects.create(
