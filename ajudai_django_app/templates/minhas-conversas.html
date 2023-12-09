@@ -120,15 +120,34 @@
 
         <div class="contacts">
           <!-- Lista de contatos disponíveis -->
-          <h2>Meus clientes </h2>
-          <a href="{% url 'minhas-conversas' %}?order={{ conversas_order }}" id="toggleOrder" class="btn btn-link fs-5">
-            {% if conversas_order == 'asc' %}
-              Ordenar pelo mais antigo
-            {% else %}
-              Ordenar pelo mais recente
-            {% endif %}
-          
-          </a>
+          <h2 style="margin-left: 10px">Meus clientes </h2>
+          <div class="container-pesquisa">
+            <div class="input-pesquisa">
+              <button class="search-button">
+                <i class="fa-solid fa-magnifying-glass"></i>
+              </button>
+              <input type="text" class="search-input" placeholder="Pesquisar contato...">
+            </div>
+            
+            <a href="{% url 'minhas-conversas' %}?order={{ conversas_order }}" id="toggleOrder" class="btn btn-link fs-5">
+              {% if conversas_order == 'asc' %}
+              <!-- Ordenar pelo mais antigo -->
+              <img
+              class="icon-filter"
+              src="{% static 'image/descending_icon.png' %}"
+              alt="icone descendente ajudai"
+              />
+              {% else %}
+              <!-- Ordenar pelo mais recente  -->
+              <img
+              class="icon-filter"
+              src="{% static 'image/ascending_icon.png' %}"
+              alt="icone ascendente ajudai"
+              />
+              {% endif %}
+            </a>
+
+          </div>
           <ul>
             {% for conversa in conversas %}
             <li id="contact-{{ conversa.id }}" onclick="toggleDivBackground(this)">
@@ -153,7 +172,11 @@
                 </div>
 
                 <div class="texto-tempo-div">
-                  <p class="texto-tempo">{{ conversa.time }}</p>
+                  {% if data_atual == conversa.date %}
+                    <p class="texto-tempo">{{ conversa.time }}</p>
+                  {% else %}
+                    <p class="texto-tempo">{{ conversa.date|date:"d/m/Y" }}</p>
+                  {% endif %}
                   <div style="display: flex; justify-content: center;">
                     {% if not conversa.last_message_shown %}<div class="notification-dot"></div>{% endif %}
                   </div>
@@ -466,35 +489,78 @@
             //  $(".side-conversation").css("display", "none");
          // }
 
+         if (activeConversaId !== null && activeConversaId !== undefined && activeConversaId !== "") {
+          console.log("Trying to show conversation with ID: ", activeConversaId);
+          
+          // Oculta todos os elementos relevantes
+          $(".conversation").hide();
+          $(".info-cliente").hide();
+          $(".side-conversation").css("display", "none");
+          $(".defaultText").hide();
+          
+          // Exibe o elemento específico com base em activeConversaId
+          $("#conversation-" + activeConversaId).show();
+          
+          // Verificar se a largura da janela é menor que 768 pixels (um valor comum para telas de celular)
+          if (window.innerWidth < 768) {
+              $(".side-conversation").css("display", "none");
+          } else {
+              $(".side-conversation").css("display", "flex");
+          }
+          
+          // Outras ações
+          toggleDivBackgroundAtRefresh('contact-' + activeConversaId);
+          scrollToBottom(activeConversaId);
+      } else {
+          // Oculta todos os elementos relevantes
+          $(".conversation").hide();
+          $(".info-cliente").hide();
+          $(".side-conversation").css("display", "none");
+          
+          // Exibe o defaultText
+          $(".defaultText").show();
+          
+          // Verificar se a largura da janela é menor que 768 pixels (um valor comum para telas de celular)
+          if (window.innerWidth < 768) {
+              $(".side-conversation").css("display", "none");
+          } else {
+              $(".side-conversation").css("display", "flex");
+          }
+      }
 
-          if (activeConversaId !== null && activeConversaId !== undefined && activeConversaId !== "") {
-            console.log("Trying to show conversation with ID: ", activeConversaId);
-            $(".conversation").hide();
-            $(".info-cliente").hide();
-            $("#conversation-" + activeConversaId).show();
-            $(".defaultText").hide();
-            
-            // Verificar se a largura da janela é menor que 768 pixels (um valor comum para telas de celular)
-            if (window.innerWidth < 768) {
-                $(".side-conversation").css("display", "none");
-            } else {
-                $(".side-conversation").css("display", "flex");
-            }
-            
-            toggleDivBackgroundAtRefresh('contact-' + activeConversaId);
-            scrollToBottom(activeConversaId);
-        } else {
-            $(".conversation").hide();
-            $(".info-cliente").hide();
-            $(".defaultText").show();
-            
-            // Verificar se a largura da janela é menor que 768 pixels (um valor comum para telas de celular)
-            if (window.innerWidth < 768) {
-                $(".side-conversation").css("display", "none");
-            } else {
-                $(".side-conversation").css("display", "flex");
-            }
-        }
+      //----------------Lógica antiga (08/12/2023) que serve para mostrar e 
+      //----------------esconder telas defaultText e side-conversation
+      
+    //   if (activeConversaId !== null && activeConversaId !== undefined && activeConversaId !== "") {
+    //     console.log("Trying to show conversation with ID: ", activeConversaId);
+    //     $(".conversation").hide();
+    //     $(".info-cliente").hide();
+    //     $(".side-conversation").css("display", "none");
+    //     $("#conversation-" + activeConversaId).hide();
+    //     $(".defaultText").show();
+        
+    //     // Verificar se a largura da janela é menor que 768 pixels (um valor comum para telas de celular)
+    //     if (window.innerWidth < 768) {
+    //         $(".side-conversation").css("display", "none");
+    //         $(".defaultText").hide();
+    //     } 
+        
+    //     toggleDivBackgroundAtRefresh('contact-' + activeConversaId);
+    //     scrollToBottom(activeConversaId);
+    // } else {
+    //     $(".conversation").hide();
+    //     $(".info-cliente").hide();
+    //     $(".defaultText").hide();
+    //     $("#conversation-" + activeConversaId).show();
+        
+    //     // Verificar se a largura da janela é menor que 768 pixels (um valor comum para telas de celular)
+    //     if (window.innerWidth < 768) {
+    //         $(".side-conversation").css("display", "none");
+    //     } else {
+    //         $(".side-conversation").css("display", "flex");
+    //     }
+    // }
+      
       
       });
     </script>

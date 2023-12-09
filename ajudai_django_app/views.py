@@ -409,6 +409,7 @@ def minhas_conversas_view(request):
         'conversas_order': new_order,
         'updated_conversa_id': updated_conversa_id,
         'userIsPremium' : user.userIsPremium(),
+        'data_atual': current_date_sao_paulo(),
     }
     return render(
         request,
