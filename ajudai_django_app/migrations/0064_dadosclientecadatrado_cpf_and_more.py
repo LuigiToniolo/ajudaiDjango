@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('ajudai_django_app', '0062_pedido_mostrar_kanban'),
+        ('ajudai_django_app', '0063_alter_pedido_status_do_pedido')
     ]
 
     operations = [
