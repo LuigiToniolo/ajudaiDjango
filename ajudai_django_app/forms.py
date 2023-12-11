@@ -107,43 +107,50 @@ class AddCustomerForm(forms.ModelForm):
     nome = forms.CharField(
         label='Nome do cliente',
         widget=forms.TextInput(attrs={
-            'class': 'input-form-customer'
-        })
+            'class': 'input-form-customer',
+            'placeholder': 'José da Silva'
+        }),
     )
     cpf = forms.CharField(
         label='CPF do cliente',
         widget=forms.TextInput(attrs={
-            'class': 'input-form-customer'
+            'class': 'input-form-customer',
+            'placeholder': 'XXX.XXX.XXX-XX'
         })
     )
     data_1 = forms.DateField(
         label='Data do agendamento',
         widget=forms.TextInput(attrs={
-            'class': 'input-form-customer'
+            'class': 'input-form-customer',
+            'placeholder': '01/01/2024'
         })
     )
     email_1 = forms.EmailField(
         label='E-mail do cliente',
         widget=forms.TextInput(attrs={
-            'class': 'input-form-customer'
+            'class': 'input-form-customer',
+            'placeholder': 'josedasilva@exemplo.com'
         })
     )
     endereco = forms.CharField(
         label='Endereço do cliente',
         widget=forms.TextInput(attrs={
-            'class': 'input-form-customer'
+            'class': 'input-form-customer',
+            'placeholder': 'Av. Brasil, 123 - Centro, 13.333-003'
         })
     )
     telefone = forms.CharField(
         label='Telefone do cliente',
         widget=forms.TextInput(attrs={
-            'class': 'input-form-customer'
+            'class': 'input-form-customer',
+            'placeholder': '(11)99999-9999'
         })
     )
     metodo_pagamento = forms.CharField(
         label='Método de pagamento do cliente',
         widget=forms.TextInput(attrs={
-            'class': 'input-form-customer'
+            'class': 'input-form-customer',
+            'placeholder': 'PIX'
         })
     )
     
