@@ -4256,8 +4256,14 @@ textarea.form-control-lg {
 .link-redirecionamento-clientes {
   cursor: pointer;
   text-decoration: none;
-  color: var(--bs-card-cap-color);
+  color: var(--bs-  card-cap-color);
 }
+
+.input-form-customer {
+  width: 100%;
+
+}
+
 
 .fa-up-right-from-square {
   margin-left: 5px;
@@ -11358,8 +11364,11 @@ outline: none;
 .modal-content-customer {
   background-color: #fefefe;
   padding: 20px;
-  border-radius: 5px;
+  /* border-radius: 5px; */
   text-align: center;
+
+  max-height: 90%;
+  overflow-y: auto;
 }
 
 #myBtn {
@@ -11367,6 +11376,42 @@ outline: none;
   font-size: 16px;
   cursor: pointer;
 }
+
+.close-modal-customer {
+  text-decoration: none;
+  cursor: pointer;
+  color: #000;
+  align-items: center;
+  display: flex;
+  justify-content: center;
+}
+
+.customer-button-modal {
+  display: flex;
+  justify-content: space-between;
+}
+
+.add-customer-button {
+  border-radius: 20px;
+	border: 1px solid #5C7AD3;
+	background-color: #5C7AD3;
+	color: #FFFFFF;
+	font-size: 16px;
+	padding: 12px 45px;
+	letter-spacing: 1px;
+	transition: transform 80ms ease-in;
+  cursor: pointer;
+  
+}
+
+.botao-voltar-customer {
+  border: none;
+  background-color: transparent;
+  text-decoration: underline;
+  color: #5C7AD3;
+}
+
+
 
 /* .botao-adicionar-cliente:hover {
   background-color: #5C7AD3;
@@ -12478,6 +12523,7 @@ input {
 	width: 65%;
   display: block;
 }
+
 textarea {
   background-color: #eee;
 	border: none;
@@ -12485,13 +12531,14 @@ textarea {
 	margin: 0px 0;
 	width: 65%;
   display: block;
-}
+} 
 
 label{
     display: block;
     margin: 0;
     font-size: 16px;
     font-weight: 500;
+    text-align: start;
 }
 
 .botao-save-chatbot {

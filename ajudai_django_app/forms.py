@@ -4,7 +4,7 @@ from django.core.exceptions import ValidationError
 from django.contrib.auth.forms import PasswordChangeForm
 import json
 
-from ajudai_django_app.models import ChatBot, CustomUser
+from ajudai_django_app.models import ChatBot, CustomUser, DadosClienteCadatrado
 from constants import ADITIONAL_INTRUCTIONS_FIELD_ID, ADITIONAL_INTRUCTIONS_FIELD_NAME, ADITIONAL_INTRUCTIONS_FIELD_ROWS, ADITIONAL_INTRUCTIONS_FIELD_SIZE_IN_PX, CELLPHONE_FIELD_SIZE_IN_PX, CHATBOT_NAME_FIELD_SIZE_IN_PX, COMPANY_NAME_FIELD_SIZE_IN_PX, FACEBOOK_PAG_ID_FIELD_SIZE_IN_PX, FULL_NAME_FIELD_SIZE_IN_PX, MAX_CHAR_INSTRUCTIONS_CHATBOT_FORM, PASSWORD_FIELD_ID, REGISTER_EMAIL_FIELD_SIZE_IN_PX, REGISTER_FIELD_STANDART_SIZE_IN_PX, USER_NAME_FIELD_ID, WHATS_APP_TOKEN_FILD_SIZE_IN_PX
 
 class JSONInput(forms.Textarea):
@@ -101,7 +101,56 @@ class LoginForm(forms.Form):
                 }
             )
         )
+
+
+class AddCustomerForm(forms.ModelForm):
+    nome = forms.CharField(
+        label='Nome do cliente',
+        widget=forms.TextInput(attrs={
+            'class': 'input-form-customer'
+        })
+    )
+    cpf = forms.CharField(
+        label='CPF do cliente',
+        widget=forms.TextInput(attrs={
+            'class': 'input-form-customer'
+        })
+    )
+    data_1 = forms.DateField(
+        label='Data do agendamento',
+        widget=forms.TextInput(attrs={
+            'class': 'input-form-customer'
+        })
+    )
+    email_1 = forms.EmailField(
+        label='E-mail do cliente',
+        widget=forms.TextInput(attrs={
+            'class': 'input-form-customer'
+        })
+    )
+    endereco = forms.CharField(
+        label='Endereço do cliente',
+        widget=forms.TextInput(attrs={
+            'class': 'input-form-customer'
+        })
+    )
+    telefone = forms.CharField(
+        label='Telefone do cliente',
+        widget=forms.TextInput(attrs={
+            'class': 'input-form-customer'
+        })
+    )
+    metodo_pagamento = forms.CharField(
+        label='Método de pagamento do cliente',
+        widget=forms.TextInput(attrs={
+            'class': 'input-form-customer'
+        })
+    )
     
+    class Meta:
+        model = DadosClienteCadatrado
+        fields = ['nome', 'cpf', 'data_1', 'email_1', 'endereco', 'telefone', 'metodo_pagamento']
+
 class CustomPasswordChangeForm(PasswordChangeForm):
     old_password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control'}), label="Senha atual")
     new_password1 = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control'}), label="Nova senha")
@@ -114,6 +163,7 @@ class ChatBotForm(forms.ModelForm):
             # 'style': 'width: {}px;'.format(CHATBOT_NAME_FIELD_SIZE_IN_PX)
             })
     )
+    
     aditional_intructions = forms.CharField(
         max_length=MAX_CHAR_INSTRUCTIONS_CHATBOT_FORM, 
         label='Instruções para o Chatbot',

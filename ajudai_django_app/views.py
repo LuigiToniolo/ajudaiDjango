@@ -14,7 +14,7 @@ from ajudai_django_app.payments_process.webhooks import HTTP_PAYMENT_API_SIGNATU
 from ajudai_django_app.phone_integration.messages import send_response
 from constants import ADESAO_PURCHASE_STATUS_PENDING, ADESAO_PURCHASE_STATUS_PROCESSED, API_MAX_ATTEMP, ADESAO_PURCHASE_STATUS_PROCESSED, ADITIONAL_INTRUCTIONS_FIELD_ID, ADITIONAL_INTRUCTIONS_FIELD_NAME, DOMAIN, EVENT_INVALID_PAYLOAD, EVENT_INVALID_SIGNATURE, FANTASY_NAME, GPT3_MODEL_NAME, GPT3_TOKEK_LIMIT, PASSWORD_FIELD_ID, PAYMENT_METHOD_REGISTRATION_STATUS_PENDING, PRODUCT_NAME_COORPORATE, PRODUCT_NAME_PLUS, PRODUCT_NAME_PREMIUM, PRUDUCT_TYPE_ADESAO, PRUDUCT_TYPE_CONVERSA_AVULSA, SLEEP_SECONDS_INTER_AI_API_CALL, STANDART_PERIOD, STATUS_CONVERSA_EM_ANDAMENTO, STATUS_PEDIDO_EM_PROCESSO, STATUS_PEDIDO_ENTREGUE, STATUS_PEDIDO_PENDENTE_DE_ENTREGA, STATUS_PEDIDO_REALIZADO, SUPPORT_EMAIL, USER_LEVEL_ADMIN, USER_LEVEL_PREMIUM, USER_NAME_FIELD_ID, WEBHOOK_ADESAO_ID, WEBHOOK_PAYMENT_METHOD_ID, WEBHOOK_USAGE_PAYMENT_ID
 from get_secret_variables import get_secret_var
-from .forms import ChatBotForm, ConversationLimitForm, CustomPasswordChangeForm, LigarDesligarTodosChatbotsForm, MessageForm
+from .forms import AddCustomerForm, ChatBotForm, ConversationLimitForm, CustomPasswordChangeForm, LigarDesligarTodosChatbotsForm, MessageForm
 from django.contrib import messages
 from django.urls import reverse
 from django.core.mail import send_mail
@@ -70,14 +70,23 @@ def meus_clientes_view(request):
 
     if not request.user.is_authenticated:
         return redirect('login')
-    
+
+    if not user.userIsPremium():
+        return redirect('planos_disponiveis')
+
+    if not user.usuario_adimplente_ou_tolerancia_de_uso():
+        return redirect('payment_debt_out_service')
+
     user.finance_check(STANDART_PERIOD)
-
-    last_payment_date = user.last_payment_date
-    today = timezone.now().astimezone(sao_paulo_tz).date()
-
-    if last_payment_date is None:
-        last_payment_date = today
+    
+            
+    if request.method == 'POST':
+        form = AddCustomerForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('meus-clientes')  # Redireciona para a página de clientes após adicionar um novo cliente
+    else:
+        form = AddCustomerForm()
 
     chatbots = ChatBot.objects.filter(user=user)
     conversas = Conversa.objects.filter(chatbot__in=chatbots)
@@ -86,6 +95,7 @@ def meus_clientes_view(request):
     context = {
         "tab_title" : 'Meus clientes',
         'user' : user,
+        'form': form,
         'userIsPremium' : user.userIsPremium(),
         'dados_clientes' : dados_clientes,
     }
@@ -93,6 +103,7 @@ def meus_clientes_view(request):
     user.finance_check(STANDART_PERIOD)
 
     return render(request, 'meus-clientes.html', context)
+
 
 def user_accounts_view(request):
     try:

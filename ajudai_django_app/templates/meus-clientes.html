@@ -45,14 +45,21 @@
 
                         <div id="modal-add-customer">
                             <div class="modal-content-customer">
-                                <h2 style="text-align: start;">Adicione um cliente!</h2>
+                                <div style="display: flex; justify-content: space-between">
+                                    <h2 style="text-align: start;">Adicione um cliente!</h2>
+                                    <a class="close-modal-customer" onclick="closeModal()"><i class="fa-solid fa-xmark" style="font-size: 24px;"></i></a>
+                                </div>
                                 <p style="text-align: start;">Preencha os campos abaixo e cadastre um cliente a sua lista de contatos.</p>
                                 <div class="add-customer-form">
-
-                                    
-
+                                    <form method="post" action="{% url 'meus-clientes' %}">
+                                        {% csrf_token %}
+                                            {{ form.as_p }}
+                                        <div class="customer-button-modal">
+                                            <button class="botao-voltar-customer" onclick="closeModal()">Voltar</button>
+                                            <button type="submit" class="add-customer-button">Adicionar</button>
+                                        </div>
+                                    </form>
                                 </div>
-                              <button onclick="closeModal()">Close</button>
                             </div>
                         </div>
 
@@ -94,7 +101,6 @@
                                               <td>{{ dados_cliente.telefone }}</td>
                                               <td>{{ dados_cliente.email_1 }}</td>
                                               <td>{{ dados_cliente.metodo_pagamento }}</td>
-                                              <td><a style="cursor: pointer;">teste123</a></td>
                                           </tr>
                                           {% endfor %}
                                           
