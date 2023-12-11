@@ -148,7 +148,7 @@
             </a>
 
           </div>
-          <ul>
+          <ul id="conversation-list">
             {% for conversa in conversas %}
             <li id="contact-{{ conversa.id }}" onclick="toggleDivBackground(this)">
               <div class="conteudo-contato">
@@ -564,8 +564,24 @@
       
       });
     </script>
-
-    <!------------------- Scripts frond-end: ------------------>
+    
+    <!--- SEARCH CONVERSATION --->
+    <script>
+      $(document).ready(function(){
+        $(".search-input").keyup(function(){
+           var searchText = $(this).val().normalize('NFD').replace(/[\u0300-\u036f]/g, "").toLowerCase();
+           $("#conversation-list li").each(function(){
+              var personName = $(this).find('.texto-contato').text().normalize('NFD').replace(/[\u0300-\u036f]/g, "").toLowerCase();
+              if(personName.startsWith(searchText)){
+                 $(this).show();
+              } else {
+                 $(this).hide();
+              }
+           });
+        });
+      });
+    </script>
+   <!------------------- Scripts frond-end: ------------------>
 
     <script>
       // Função para rolar para a parte inferior
