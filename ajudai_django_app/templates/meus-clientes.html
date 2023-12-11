@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+    <head>
+        {% load static %}
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="" />
+        <meta name="author" content="" />
+        <title>{{ tab_title }}</title>
+        <link rel="icon" href="{% static 'image/logo-ajudai-circulo.png' %}">
+        <link href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css" rel="stylesheet" />
+        <link href="{% static 'css/styles.css' %}" rel="stylesheet" />
+        <link href="{% static 'css/dashboard-style.css' %}" rel="stylesheet" />
+        <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+        <script src="{% static 'js/datatables-simple-demo.js' %}"></script>
+        <script src="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/umd/simple-datatables.min.js" crossorigin="anonymous"></script>
+    </head>
+    <body>
+        {% include 'includes/topMenu.html' %}
+        <div id="layoutSidenav">
+            <div id="layoutSidenav_nav">
+                {% include 'includes/sidebar.html' %}
+            </div>
+            <div id="layoutSidenav_content">
+                <main>
+                    <div class="container-fluid px-4">
+                        <div class="cabecalho-planos">
+                            <div class="cabecalho-texto">
+                                <h2>Clientes cadastrados de {{ user.username }}</h2>
+                                <h4>Fique por dentro das informações dos seus clientes cadastrados</h4>
+                                <p>Adicione, edite ou remova as informações dos seus clientes. Esses clientes também serão a lista de contatos do seu estabelecimento</p>
+                            </div>
+                            <img
+                            class="doodle-plans"
+                            src="{% static 'image/meus-clientes-ajudai-doodle.svg' %}"
+                            alt="meus-clientes-ilustracao-ajudai"
+                            />
+                        </div>
+                        <div class="divider"></div>
+                        <p>Adicione novos clientes para a <strong>lista de contatos</strong> do seu estabelecimento.</p>
+                        <button class="botao-adicionar-cliente" id="myBtn">Adicionar Cliente<i class="fas fa-plus" style="margin-left: 5px;"></i></button>
+
+                        <!-- <button id="myBtn">Open Modal</button> -->
+
+                        <div id="modal-add-customer">
+                            <div class="modal-content-customer">
+                                <h2 style="text-align: start;">Adicione um cliente!</h2>
+                                <p style="text-align: start;">Preencha os campos abaixo e cadastre um cliente a sua lista de contatos.</p>
+                                <div class="add-customer-form">
+
+                                    
+
+                                </div>
+                              <button onclick="closeModal()">Close</button>
+                            </div>
+                        </div>
+
+                        <div style="margin-top: 1rem;">
+                            <div class="card mb-4" id="tabela-pedidos">
+                              <div class="card-header">
+                                  <div>
+                                      <i class="fas fa-user-tie"></i>
+                                      Clientes cadastrados
+                                  </div>
+                              </div>
+                              <div class="card-body">
+                                  <table id="datatablesSimple2">
+                                      <thead>
+                                          <tr>
+                                              <th>Nome cliente</th>
+                                              <th>Endereço</th>
+                                              <th>Número do celular</th>
+                                              <th>E-mail</th>
+                                              <th>Meio de Pagamento</th>
+                                              <th>teste</th>
+                                          </tr>
+                                      </thead>
+                                      <tfoot>
+                                          <tr>
+                                              <th>Nome cliente</th>
+                                              <th>Endereço</th>
+                                              <th>Número do celular</th>
+                                              <th>E-mail</th>
+                                              <th>Meio de Pagamento</th>
+                                              <th>teste</th>
+                                          </tr>
+                                      </tfoot>
+                                      <tbody>
+                                          {% for dados_cliente in dados_clientes %}
+                                          <tr>
+                                              <td>{{ dados_cliente.nome }}</td>
+                                              <td>{{ dados_cliente.endereco }}</td>
+                                              <td>{{ dados_cliente.telefone }}</td>
+                                              <td>{{ dados_cliente.email_1 }}</td>
+                                              <td>{{ dados_cliente.metodo_pagamento }}</td>
+                                              <td><a style="cursor: pointer;">teste123</a></td>
+                                          </tr>
+                                          {% endfor %}
+                                          
+                                      </tbody>
+                                  </table>
+                              </div>
+                          </div>
+                        </div>
+                    </div>
+                </main>
+                
+                {% include 'includes/footer.html' %}
+
+            </div>
+        </div>
+        <script>
+            //Script JavaScript que faz a abertura e fechamento de modal
+            var modal = document.getElementById("modal-add-customer");
+            var btn = document.getElementById("myBtn");
+          
+            btn.onclick = function() {
+              modal.style.display = "flex";
+              setTimeout(function() {
+                modal.style.opacity = 1;
+              }, 10);
+            }
+          
+            function closeModal() {
+              modal.style.opacity = 0;
+              setTimeout(function() {
+                modal.style.display = "none";
+              }, 400); // Tempo da transição em milissegundos
+            }
+          
+            window.onclick = function(event) {
+              if (event.target == modal) {
+                closeModal();
+              }
+            }
+            
+        </script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+        <script src="{% static 'js/scripts.js' %}"></script>
+        <script src="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/umd/simple-datatables.min.js" crossorigin="anonymous"></script>
+        <script src="{% static 'js/datatables-simple-demo.js' %}"></script>
+    </body>
+</html>

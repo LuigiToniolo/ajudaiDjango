@@ -18,6 +18,7 @@
         <link href="{% static 'css/switch-chatbot.css' %}" rel="stylesheet" />
         <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script src="{% static 'js/datatables-simple-demo.js' %}"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
     </head>
     <body class="sb-nav-fixed">
@@ -85,8 +86,10 @@
                             <div class="col-xl-6">
                                 <div class="card mb-4">
                                     <div class="card-header">
-                                        <i class="fas fa-chart-area me-1"></i>
-                                        Conversas usadas por dia
+                                        <div>
+                                            <i class="fas fa-chart-area me-1"></i>
+                                            Conversas usadas por dia
+                                        </div>
                                     </div>
                                     <div class="card-body"><canvas id="myAreaChart" width="100%" height="40"></canvas></div>
                                 </div>
@@ -94,8 +97,10 @@
                             <div class="col-xl-6">
                                 <div class="card mb-4">
                                     <div class="card-header">
-                                        <i class="fas fa-chart-bar me-1"></i>
-                                        Total de conversas por mês
+                                        <div>
+                                            <i class="fas fa-chart-bar me-1"></i>
+                                            Total de conversas por mês
+                                        </div>
                                     </div>
                                     <div class="card-body"><canvas id="myBarChart" width="100%" height="40"></canvas></div>
                                 </div>
@@ -103,8 +108,10 @@
                         </div>
                         <div class="card mb-4" id="tabela-pedidos">
                             <div class="card-header">
-                                <i class="fas fa-table me-1"></i>
-                                Pedidos realizados
+                                <div>
+                                    <i class="fas fa-table me-1"></i>
+                                    Pedidos realizados
+                                </div>
                             </div>
                             <div class="card-body">
                                 <table id="datatablesSimple">
@@ -149,8 +156,13 @@
                         </div>
                         <div class="card mb-4" id="tabela-pedidos">
                             <div class="card-header">
-                                <i class="fas fa-user-tie"></i>
-                                Clientes cadastrados
+                                <div class="titulo-tabela-cliente">
+                                    <i class="fas fa-user-tie"></i>
+                                    Clientes cadastrados
+                                </div>
+                                <div class="link-tabela-cliente">
+                                    <a class="link-redirecionamento-clientes" href="{% url 'meus-clientes' %}">Todos os clientes <i class="fa-solid fa-up-right-from-square"></i></a>
+                                </div>
                             </div>
                             <div class="card-body">
                                 <table id="datatablesSimple2">
@@ -159,6 +171,7 @@
                                             <th>Nome cliente</th>
                                             <th>Endereço</th>
                                             <th>Número do celular</th>
+                                            <th>E-mail</th>
                                             <th>Meio de Pagamento</th>
                                         </tr>
                                     </thead>
@@ -167,6 +180,7 @@
                                             <th>Nome cliente</th>
                                             <th>Endereço</th>
                                             <th>Número do celular</th>
+                                            <th>E-mail</th>
                                             <th>Meio de Pagamento</th>
                                         </tr>
                                     </tfoot>
@@ -176,6 +190,7 @@
                                             <td>{{ dados_cliente.nome }}</td>
                                             <td>{{ dados_cliente.endereco }}</td>
                                             <td>{{ dados_cliente.telefone }}</td>
+                                            <td>{{ dados_cliente.email_1 }}</td>
                                             <td>{{ dados_cliente.metodo_pagamento }}</td>
                                         </tr>
                                         {% endfor %}
@@ -429,50 +444,50 @@
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         <script>
             $(document).ready(function() {
-              // Abrir modal ao clicar no link "Ver detalhes"
-              $("a[data-modal-id]").click(function(e) {
+            // Abrir modal ao clicar no link "Ver detalhes"
+            $("a[data-modal-id]").click(function(e) {
                 e.preventDefault();
                 var modalId = $(this).data("modal-id");
                 $("#" + modalId).fadeIn();
-              });
+            });
         
-              // Fechar modal ao clicar no botão de fechar
-              $(".close-modal-global").click(function() {
+            // Fechar modal ao clicar no botão de fechar
+            $(".close-modal-global").click(function() {
                 $(this).closest(".modal-global").fadeOut();
-              });
+            });
         
-              // Fechar modal ao clicar fora da modal
-              $(window).click(function(e) {
+            // Fechar modal ao clicar fora da modal
+            $(window).click(function(e) {
                 if ($(e.target).hasClass("modal-global")) {
-                  $(e.target).fadeOut();
+                $(e.target).fadeOut();
                 }
-              });
             });
-          </script>
+            });
+        </script>
 
-          <script>
-            var checkboxLimit = document.querySelector('.switch-toggle input');
-            var wrapper = document.getElementById('wrapper');
-            
-            if (!checkboxLimit.checked) {
-                wrapper.style.pointerEvents = 'none';
-                wrapper.style.opacity = 0.5;
-            } else{
-                wrapper.style.pointerEvents = 'auto';
-                wrapper.style.opacity = 1;
-            }
-            
-            checkboxLimit.addEventListener('change', function() {
-              if (checkboxLimit.checked) {
-                wrapper.style.pointerEvents = 'auto';
-                wrapper.style.opacity = 1;
-              } else {
-                wrapper.style.pointerEvents = 'none';
-                wrapper.style.opacity = 0.5;
-              }
-            });
+        <script>
+        var checkboxLimit = document.querySelector('.switch-toggle input');
+        var wrapper = document.getElementById('wrapper');
         
-          </script>
+        if (!checkboxLimit.checked) {
+            wrapper.style.pointerEvents = 'none';
+            wrapper.style.opacity = 0.5;
+        } else{
+            wrapper.style.pointerEvents = 'auto';
+            wrapper.style.opacity = 1;
+        }
+        
+        checkboxLimit.addEventListener('change', function() {
+            if (checkboxLimit.checked) {
+            wrapper.style.pointerEvents = 'auto';
+            wrapper.style.opacity = 1;
+            } else {
+            wrapper.style.pointerEvents = 'none';
+            wrapper.style.opacity = 0.5;
+            }
+        });
+    
+        </script>
 
         <script>
             var checkbox = document.getElementById("checkbox");
@@ -493,70 +508,70 @@
             });
         </script>
 
-<script>
-    // Grafico conversas por dia
-    Chart.defaults.font.family = '-apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif';
-    Chart.defaults.color = '#292b2c';
+        <script>
+            // Grafico conversas por dia
+            Chart.defaults.font.family = '-apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif';
+            Chart.defaults.color = '#292b2c';
 
-    var ctx = document.getElementById("myAreaChart");
+            var ctx = document.getElementById("myAreaChart");
 
-    var days = JSON.parse('{{ conversas_per_days | safe }}');
+            var days = JSON.parse('{{ conversas_per_days | safe }}');
 
-    var labels = days.map(function(day) {
-        return day[0];
-    });
+            var labels = days.map(function(day) {
+                return day[0];
+            });
 
-    var data = days.map(function(day) {
-        return day[1];
-    });
+            var data = days.map(function(day) {
+                return day[1];
+            });
 
-    var myLineChart = new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: labels,
-            datasets: [{
-                label: "Conversas",
-                tension: 0.3,
-                backgroundColor: "rgba(2,117,216,0.2)",
-                borderColor: "#5C7AD3",
-                pointRadius: 5,
-                pointBackgroundColor: "#5C7AD3",
-                pointBorderColor: "rgba(255,255,255,0.8)",
-                pointHoverRadius: 5,
-                pointHoverBackgroundColor: "#5C7AD3",
-                pointHitRadius: 50,
-                pointBorderWidth: 2,
-                data: data,
-            }],
-        },
-        options: {
-            scales: {
-                x: {
-                    grid: {
-                        display: false
-                    },
-                    ticks: {
-                        maxTicksLimit: 7
-                    }
+            var myLineChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: "Conversas",
+                        tension: 0.3,
+                        backgroundColor: "rgba(2,117,216,0.2)",
+                        borderColor: "#5C7AD3",
+                        pointRadius: 5,
+                        pointBackgroundColor: "#5C7AD3",
+                        pointBorderColor: "rgba(255,255,255,0.8)",
+                        pointHoverRadius: 5,
+                        pointHoverBackgroundColor: "#5C7AD3",
+                        pointHitRadius: 50,
+                        pointBorderWidth: 2,
+                        data: data,
+                    }],
                 },
-                y: {
-                    beginAtZero: true,
-                    ticks: {
-                        autoSkip: true
+                options: {
+                    scales: {
+                        x: {
+                            grid: {
+                                display: false
+                            },
+                            ticks: {
+                                maxTicksLimit: 7
+                            }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                autoSkip: true
+                            },
+                            grid: {
+                                color: "rgba(0, 0, 0, .125)",
+                            }
+                        }
                     },
-                    grid: {
-                        color: "rgba(0, 0, 0, .125)",
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
                     }
                 }
-            },
-            plugins: {
-                legend: {
-                    display: false
-                }
-            }
-        }
-    });
-</script>
+            });
+        </script>
 
         <script>
             // Grafico de barras das conversas por mes

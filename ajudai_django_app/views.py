@@ -62,6 +62,38 @@ def welcome_view(request):
 
     return render(request, 'welcome.html', context)
 
+def meus_clientes_view(request):
+    try:
+        user = CustomUser.getUser(request)
+    except:
+        return redirect('database_error')
+
+    if not request.user.is_authenticated:
+        return redirect('login')
+    
+    user.finance_check(STANDART_PERIOD)
+
+    last_payment_date = user.last_payment_date
+    today = timezone.now().astimezone(sao_paulo_tz).date()
+
+    if last_payment_date is None:
+        last_payment_date = today
+
+    chatbots = ChatBot.objects.filter(user=user)
+    conversas = Conversa.objects.filter(chatbot__in=chatbots)
+    dados_clientes = DadosClienteCadatrado.objects.filter(ultima_conversa__in=conversas)
+
+    context = {
+        "tab_title" : 'Meus clientes',
+        'user' : user,
+        'userIsPremium' : user.userIsPremium(),
+        'dados_clientes' : dados_clientes,
+    }
+
+    user.finance_check(STANDART_PERIOD)
+
+    return render(request, 'meus-clientes.html', context)
+
 def user_accounts_view(request):
     try:
         user = CustomUser.getUser(request)
