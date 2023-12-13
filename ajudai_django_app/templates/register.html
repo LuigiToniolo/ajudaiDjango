@@ -22,7 +22,7 @@
                 <ul>
                   <!-- <h1>Seja um membro do Ajudai! Registre-se</h1> -->
                   {% if user and user.username %}
-                    <a href="{% url 'user_accounts' %}">{{ user.username }} (my account)</a><br>
+                    <a href="{% url 'user_accounts' %}">{{ user.username }} (Minha conta)</a><br>
                   {% else %}
                       <a class="login-redirect" href="{% url 'login' %}">Já é membro? Faça Login</a><br>
                   {% endif %}

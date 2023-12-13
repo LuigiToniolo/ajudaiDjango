@@ -1,5 +1,6 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
+from django.core.validators import EmailValidator, RegexValidator
 from django.core.exceptions import ValidationError
 from django.contrib.auth.forms import PasswordChangeForm
 import json
@@ -102,7 +103,16 @@ class LoginForm(forms.Form):
             )
         )
 
+def validate_cpf(value):
+    # Custom CPF validator
+    if not value.isdigit() or len(value) != 11:
+        raise ValidationError('CPF deve conter exatamente 11 números.')
 
+def validate_phone(value):
+    # Custom phone number validator
+    if not value.isdigit() or len(value) != 11:
+        raise ValidationError('Informe um telefone válido com DDD.')
+    
 class AddCustomerForm(forms.ModelForm):
     nome = forms.CharField(
         label='Nome do cliente',
@@ -110,53 +120,55 @@ class AddCustomerForm(forms.ModelForm):
             'class': 'input-form-customer',
             'placeholder': 'José da Silva'
         }),
+        required=True
     )
     cpf = forms.CharField(
         label='CPF do cliente',
         widget=forms.TextInput(attrs={
             'class': 'input-form-customer',
             'placeholder': 'XXX.XXX.XXX-XX'
-        })
-    )
-    data_1 = forms.DateField(
-        label='Data do agendamento',
-        widget=forms.TextInput(attrs={
-            'class': 'input-form-customer',
-            'placeholder': '01/01/2024'
-        })
+        }),
+        required=False,
+        validators=[validate_cpf]
     )
     email_1 = forms.EmailField(
         label='E-mail do cliente',
         widget=forms.TextInput(attrs={
             'class': 'input-form-customer',
             'placeholder': 'josedasilva@exemplo.com'
-        })
+        }),
+        required=False,
+        validators=[EmailValidator]
     )
     endereco = forms.CharField(
         label='Endereço do cliente',
         widget=forms.TextInput(attrs={
             'class': 'input-form-customer',
             'placeholder': 'Av. Brasil, 123 - Centro, 13.333-003'
-        })
+        }),
+        required=False
     )
     telefone = forms.CharField(
         label='Telefone do cliente',
         widget=forms.TextInput(attrs={
             'class': 'input-form-customer',
             'placeholder': '(11)99999-9999'
-        })
+        }),
+        required=True,
+        validators=[validate_phone],
     )
     metodo_pagamento = forms.CharField(
         label='Método de pagamento do cliente',
         widget=forms.TextInput(attrs={
             'class': 'input-form-customer',
             'placeholder': 'PIX'
-        })
+        }),
+        required=False
     )
     
     class Meta:
         model = DadosClienteCadatrado
-        fields = ['nome', 'cpf', 'data_1', 'email_1', 'endereco', 'telefone', 'metodo_pagamento']
+        fields = ['nome', 'cpf', 'email_1', 'endereco', 'telefone', 'metodo_pagamento']
 
 class CustomPasswordChangeForm(PasswordChangeForm):
     old_password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control'}), label="Senha atual")

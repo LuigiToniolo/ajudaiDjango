@@ -90,6 +90,12 @@ def meus_clientes_view(request):
 
     dados_clientes = DadosClienteCadatrado.objects.all()
     numero_de_clientes = dados_clientes.count()
+    
+    custom_error_names = {
+        'cpf': 'CPF inválido',
+        'telefone': 'Telefone inválido',
+        # Add more field names and custom error names as needed
+    }
 
     context = {
         "tab_title" : 'Meus clientes',
@@ -98,6 +104,7 @@ def meus_clientes_view(request):
         'userIsPremium' : user.userIsPremium(),
         'dados_clientes' : dados_clientes,
         'numero_de_clientes' : numero_de_clientes,
+        
     }
 
     user.finance_check(STANDART_PERIOD)

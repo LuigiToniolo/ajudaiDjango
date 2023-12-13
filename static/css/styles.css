@@ -11434,6 +11434,20 @@ outline: none;
   text-align: center;
 }
 
+.form-field {
+  margin-top: 10px;
+}
+
+.error-message {
+  text-align: start;
+  color: red;
+  list-style: none;
+  margin: 0;
+}
+
+.customer-button-modal {
+  margin-top: 10px;
+}
 
 /* Estilize o botão e o menu suspenso aqui */
 .custom-dropdown {
