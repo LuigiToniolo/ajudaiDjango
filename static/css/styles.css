@@ -11411,6 +11411,70 @@ outline: none;
   color: #5C7AD3;
 }
 
+.total-clientes {
+  background-color: #5C7AD3;
+  border-radius: 0px 0px 5px 5px;
+  width: 100%;
+  padding: 10px 20px;
+  text-align: end;
+  font-size: 18px;
+  font-weight: bold;
+  color: #FFF;
+}
+
+.card-total-clientes {
+  width: 25%;
+  background-color: #212D40;
+  border-radius: 5px;
+}
+
+.fa-ellipsis-vertical {
+  font-size: 18px;
+  color: #000;
+  text-align: center;
+}
+
+
+/* Estilize o botão e o menu suspenso aqui */
+.custom-dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.custom-dropbtn {
+  background-color: transparent;
+  color: white;
+  padding: 10px;
+  font-size: 16px;
+  border: none;
+  cursor: pointer;
+}
+
+.custom-dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #f9f9f9;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 999999;
+  left: -130px
+}
+
+.custom-dropdown-content a {
+  color: black;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+}
+
+.custom-dropdown-content a:hover {
+  background-color: #f1f1f1;
+}
+
+.show {
+  display: block;
+}
+
 
 
 /* .botao-adicionar-cliente:hover {

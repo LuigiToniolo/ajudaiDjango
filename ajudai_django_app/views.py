@@ -88,9 +88,8 @@ def meus_clientes_view(request):
     else:
         form = AddCustomerForm()
 
-    chatbots = ChatBot.objects.filter(user=user)
-    conversas = Conversa.objects.filter(chatbot__in=chatbots)
-    dados_clientes = DadosClienteCadatrado.objects.filter(ultima_conversa__in=conversas)
+    dados_clientes = DadosClienteCadatrado.objects.all()
+    numero_de_clientes = dados_clientes.count()
 
     context = {
         "tab_title" : 'Meus clientes',
@@ -98,6 +97,7 @@ def meus_clientes_view(request):
         'form': form,
         'userIsPremium' : user.userIsPremium(),
         'dados_clientes' : dados_clientes,
+        'numero_de_clientes' : numero_de_clientes,
     }
 
     user.finance_check(STANDART_PERIOD)
