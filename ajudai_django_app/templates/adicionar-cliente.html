@@ -1,0 +1,64 @@
+<!-- <h1>teste</h1>
+<div id="modal-add-customer">
+  <div class="modal-content-customer">
+    <div style="display: flex; justify-content: space-between">
+      <h2 style="text-align: start">Adicione um cliente!</h2>
+      <a class="close-modal-customer" onclick="closeModal()"
+        ><i class="fa-solid fa-xmark" style="font-size: 24px"></i
+      ></a>
+    </div>
+    <p style="text-align: start">
+      Preencha os campos abaixo e cadastre um cliente a sua lista de contatos.
+    </p>
+    <div class="add-customer-form">
+      <form method="post" action="{% url 'meus-clientes' %}" novalidate>
+        {% csrf_token %} {% for field in form %}
+        <div class="form-field">
+          {{ field.label_tag }} {{ field }} {% if field.errors %}
+          <p class="error-message">{{ field.errors.as_text }}</p>
+          {% endif %}
+        </div>
+        {% endfor %}
+        <div class="customer-button-modal">
+          <button class="botao-voltar-customer" onclick="closeModal()">
+            Voltar
+          </button>
+          <button type="submit" class="add-customer-button">Adicionar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div> -->
+  
+  <!-- Modal -->
+  <div class="modal fade" id="addModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title" id="exampleModalLabel">Adicione um cliente!</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            <form method="post" action="{% url 'meus-clientes' %}" novalidate>
+                {% csrf_token %} {% for field in form %}
+                <div class="form-field">
+                  {{ field.label_tag }} {{ field }} {% if field.errors %}
+                  <p class="error-message">{{ field.errors.as_text }}</p>
+                  {% endif %}
+                </div>
+                {% endfor %}
+                <div class="customer-button-modal">
+                  <button class="botao-voltar-customer" data-bs-dismiss="modal">
+                    Voltar
+                  </button>
+                  <button type="submit" class="add-customer-button">Adicionar</button>
+                </div>
+              </form>
+        </div>
+        <!-- <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary">Save changes</button>
+        </div> -->
+      </div>
+    </div>
+  </div>

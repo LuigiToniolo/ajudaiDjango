@@ -91,11 +91,11 @@ def meus_clientes_view(request):
     dados_clientes = DadosClienteCadatrado.objects.all()
     numero_de_clientes = dados_clientes.count()
     
-    custom_error_names = {
-        'cpf': 'CPF inválido',
-        'telefone': 'Telefone inválido',
-        # Add more field names and custom error names as needed
-    }
+    # custom_error_names = {
+    #     'cpf': 'CPF inválido',
+    #     'telefone': 'Telefone inválido',
+    #     # Add more field names and custom error names as needed
+    # }
 
     context = {
         "tab_title" : 'Meus clientes',
@@ -110,6 +110,44 @@ def meus_clientes_view(request):
     user.finance_check(STANDART_PERIOD)
 
     return render(request, 'meus-clientes.html', context)
+
+def add_cliente_view(request):
+    try:
+        user = CustomUser.getUser(request)
+    except:
+        return redirect('database_error')
+
+    if not request.user.is_authenticated:
+        return redirect('login')
+
+    if not user.userIsPremium():
+        return redirect('planos_disponiveis')
+
+    if not user.usuario_adimplente_ou_tolerancia_de_uso():
+        return redirect('payment_debt_out_service')
+
+    user.finance_check(STANDART_PERIOD)
+    
+            
+    if request.method == 'POST':
+        form = AddCustomerForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('meus-clientes')  # Redireciona para a página de clientes após adicionar um novo cliente
+    else:
+        form = AddCustomerForm()
+
+
+    context = {
+        'user' : user,
+        'form': form,
+        'userIsPremium' : user.userIsPremium(),
+        'tab_title': 'Adicionar cliente'
+    }
+
+    user.finance_check(STANDART_PERIOD)
+
+    return render(request, 'adicionar-cliente.html', context)
 
 
 def user_accounts_view(request):

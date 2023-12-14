@@ -48,42 +48,14 @@
                         </div>
                         <div class="divider"></div>
                         <p>Adicione novos clientes para a <strong>lista de contatos</strong> do seu estabelecimento.</p>
-                        <button class="botao-adicionar-cliente" id="myBtn">Adicionar Cliente<i class="fas fa-plus" style="margin-left: 5px;"></i></button>
+                        <!-- <button class="botao-adicionar-cliente" id="myBtn" >Adicionar Cliente<i class="fas fa-plus" style="margin-left: 5px;"></i></button> -->
+                        <a class="botao-adicionar-cliente" data-bs-toggle="modal" data-bs-target="#addModal">
+                            Adicionar Cliente<i class="fas fa-plus" style="margin-left: 5px;"></i>
+                        </a>
 
-                        <div id="modal-add-customer">
-                            <div class="modal-content-customer">
-                                <div style="display: flex; justify-content: space-between">
-                                    <h2 style="text-align: start;">Adicione um cliente!</h2>
-                                    <a class="close-modal-customer" onclick="closeModal()"><i class="fa-solid fa-xmark" style="font-size: 24px;"></i></a>
-                                </div>
-                                <p style="text-align: start;">Preencha os campos abaixo e cadastre um cliente a sua lista de contatos.</p>
-                                <div class="add-customer-form">
+                        {% include 'adicionar-cliente.html' %}
 
-                                    <form method="post" action="{% url 'meus-clientes' %}" novalidate>
-                                        {% csrf_token %}
-                                        
-                                        {% for field in form %}
-                                            <div class="form-field">
-                                                {{ field.label_tag }}
-                                                {{ field }}
-                                                {% if field.errors %}
-                                                    <p class="error-message">{{ field.errors.as_text }}</p>
-                                                {% endif %}
-                                            </div>
-                                        {% endfor %}
-                                        <div class="customer-button-modal">
-                                            <button class="botao-voltar-customer" onclick="closeModal()">Voltar</button>
-                                            <button type="submit" class="add-customer-button" >Adicionar</button>
-                                        </div>
-                                        
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-
-                          
-
-                        <div style="margin-top: 1rem;">
+                        <div style="margin-top: 5rem;">
                             <div class="card mb-4" id="tabela-pedidos">
                               <div class="card-header">
                                   <div>
@@ -127,7 +99,16 @@
                                               <td>{{ dados_cliente.endereco }}</td>
                                               <td>{{ dados_cliente.data_1 }}</td>
                                               <td>{{ dados_cliente.metodo_pagamento }}</td>
-                                              <td><i class="fa-solid fa-ellipsis-vertical"></i></td>
+                                              <td>
+                                                <div class="action-link">
+                                                    <a title="Editar cliente" data-bs-toggle="modal" data-bs-target="#addModal">
+                                                        <i class="fas fa-pen"></i>
+                                                    </a>
+                                                    <a title="Excluir Cliente">
+                                                        <i class="fa-solid fa-trash-can"></i>
+                                                    </a>
+                                                </div>
+                                              </td>
                                           </tr>
                                           {% endfor %}
                                           
@@ -144,7 +125,7 @@
             </div>
         </div>
 
-        <script>
+        <!-- <script>
             //Script JavaScript que faz a abertura e fechamento de modal
             var modal = document.getElementById("modal-add-customer");
             var btn = document.getElementById("myBtn");
@@ -169,7 +150,7 @@
                 }
             }
                
-        </script>
+        </script> -->
 
   
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>

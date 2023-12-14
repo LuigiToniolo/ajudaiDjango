@@ -11341,9 +11341,13 @@ outline: none;
 	transition: transform 80ms ease-in;
   cursor: pointer;
   text-decoration: none;
-
+  margin: 10px 0;
 }
 
+.botao-adicionar-cliente:hover {
+  background-color: #5C7AD3;
+  color: #FFF;
+}
 
 #modal-add-customer {
   display: none;
@@ -11445,9 +11449,23 @@ outline: none;
   margin: 0;
 }
 
+.action-link {
+  display: flex;
+  justify-content: space-around;
+}
+
+.fa-pen {
+  color: #5C7AD3;
+}
+
+.fa-trash-can {
+  color: red;
+}
+
 .customer-button-modal {
   margin-top: 10px;
 }
+
 
 /* Estilize o botão e o menu suspenso aqui */
 .custom-dropdown {
