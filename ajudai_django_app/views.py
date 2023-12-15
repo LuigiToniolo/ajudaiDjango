@@ -90,12 +90,6 @@ def meus_clientes_view(request):
 
     dados_clientes = DadosClienteCadatrado.objects.all()
     numero_de_clientes = dados_clientes.count()
-    
-    # custom_error_names = {
-    #     'cpf': 'CPF inválido',
-    #     'telefone': 'Telefone inválido',
-    #     # Add more field names and custom error names as needed
-    # }
 
     context = {
         "tab_title" : 'Meus clientes',
@@ -104,7 +98,6 @@ def meus_clientes_view(request):
         'userIsPremium' : user.userIsPremium(),
         'dados_clientes' : dados_clientes,
         'numero_de_clientes' : numero_de_clientes,
-        
     }
 
     user.finance_check(STANDART_PERIOD)
@@ -137,7 +130,6 @@ def add_cliente_view(request):
     else:
         form = AddCustomerForm()
 
-
     context = {
         'user' : user,
         'form': form,
@@ -148,6 +140,49 @@ def add_cliente_view(request):
     user.finance_check(STANDART_PERIOD)
 
     return render(request, 'adicionar-cliente.html', context)
+
+def edit_cliente_view(request, cliente_id):
+    try:
+        user = CustomUser.getUser(request)
+    except:
+        return redirect('database_error')
+
+    if not request.user.is_authenticated:
+        return redirect('login')
+
+    if not user.userIsPremium():
+        return redirect('planos_disponiveis')
+
+    if not user.usuario_adimplente_ou_tolerancia_de_uso():
+        return redirect('payment_debt_out_service')
+
+    user.finance_check(STANDART_PERIOD)
+
+    dados_clientes = get_object_or_404(DadosClienteCadatrado, id=cliente_id)
+
+    if request.method == 'POST':
+        form = AddCustomerForm(request.POST, instance=dados_clientes)
+        if form.is_valid():
+            form.save()
+            return redirect('meus-clientes')
+    else:
+        form = AddCustomerForm(instance=dados_clientes)
+
+    context = {
+        'user': user,
+        'form': form,
+        'cliente': dados_clientes,
+        'userIsPremium': user.userIsPremium(),
+        'tab_title': 'Editar cliente',
+    }
+
+    return render(request, 'editar-cliente.html', context)
+
+
+def delete_cliente_view(request, cliente_id):
+    dados_clientes = DadosClienteCadatrado.objects.get(id = cliente_id)
+    dados_clientes.delete()
+    return redirect('meus-clientes')
 
 
 def user_accounts_view(request):

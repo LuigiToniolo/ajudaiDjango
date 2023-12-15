@@ -1,0 +1,32 @@
+<div class="modal fade" id="editModal{{ dados_cliente.id }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="modal-title" id="exampleModalLabel">Editar cliente</h2>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form method="post" action="/editar_cliente" enctype="multipart/form-data" novalidate>
+            {% csrf_token %} 
+                {{cliente.id}}
+                {% for field in form %}
+                  <div class="form-field">
+                    {{ field.label_tag }} 
+                    {{ field }} 
+                    {% if field.errors %}
+                      <p class="error-message">{{ field.errors.as_text }}</p>
+                    {% endif %}
+                    <p>Valor do campo: {{ field.value }}</p>
+                  </div>
+                {% endfor %}
+                <div class="customer-button-modal">
+                  <button class="botao-voltar-customer" data-bs-dismiss="modal">
+                    Voltar
+                  </button>
+                  <button type="submit" class="add-customer-button">Salvar Alterações</button>
+                </div>
+              </form>
+            </div>
+      </div>
+    </div>
+  </div>

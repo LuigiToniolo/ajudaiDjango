@@ -11341,7 +11341,8 @@ outline: none;
 	transition: transform 80ms ease-in;
   cursor: pointer;
   text-decoration: none;
-  margin: 10px 0;
+  margin: 2rem 0;
+  /* margin-bottom: 20px; */
 }
 
 .botao-adicionar-cliente:hover {
@@ -11456,15 +11457,77 @@ outline: none;
 
 .fa-pen {
   color: #5C7AD3;
+  transition: transform 0.3s ease; 
+  cursor: pointer;
+}
+
+.fa-pen:hover {
+  transform: scale(1.25); 
 }
 
 .fa-trash-can {
-  color: red;
+  color: #F58A07;
+  transition: transform 0.3s ease; 
+  cursor: pointer;
+}
+
+.fa-trash-can:hover {
+  transform: scale(1.25);
+}
+
+#trash-can-button {
+  color: #FFFFFF !important;
+  margin-left: 5px;
 }
 
 .customer-button-modal {
   margin-top: 10px;
 }
+
+.modal-title-delete {
+  text-align: center;
+}
+
+
+.delete-button,
+.botao-voltar-delete {
+  border-radius: 20px;
+  border: 1px solid;
+  font-size: 16px;
+  letter-spacing: 1px;
+  cursor: pointer;
+  text-decoration: none;
+  margin: 2rem 0;
+  width: 180px; /* Adjust the width as needed */
+  height: 50px;
+}
+
+.delete-button {
+  background-color: #F58A07;
+  color: #FFFFFF;
+  border-color: #F58A07;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.delete-button:hover {
+  color: #FFFFFF;
+}
+
+.botao-voltar-delete {
+  background-color: #212D40;
+  color: #FFFFFF;
+  border-color: #212D40;
+}
+
+.delete-modal-buttons {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+
+}
+
 
 
 /* Estilize o botão e o menu suspenso aqui */

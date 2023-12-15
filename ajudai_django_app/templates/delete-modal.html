@@ -1,0 +1,21 @@
+<div class="modal fade" id="deleteModal{{ dados_cliente.id }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="modal-title" id="exampleModalLabel" style="text-align: center;">Excluir cliente?</h2>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            <p style="text-align: center;">Você tem certeza que deseja excluir <strong>{{ dados_cliente.nome }}</strong>? Você não poderá desfazer essa alteração.</p>
+            <div class="delete-modal-buttons">
+                <button class="botao-voltar-delete" data-bs-dismiss="modal">
+                    Desfazer
+                </button>
+                <a class="delete-button" href="{% url 'deletar_cliente' dados_cliente.id %}" title="Excluir Cliente">
+                    Excluir cliente <i class="fa-solid fa-trash-can" id="trash-can-button"></i>
+                </a>
+            </div>
+        </div>
+      </div>
+    </div>
+</div>
