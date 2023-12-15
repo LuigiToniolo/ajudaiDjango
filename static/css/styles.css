@@ -11453,12 +11453,16 @@ outline: none;
 .action-link {
   display: flex;
   justify-content: space-around;
+  align-items: center;
+
 }
 
 .fa-pen {
   color: #5C7AD3;
   transition: transform 0.3s ease; 
   cursor: pointer;
+  font-size: 18px;
+  margin: 0 10px;
 }
 
 .fa-pen:hover {
@@ -11469,6 +11473,7 @@ outline: none;
   color: #F58A07;
   transition: transform 0.3s ease; 
   cursor: pointer;
+  font-size: 18px;
 }
 
 .fa-trash-can:hover {
@@ -11480,6 +11485,17 @@ outline: none;
   margin-left: 5px;
 }
 
+.fa-eye {
+  color: #212D40;
+  transition: transform 0.3s ease; 
+  cursor: pointer;
+  font-size: 18px;
+}
+
+.fa-eye:hover {
+  transform: scale(1.25);
+}
+
 .customer-button-modal {
   margin-top: 10px;
 }
@@ -11488,6 +11504,32 @@ outline: none;
   text-align: center;
 }
 
+/* ----------- modal info cliente ----------- */
+
+.sua-lista {
+  list-style-type: none;
+  padding: 0;
+  width: 50%;
+}
+
+.sua-lista-item {
+  margin-bottom: 20px;
+}
+
+.sua-lista-titulo {
+  font-weight: bold;
+}
+
+.conteudo-info-cliente {
+  display: flex;
+  justify-content: space-between;
+}
+
+#info-button-modal {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 
 .delete-button,
 .botao-voltar-delete {

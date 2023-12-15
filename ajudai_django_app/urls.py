@@ -12,6 +12,7 @@ urlpatterns = [
     path('adicionar-cliente/', views.add_cliente_view, name="adicionar-cliente"),  
     path('editar-cliente/<int:cliente_id>/', views.edit_cliente_view, name="editar_cliente"),  
     path('deletar-cliente/<int:cliente_id>/', views.delete_cliente_view, name="deletar_cliente"),  
+    path('info-cliente/<int:cliente_id>/', views.info_cliente_view, name="info_cliente"),  
     path('planos-disponiveis/', views.planos_disponiveis_view, name="planos_disponiveis"),    
     path('minhas-conversas/', views.minhas_conversas_view, name='minhas-conversas'),
     path('get_chat/<int:id>/', views.get_chat, name='get_chat'),

@@ -1,0 +1,64 @@
+<div class="modal fade" id="infoModal{{ dados_cliente.id }}" tabindex="-1" aria-labelledby="infoModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="modal-title" id="infoModalLabel" style="text-align: center;">Informação do cliente</h2>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+
+          <div class="conteudo-info-cliente">
+
+            <div class="sua-lista">
+              <ul style="list-style: none; padding: 0;">
+                <li class="sua-lista-item">
+                  <span class="sua-lista-titulo">Nome:</span>
+                  <p>{{ dados_cliente.nome }}</p>
+                </li>
+                <li class="sua-lista-item">
+                  <span class="sua-lista-titulo">CPF:</span>
+                  <p>{{ dados_cliente.cpf }}</p>
+                </li>
+                <li class="sua-lista-item">
+                  <span class="sua-lista-titulo">Data da última faxina:</span>
+                  <p>{{ dados_cliente.data_1 }}</p> 
+                </li>
+                <li class="sua-lista-item">
+                  <span class="sua-lista-titulo">Data do cadastro:</span>
+                  <p>{{ dados_cliente.creation_date }}</p>
+                  <p>{{ dados_cliente.creation_time }}</p>
+                </li>
+              </ul>
+            </div>
+        
+            <div class="sua-lista">
+              <ul style="list-style: none;">
+                <li class="sua-lista-item">
+                  <span class="sua-lista-titulo">Email:</span>
+                  <p>{{ dados_cliente.email_1 }}</p> 
+                </li>
+                <li class="sua-lista-item">
+                  <span class="sua-lista-titulo">Telefone:</span>
+                  <p>{{ dados_cliente.telefone }}</p>
+                </li>
+                <li class="sua-lista-item">
+                  <span class="sua-lista-titulo">Endereço:</span> 
+                  <p>{{ dados_cliente.endereco }}</p>
+                </li>
+                <li class="sua-lista-item">
+                  <span class="sua-lista-titulo">Método de Pagamento:</span>
+                  <p>{{ dados_cliente.metodo_pagamento }}</p> 
+                </li>
+              </ul>
+            </div>
+        </div> 
+          
+          <div id="info-button-modal">
+            <button class="botao-voltar-delete" data-bs-dismiss="modal">
+                Fechar
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+</div>

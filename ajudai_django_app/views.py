@@ -184,6 +184,10 @@ def delete_cliente_view(request, cliente_id):
     dados_clientes.delete()
     return redirect('meus-clientes')
 
+def info_cliente_view(request, cliente_id):
+    dados_clientes = DadosClienteCadatrado.objects.get(id = cliente_id)
+    context = {'dados_cliente': dados_clientes}
+    return render('meus-clientes', context)
 
 def user_accounts_view(request):
     try:
