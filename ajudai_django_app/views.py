@@ -29,6 +29,7 @@ from django.db.models import Case, When, Value, IntegerField, Subquery, OuterRef
 from django.core.exceptions import ObjectDoesNotExist
 from datetime import datetime, timedelta
 from django.db.models.functions import ExtractYear, ExtractMonth
+from django.template.loader import render_to_string
 from django.http import JsonResponse
 import requests
 
@@ -79,22 +80,25 @@ def meus_clientes_view(request):
 
     user.finance_check(STANDART_PERIOD)
     
-            
+    dados_clientes = DadosClienteCadatrado.objects.all().order_by('nome')
+    numero_de_clientes = dados_clientes.count()
+
+    forms = {'default': AddCustomerForm()}
+    clients_forms = {}
     if request.method == 'POST':
         form = AddCustomerForm(request.POST)
         if form.is_valid():
             form.save()
             return redirect('meus-clientes')  # Redireciona para a página de clientes após adicionar um novo cliente
     else:
-        form = AddCustomerForm()
+        clients_forms = {dados_cliente.id: AddCustomerForm(instance=dados_cliente) for dados_cliente in dados_clientes}
 
-    dados_clientes = DadosClienteCadatrado.objects.all()
-    numero_de_clientes = dados_clientes.count()
+    forms = {**forms, **clients_forms} 
 
     context = {
         "tab_title" : 'Meus clientes',
         'user' : user,
-        'form': form,
+        'forms': forms,
         'userIsPremium' : user.userIsPremium(),
         'dados_clientes' : dados_clientes,
         'numero_de_clientes' : numero_de_clientes,
@@ -171,12 +175,14 @@ def edit_cliente_view(request, cliente_id):
     context = {
         'user': user,
         'form': form,
-        'cliente': dados_clientes,
+        'dados_cliente': dados_clientes,
         'userIsPremium': user.userIsPremium(),
         'tab_title': 'Editar cliente',
     }
-
-    return render(request, 'editar-cliente.html', context)
+    # Aqui estamos enviando o HTML do form com os erros de campo (caso tenham)
+    # TODO: é necessário ainda adicionar uma forma de tratar quando a edição de usuário é um sucesso, atualmente, não acontece nada.
+    form_html = render_to_string('editar-cliente.html', context)
+    return JsonResponse({'form_html': form_html})
 
 
 def delete_cliente_view(request, cliente_id):

@@ -6,9 +6,8 @@
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-          <form method="post" action="/editar_cliente" enctype="multipart/form-data" novalidate>
+        <form method="post" action="/editar-cliente/{{dados_cliente.id}}/" enctype="multipart/form-data" novalidate>
             {% csrf_token %} 
-                {{cliente.id}}
                 {% for field in form %}
                   <div class="form-field">
                     {{ field.label_tag }} 
@@ -16,7 +15,6 @@
                     {% if field.errors %}
                       <p class="error-message">{{ field.errors.as_text }}</p>
                     {% endif %}
-                    <p>Valor do campo: {{ field.value }}</p>
                   </div>
                 {% endfor %}
                 <div class="customer-button-modal">
@@ -29,4 +27,30 @@
             </div>
       </div>
     </div>
-  </div>
+</div>
+
+<script>
+$('#editModal{{ dados_cliente.id }} form').on('submit', function(event) {
+ event.preventDefault();
+
+ var formData = new FormData(this);
+// TODO: MUDAR O COMPORTAMENTO QUANDO O SUBMIT DO FORM FOR UM SUCESSO
+ $.ajax({
+   url: '/editar-cliente/{{dados_cliente.id}}/',
+   type: 'POST',
+   data: formData,
+   processData: false,
+   contentType: false,
+   success: function(response) {
+      //console.log(response.form_html)
+     // Update the modal body with the new form// Create a temporary div and set its innerHTML to the response
+      var tempDiv = $('<div>', {html: response.form_html});
+      // Use the .find() method to get the contents of the modal body
+      var modalBodyContent = tempDiv.find('.modal-body').html();
+      // Update the modal body with the new form
+      $('#editModal{{ dados_cliente.id }} .modal-body').html(modalBodyContent);
+   }
+ });
+});
+</script>
+
