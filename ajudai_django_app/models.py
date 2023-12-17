@@ -633,7 +633,6 @@ class Conversa(models.Model):
 
 class DadosClienteCadatrado(models.Model):
 
-    id = models.AutoField(primary_key=True)
     ultima_conversa = models.ForeignKey(Conversa, on_delete=models.SET_NULL, null=True)
     nome = models.CharField(
         max_length=60,
