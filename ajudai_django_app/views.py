@@ -80,25 +80,22 @@ def meus_clientes_view(request):
 
     user.finance_check(STANDART_PERIOD)
     
-    dados_clientes = DadosClienteCadatrado.objects.all().order_by('nome')
-    numero_de_clientes = dados_clientes.count()
-
-    forms = {'default': AddCustomerForm()}
-    clients_forms = {}
     if request.method == 'POST':
         form = AddCustomerForm(request.POST)
         if form.is_valid():
             form.save()
             return redirect('meus-clientes')  # Redireciona para a página de clientes após adicionar um novo cliente
-    else:
-        clients_forms = {dados_cliente.id: AddCustomerForm(instance=dados_cliente) for dados_cliente in dados_clientes}
 
-    forms = {**forms, **clients_forms} 
+    dados_clientes = DadosClienteCadatrado.objects.all().order_by('nome')
+    numero_de_clientes = dados_clientes.count()
+
+    for dados_cliente in dados_clientes:
+        dados_cliente.form = AddCustomerForm(instance=dados_cliente)
+
 
     context = {
         "tab_title" : 'Meus clientes',
         'user' : user,
-        'forms': forms,
         'userIsPremium' : user.userIsPremium(),
         'dados_clientes' : dados_clientes,
         'numero_de_clientes' : numero_de_clientes,

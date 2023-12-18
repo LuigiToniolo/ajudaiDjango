@@ -2,7 +2,6 @@
 <html lang="pt-br">
     <head>
         {% load static %}
-        {% load custom_tags %}
         <meta charset="utf-8" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
@@ -92,7 +91,6 @@
                                       </tfoot>
                                       <tbody>
                                           {% for dados_cliente in dados_clientes %}
-                                            {% with form=forms|dict_key:dados_cliente.id %}
                                               <tr href="{% url 'editar_cliente' dados_cliente.id %}">
                                                   <td>{{ dados_cliente.nome }}</td>
                                                   <td>{{ dados_cliente.telefone }}</td>
@@ -120,12 +118,11 @@
                                                 </a>
                                               </tr>
 
-                                              {% include 'editar-cliente.html' with form=form %}
+                                              {% include 'editar-cliente.html' with form=dados_cliente.form %}
 
                                               {% include 'delete-modal.html' %}
 
                                               {% include 'info-cliente.html' %}
-                                            {% endwith %}
                                           {% endfor %}
                                           
                                       </tbody>
