@@ -73,10 +73,63 @@ body {
   border-right: 1px solid #f2f2f2;
 }
 
-.contacts ul {
-    padding: 0;
-    margin: 0;
+.container-pesquisa {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin: 10px 0;
+}
 
+.input-pesquisa {
+  display: flex;
+  align-items: center;
+  margin-left: 10px;
+  width: 100%;
+  border: 1px solid #f2f2f2;
+  border-radius: 25px;
+  padding-left: 10px;
+
+  height: 40px;
+}
+
+.input-pesquisa input[type="text"] {
+  width: 100%;
+  outline: none;
+  font-size: 14px;
+}
+.search-input {
+  width: 100%;
+  border: none;
+  border-radius: 25px;
+  padding-left: 10px;
+  font-size: 16px;
+  height: 35px;
+}
+
+.search-button,.search-button:active, .search-button:focus {
+    outline: none;
+    border: none;
+    margin: 0;
+    padding: 0;
+    width: auto;
+    overflow: visible;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    text-align: inherit;
+    cursor: pointer;
+    display: inline-block;
+}
+
+.contacts ul {
+  padding: 0;
+  margin: 0;
+}
+
+.icon-filter {
+  width: 25px;
+  height: 25px;
+  margin: 0;
 }
 
 .contacts li {
@@ -662,7 +715,6 @@ background-color: #555;
   border-right: 1px solid #f2f2f2;
   padding-top: 10vh;
 }
-
 
 .info-cliente {
   margin-left: 10px;
