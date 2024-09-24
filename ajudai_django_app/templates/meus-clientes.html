@@ -52,8 +52,7 @@
                             Adicionar Cliente<i class="fas fa-plus" style="margin-left: 5px;"></i>
                         </button>
 
-                        {% include 'adicionar-cliente.html' %}
-
+                        {% include 'adicionar-cliente.html' with form=form %}
 
                         <div>
                             <div class="card mb-4" id="tabela-pedidos">
@@ -123,6 +122,7 @@
                                               {% include 'delete-modal.html' %}
 
                                               {% include 'info-cliente.html' %}
+
                                           {% endfor %}
                                           
                                       </tbody>

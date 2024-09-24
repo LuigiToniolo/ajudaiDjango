@@ -92,10 +92,12 @@ def meus_clientes_view(request):
     for dados_cliente in dados_clientes:
         dados_cliente.form = AddCustomerForm(instance=dados_cliente)
 
+    form = AddCustomerForm()
 
     context = {
         "tab_title" : 'Meus clientes',
         'user' : user,
+        'form': form,
         'userIsPremium' : user.userIsPremium(),
         'dados_clientes' : dados_clientes,
         'numero_de_clientes' : numero_de_clientes,
