@@ -1,10 +1,5 @@
-import openai
 import tiktoken
 from constants import AI_PROVIDER_OPEN_AI, MAX_INSTRUCTIONS_RATE_SIZE
-
-from get_secret_variables import get_secret_var
-
-openai.api_key = get_secret_var("OPENAI_API_KEY")
 
 def count_tokens(model, content):
     enc = tiktoken.encoding_for_model(model)

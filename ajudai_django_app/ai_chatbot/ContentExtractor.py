@@ -1,8 +1,7 @@
-import openai
-
 from abc import ABC
 from constants import GPT3_MODEL_NAME
 from get_secret_variables import get_secret_var
+from .openai_client import get_openai_client
 
 class ContentExtractor():
     """
@@ -20,7 +19,7 @@ class ContentExtractor():
     """
     def __init__(self):
         self.openai_api_key = get_secret_var("OPENAI_API_KEY")
-        openai.api_key = self.openai_api_key
+        self.client = get_openai_client()
 
     def extract(self, instructions, user_message):
         """
@@ -38,7 +37,7 @@ class ContentExtractor():
             str
                 The extracted content from the user message.
         """
-        completions = openai.ChatCompletion.create(
+        completions = self.client.chat.completions.create(
             model=GPT3_MODEL_NAME,
             messages=[
                 {"role": "system", "content": instructions},
@@ -48,4 +47,4 @@ class ContentExtractor():
                 },
             ]
         )
-        return completions['choices'][0]['message']['content']
+        return completions.choices[0].message.content

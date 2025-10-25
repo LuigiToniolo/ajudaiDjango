@@ -1,12 +1,10 @@
-import openai
 from constants import GPT3_MODEL_NAME
-from get_secret_variables import get_secret_var
-
-openai.api_key = get_secret_var("OPENAI_API_KEY")
+from .openai_client import get_openai_client
 
 def ai_gpt_extrair_dado_do_resumo(dado_a_extrair, resumo_do_pedido):
     intructions = 'Você é um assistente prestativo que responde de forma objetiva e apenas o que te foi solicitado'
-    completions = openai.ChatCompletion.create(
+    client = get_openai_client()
+    completions = client.chat.completions.create(
                     model=GPT3_MODEL_NAME,
                     messages=[
                         {"role": "system", "content": intructions},
@@ -16,12 +14,12 @@ def ai_gpt_extrair_dado_do_resumo(dado_a_extrair, resumo_do_pedido):
                         },
                     ]
                 )
-
-    return completions['choices'][0]['message']['content']
+    return completions.choices[0].message.content
 
 def ai_gpt_extrair_endereco_do_resumo(resumo_do_pedido):
     intructions = 'Você é um assistente prestativo que responde de forma objetiva e apenas o que te foi solicitado'
-    completions = openai.ChatCompletion.create(
+    client = get_openai_client()
+    completions = client.chat.completions.create(
                     model=GPT3_MODEL_NAME,
                     messages=[
                         {"role": "system", "content": intructions},
@@ -31,14 +29,14 @@ def ai_gpt_extrair_endereco_do_resumo(resumo_do_pedido):
                         },
                     ]
                 )
-
-    return completions['choices'][0]['message']['content']
+    return completions.choices[0].message.content
 
 def ai_gpt_extrair_preco_do_cardapio(itens_do_cardapio, cardapio):
     instructions = f'Você é um assistente especializado em obter os preços dos itens contidos no seguinte cardápio {cardapio}. Responda sempre de forma curta e objectiva, se restringindo sempre às infomações obtidas no cardápio.'
     instructions = instructions + 'Ao receber os itens solictados, informe, para cada item localizado no cardápio: "o preço do item [item solictado] é [preço emcontrado]"'
     instructions = instructions +  'Para cada item em que você não localizar o preço no cardápio, responda: "o item [item solicitado] não está no cardápio. Peço para o cliente informar o nome do item exatamente como está no cardápio]"'
-    completions = openai.ChatCompletion.create(
+    client = get_openai_client()
+    completions = client.chat.completions.create(
                     model=GPT3_MODEL_NAME,
                     messages=[
                         {"role": "system", "content": instructions},
@@ -48,5 +46,4 @@ def ai_gpt_extrair_preco_do_cardapio(itens_do_cardapio, cardapio):
                         },
                     ]
                 )
-
-    return completions['choices'][0]['message']['content']
+    return completions.choices[0].message.content

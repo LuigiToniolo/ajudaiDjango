@@ -19,6 +19,7 @@ from django.contrib import messages
 from django.urls import reverse
 from django.core.mail import send_mail
 from django.conf import settings
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.views.decorators.csrf import csrf_exempt
 import json
@@ -109,13 +110,14 @@ def dashboard_view(request):
     except:
         return redirect('database_error')
 
-    if not user.userIsPremium():
+    if not request.user.is_superuser and not user.userIsPremium():
         return redirect('planos_disponiveis')
 
-    if not user.usuario_adimplente_ou_tolerancia_de_uso():
+    if not request.user.is_superuser and not user.usuario_adimplente_ou_tolerancia_de_uso():
         return redirect('payment_debt_out_service')
 
-    user.finance_check(STANDART_PERIOD)
+    if not request.user.is_superuser:
+        user.finance_check(STANDART_PERIOD)
 
     last_payment_date = user.last_payment_date
     today = timezone.now().astimezone(sao_paulo_tz).date()
@@ -892,8 +894,14 @@ def send_confirmation_email(request):
         return redirect('database_error')
 
     subject = FANTASY_NAME + ' - Confirme seu email'
-    message = f'Bem-vindo ao {FANTASY_NAME}! Clique no link a seguir para confirmar o seu email: {request.build_absolute_uri(reverse("email_confirmed", args=[token]))}'
-    send_mail(subject, message, from_email=settings.DEFAULT_FROM_EMAIL, recipient_list=[user.email])
+    if getattr(settings, 'REQUIRE_EMAIL_CONFIRMATION', False):
+        message = f'Bem-vindo ao {FANTASY_NAME}! Clique no link a seguir para confirmar o seu email: {request.build_absolute_uri(reverse("email_confirmed", args=[token]))}'
+        send_mail(subject, message, from_email=settings.DEFAULT_FROM_EMAIL, recipient_list=[user.email])
+    else:
+        # auto-confirm in demo mode
+        user.email_confirmed = True
+        user.email_confirmation_token = ''
+        user.save()
 
     context = {
         'title' : "Confirmação de email enviada",
@@ -908,10 +916,14 @@ def email_confirmed(request, token):
     User = get_user_model()
     try:
         # retrieve the user associated with the activation token
-        user = User.objects.get(email_confirmation_token=token)
-        user.email_confirmed = True
-        user.email_confirmation_token = ''
-        user.save()
+        if getattr(settings, 'REQUIRE_EMAIL_CONFIRMATION', False):
+            user = User.objects.get(email_confirmation_token=token)
+        else:
+            user = CustomUser.getUser(request)
+        if getattr(settings, 'REQUIRE_EMAIL_CONFIRMATION', False):
+            user.email_confirmed = True
+            user.email_confirmation_token = ''
+            user.save()
         context = {
             'title' : 'Email confirmado',
             'user': user,

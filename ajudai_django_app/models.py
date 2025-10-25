@@ -15,6 +15,7 @@ from ajudai_django_app.phone_integration.messages import send_response
 import pytz
 from dateutil.relativedelta import relativedelta
 from django.core.exceptions import ObjectDoesNotExist
+from django.conf import settings
 from constants import ADESAO_PURCHASE_STATUS_CALCELED, ADESAO_PURCHASE_STATUS_PENDING, ADESAO_PURCHASE_STATUS_PROCESSED, AI_PROVIDER_OPEN_AI, API_MAX_ATTEMP, BRL_CURRENCY_SIMBOL, CONVERSA_AGUARDANDO_VENCIMENTO, CONVERSA_PAGA, CONVERSA_PAGAMENTO_PENDENTE, DIAS_TOLERACIA_INADIMPLECIA, FATURA_PAGA, FATURA_PENDENTE, GPT3_MODEL_NAME, HOURS_TO_RESER_ABSOLUTE, HOURS_TO_RESET_INACTIVE, LIMITE_CONVERSAS_PLANO_PLUS, LIMITE_CONVERSAS_PLANO_PREMIUM, LIMITE_CONVERSAS_PLANO_STANDARD, MAX_CHAR_INSTRUCTIONS_CHATBOT_FORM, MENSAGEM_ENCERRAMENTO_DE_CONVERSA_INATIVIDADE, MENSAGEM_ENCERRAMENTO_DE_CONVERSA_TEMPO_LIMITE, PAYMENT_METHOD_BOLETO, PAYMENT_METHOD_CREDIT_CARD, PAYMENT_METHOD_OTHER, PAYMENT_METHOD_PIX, PAYMENT_METHOD_REGISTRATION_STATUS_FAILING, PAYMENT_METHOD_REGISTRATION_STATUS_PENDING, PAYMENT_METHOD_REGISTRATION_STATUS_SUCCESS, PAYMENT_PERIOD_ANUALY, PAYMENT_PERIOD_DAILY, PAYMENT_PERIOD_MONTHLY, PRODUCT_NAME_BASIC, PRODUCT_NAME_COORPORATE, PRODUCT_NAME_PLUS, PRODUCT_NAME_PREMIUM, PRUDUCT_TYPE_ADESAO, PRUDUCT_TYPE_CONVERSA_AVULSA, PRUDUCT_TYPE_PLAN, SEM_METODO_DE_PAGAMENTO_CLIENTE_LOCALIZADO_NA_CONVERSA, SLEEP_SECONDS_INTER_AI_API_CALL, STATUS_CONVERSA_EM_ANDAMENTO, STATUS_CONVERSA_ENCERRADA, STATUS_CONVERSA_FALHA, STATUS_PEDIDO_CANCELADO, STATUS_PEDIDO_EM_PROCESSO, STATUS_PEDIDO_ENTREGUE, STATUS_PEDIDO_PENDENTE_DE_ENTREGA, STATUS_PEDIDO_REALIZADO, USER_LEVEL_ADMIN, USER_LEVEL_FREE, USER_LEVEL_PREMIUM, USER_PAYMENT_METHOD_FAILED, USER_PAYMENT_METHOD_NOT_REGISTERED, USER_PAYMENT_METHOD_STATUS_OK
 
 sao_paulo_tz = pytz.timezone('America/Sao_Paulo')
@@ -99,11 +100,15 @@ class CustomUser(AbstractUser):
     chatbots_on = models.BooleanField(default=True)
 
     def usuario_adimplente(self):
+        if self.is_superuser:
+            return True
         if self.valor_em_debito > 0:
             return False
         return True
     
     def usuario_adimplente_ou_tolerancia_de_uso(self):
+        if self.is_superuser:
+            return True
         if not self.usuario_adimplente:
             if self.last_payment_date is not None:
                 today = timezone.now().astimezone(sao_paulo_tz).date()
@@ -113,6 +118,12 @@ class CustomUser(AbstractUser):
         return True
     
     def userIsPremium(self):
+        # Superuser always premium
+        if self.is_superuser:
+            return True
+        # When Stripe is disabled (demo), treat everyone as premium
+        if not getattr(settings, 'USE_STRIPE', False):
+            return True
         if self.user_plan == USER_LEVEL_PREMIUM or self.user_plan == USER_LEVEL_ADMIN:
             return True
         return False
@@ -164,6 +175,8 @@ class CustomUser(AbstractUser):
             login(request, user)
 
     def is_payment_time(self, reset_period):
+        if self.is_superuser:
+            return False
         if self.user_plan == USER_LEVEL_FREE:
             return False
         
@@ -192,6 +205,10 @@ class CustomUser(AbstractUser):
         return False
     
     def days_to_next_payment(self, reset_period):
+        if self.is_superuser:
+            return 30
+        if not getattr(settings, 'USE_STRIPE', False):
+            return 30
         if self.user_plan == USER_LEVEL_FREE:
             return None
         
@@ -214,6 +231,10 @@ class CustomUser(AbstractUser):
 
         
     def reset_payment_date(self, reset_period):
+        if self.is_superuser:
+            return
+        if not getattr(settings, 'USE_STRIPE', False):
+            return
         if self.userIsPremium == True:
             today = timezone.now().astimezone(sao_paulo_tz).date()
             if reset_period == PAYMENT_PERIOD_DAILY:
@@ -250,6 +271,10 @@ class CustomUser(AbstractUser):
         return product, price, conversas_a_pagar
 
     def charge_new_conversations_first_attempt(self, reset_period):
+        if self.is_superuser:
+            return
+        if not getattr(settings, 'USE_STRIPE', False):
+            return
         product, price, conversas_a_pagar = self.current_user_plan_price_and_conversas_a_pagar(reset_period)
         total_cost = price * conversas_a_pagar
         charge_usages(total_cost, self)
@@ -269,10 +294,18 @@ class CustomUser(AbstractUser):
         return self.valor_em_debito
     
     def charge_all_user_debt(self):
+        if self.is_superuser:
+            return
+        if not getattr(settings, 'USE_STRIPE', False):
+            return
         total_cost = self.valor_em_debito
         charge_usages(total_cost, self)
 
     def finance_check(self, reset_period):
+        if self.is_superuser:
+            return
+        if not getattr(settings, 'USE_STRIPE', False):
+            return
         if self.is_payment_time(reset_period):
             self.reset_payment_date(reset_period)
             #cobra cnversas aguardando vencimento
@@ -281,6 +314,14 @@ class CustomUser(AbstractUser):
             Conversa.conversations_to_payment_due(self)
 
     def reduce_debt_amount(self, amount_payed):
+        if self.is_superuser:
+            self.valor_em_debito = 0
+            self.save()
+            return
+        if not getattr(settings, 'USE_STRIPE', False):
+            self.valor_em_debito = 0
+            self.save()
+            return
         self.valor_em_debito = 0
         self.save()
 
@@ -296,6 +337,10 @@ class CustomUser(AbstractUser):
         '''
 
     def can_create_new_messages(self, reset_period):
+        if self.is_superuser:
+            return True
+        if not getattr(settings, 'USE_STRIPE', False):
+            return True
         if self.user_plan == USER_LEVEL_FREE:
             #PARA O MODELO DE NEGÓCIOS ATUAL, FOI DEFINIDO QUE O USUÁRIO FREE NÃO PODE UTILIZAR O SERVIÇO
             return False

@@ -2,6 +2,7 @@ from django.urls import path
 from django.contrib.auth import views as auth_views
 
 from ajudai_django_app import views
+from django.conf import settings
 
 urlpatterns = [
     path('', views.welcome_view, name="welcome"),
@@ -40,15 +41,16 @@ urlpatterns = [
     path('termos_e_condicoes/', views.terms_and_conditions, name='termos_e_condicoes'),
     path('whatsapp/webhook/', views.whatsapp_message_webhook, name='whatsapp_webhook'),
     path('erro-banco-dados/', views.database_error, name="database_error"),
-    path('checkout-pagamento-adesao/', views.adesao_payment_checkout, name = 'checkout_pagamento_adesao'),
-    path('adesao-realizada/', views.adesao_payment_success, name = 'adesao_realizada'),
-    path('adesao-falhou/', views.adesao_payment_failiure, name = 'adesao_falhou'),
-    path('adesao-webhook/', views.adesao_payment_webhook, name = 'adesao_payment_webhook'),
-    path('checkout-metodo-pagamento/', views.payment_method_checkout, name = 'checkout_metodo_pagamento'),
-    path('metodo-pagamento-registrado/', views.payment_method_success, name = 'metodo_pagamento_success'),
-    path('metodo-pagamento-falhou/', views.payment_method_failure, name = 'metodo_pagamento_falhou'),
-    path('metodo-pagamento-webhook/', views.payment_method_webhook, name = 'payment_method_webhook'),
-    path('pagamento-uso-webhook/', views.usage_payment_webhook, name = 'usage_payment_webhook'),
+    # Stripe-related endpoints: active only if USE_STRIPE=True
+    *([path('checkout-pagamento-adesao/', views.adesao_payment_checkout, name = 'checkout_pagamento_adesao'),
+       path('adesao-realizada/', views.adesao_payment_success, name = 'adesao_realizada'),
+       path('adesao-falhou/', views.adesao_payment_failiure, name = 'adesao_falhou'),
+       path('adesao-webhook/', views.adesao_payment_webhook, name = 'adesao_payment_webhook'),
+       path('checkout-metodo-pagamento/', views.payment_method_checkout, name = 'checkout_metodo_pagamento'),
+       path('metodo-pagamento-registrado/', views.payment_method_success, name = 'metodo_pagamento_success'),
+       path('metodo-pagamento-falhou/', views.payment_method_failure, name = 'metodo_pagamento_falhou'),
+       path('metodo-pagamento-webhook/', views.payment_method_webhook, name = 'payment_method_webhook'),
+       path('pagamento-uso-webhook/', views.usage_payment_webhook, name = 'usage_payment_webhook')] if getattr(settings, 'USE_STRIPE', False) else []),
     path('fora-de-servico-valores-a-pagar/', views.user_in_debt_and_out_of_service_view, name = 'payment_debt_out_service'),
     path('processando-pagamento-debito/', views.pay_debit, name = 'processando_pagamento_debito'),
     path('toggle_chatbot/', views.toggle_chatbot, name='toggle_chatbot'),

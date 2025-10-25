@@ -24,6 +24,10 @@ env = environ.Env(DEBUG=(bool, True))
 env_file = os.path.join(BASE_DIR, ".env")
 env.read_env(env_file)
 
+# Feature flags
+USE_STRIPE = env.bool("USE_STRIPE", default=False)
+REQUIRE_EMAIL_CONFIRMATION = env.bool("REQUIRE_EMAIL_CONFIRMATION", default=False)
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
@@ -100,12 +104,8 @@ if DATABASE_URL:
 else:
     DATABASES = {
         "default": {
-            "ENGINE": "django.db.backends.postgresql",
-            "NAME": env("DBNAME"),
-            "USER": env("DBUSER"),
-            "PASSWORD": env("DATABASE_KEY"),
-            "HOST": env("DBADRESS"),
-            "PORT": env("DBPORT"),
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR / "db.sqlite3",
         }
     }
 # Password validation

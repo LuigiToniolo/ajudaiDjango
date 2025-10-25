@@ -1,4 +1,4 @@
-import openai
+from .openai_client import get_openai_client
 import json
 from ajudai_django_app.ai_chatbot.ai_extration import ai_gpt_extrair_preco_do_cardapio
 from ajudai_django_app.ai_chatbot.ai_tools import count_tokens, instruction_builder, messages_to_string
@@ -12,8 +12,7 @@ from notifications.signals import notify
 import sys
 
 from get_secret_variables import get_secret_var
-
-openai.api_key = get_secret_var("OPENAI_API_KEY")
+client = get_openai_client()
 
 def obeter_precos_itens_cardapio(itens_do_cardapio, chatbot_id):
     try:
@@ -275,16 +274,16 @@ def generate_gpt_response(prompt, context, role, aditional_instructions, model_n
 
         if possivel_obter_resposta:
             try:
-                completions = openai.ChatCompletion.create(
+                completions = client.chat.completions.create(
                     model=model_name,
                     temperature=0,
                     messages=context,
                     functions=functions,
                     function_call="auto",
                 )
-                tokens_used = completions.usage['total_tokens']
+                tokens_used = completions.usage.total_tokens
 
-                response_message = completions["choices"][0]["message"]
+                response_message = completions.choices[0].message
                 if response_message.get("function_call"):
                     available_functions = {
                         "criar_pedido_e_retornar_resumo": criar_pedido_e_retornar_resumo,
@@ -309,15 +308,14 @@ def generate_gpt_response(prompt, context, role, aditional_instructions, model_n
                             "content": function_response,
                         })
 
-                        completions_after_function_response = openai.ChatCompletion.create(
+                        completions_after_function_response = client.chat.completions.create(
                             model=model_name,
                             temperature=0,
                             messages=context
                         )
-
-                        awnser = completions_after_function_response['choices'][0]['message']['content']
+                        awnser = completions_after_function_response.choices[0].message.content
                         context.append({"role": "assistant", "content": awnser})
-                        tokens_used = tokens_used + completions_after_function_response.usage['total_tokens']
+                        tokens_used = tokens_used + completions_after_function_response.usage.total_tokens
 
                     if function_name == 'criar_pedido_e_retornar_resumo':
                         try:
@@ -370,15 +368,14 @@ def generate_gpt_response(prompt, context, role, aditional_instructions, model_n
                             "content": function_response,
                         })
 
-                        completions_after_function_response = openai.ChatCompletion.create(
+                        completions_after_function_response = client.chat.completions.create(
                             model=model_name,
                             temperature=0,
                             messages=context
                         )
-
-                        awnser = completions_after_function_response['choices'][0]['message']['content']
+                        awnser = completions_after_function_response.choices[0].message.content
                         context.append({"role": "assistant", "content": awnser})
-                        tokens_used = tokens_used + completions_after_function_response.usage['total_tokens']
+                        tokens_used = tokens_used + completions_after_function_response.usage.total_tokens
 
                     # NOTIFICACAO  
                     if function_name == 'notificar_admin':
@@ -407,7 +404,7 @@ def generate_gpt_response(prompt, context, role, aditional_instructions, model_n
                         # tokens_used = tokens_used + completions_after_function_response.usage['total_tokens']
 
                 else:
-                    awnser = completions['choices'][0]['message']['content']
+                    awnser = completions.choices[0].message.content
                     context.append({"role": "assistant", "content": awnser})
 
 
