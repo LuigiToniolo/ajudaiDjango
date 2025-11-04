@@ -80,9 +80,9 @@ MENSAGEM_ENCERRAMENTO_DE_CONVERSA_TEMPO_LIMITE = 'Essa conversa ultrapassou seu 
 #API RELATED
 AI_PROVIDER_OPEN_AI = "open_ai"
 
-GPT3_MODEL_NAME = 'gpt-3.5-turbo'
+GPT3_MODEL_NAME = 'gpt-4o-2024-11-20'
 
-GPT3_TOKEK_LIMIT = 4096
+GPT3_TOKEK_LIMIT = 32000
 
 MAX_INSTRUCTIONS_RATE_SIZE = 0.95
 #o limite deixado para a pergunta/prompt é, então 0,05 menos o limite de reserva para a resposta abaixo

@@ -404,7 +404,7 @@ class Product(models.Model):
         (AI_PROVIDER_OPEN_AI , 'Open AI'),
         )
     AI_MODEL_CHOICES = (
-        (GPT3_MODEL_NAME, 'GPT 3.5'),
+        (GPT3_MODEL_NAME, 'GPT-4o'),
         )
     CURRENCY_CHOICES = (
         (BRL_CURRENCY_SIMBOL, 'Reais (R$)'),
