@@ -147,11 +147,16 @@ def dashboard_view(request):
     
     dias_para_pagamento = user.days_to_next_payment(STANDART_PERIOD)
     data_proximo_pagamento = today + timedelta(days=dias_para_pagamento)
-    nome_do_plano = plano_atual_usuario.name
-    minimo_conversas_plano_atual = plano_atual_usuario.minimo_conversas
-    limite_conversas_plano_atual = plano_atual_usuario.maximo_conversas
-    valor_por_conversa_do_plano_atual = preco_atual
-    gasto_atual_do_periodo = conversas_a_pagar * valor_por_conversa_do_plano_atual
+    if plano_atual_usuario:
+        nome_do_plano = plano_atual_usuario.name
+        minimo_conversas_plano_atual = plano_atual_usuario.minimo_conversas
+        limite_conversas_plano_atual = plano_atual_usuario.maximo_conversas
+    else:
+        nome_do_plano = 'Demo'
+        minimo_conversas_plano_atual = 0
+        limite_conversas_plano_atual = conversas_a_pagar or 0
+    valor_por_conversa_do_plano_atual = preco_atual if preco_atual is not None else 0
+    gasto_atual_do_periodo = (conversas_a_pagar or 0) * (valor_por_conversa_do_plano_atual or 0)
 
     limite_atual_conversas = int(user.conversation_limit_set_by_user)
 
