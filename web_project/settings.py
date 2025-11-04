@@ -167,15 +167,15 @@ STATICFILES_FINDERS = [
 
 # *****************************ATIVAR TODOS ABAIXO PARA DEPLOY **************************************************************************************
 # PARA RODAR NO SERVER DE PRODUÇÃO
-# CSRF_COOKIE_SECURE = True
-# SESSION_COOKIE_SECURE = True
-# SECURE_SSL_REDIRECT = True
-# SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True
+SECURE_SSL_REDIRECT = True
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # PARA RODAR DO SERVIDOR INTERNO:
 
 # *****************************DESATIVAR PARA DEPLOY **************************************************************************************
-if IS_DEVELOPMENT_ENV:
-    SECURE_SSL_REDIRECT = False
+#if IS_DEVELOPMENT_ENV:
+#    SECURE_SSL_REDIRECT = False
 
 # END HTTPS CONFIG
