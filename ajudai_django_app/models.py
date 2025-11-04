@@ -58,6 +58,7 @@ class CustomUser(AbstractUser):
         default='',
     )
     cell_phone = models.CharField(
+        max_length=20,
         validators=[phone_regex],
         default='99999999999',
     )
@@ -492,6 +493,7 @@ class ChatBot(models.Model):
     cardapio = models.CharField(max_length=MAX_CHAR_INSTRUCTIONS_CHATBOT_FORM, default='')
     descricao_funcao_cardapio = models.CharField(max_length=1000, default='Obtém uma informação específica, ou um conjunto de informações específicas contidas no cardápio, como nome do produto, tamanho, ingredientes e preço')
     whatsapp_number=models.CharField(
+        max_length=20,
         validators=[phone_regex],
         default='99999999999',
     )
@@ -735,6 +737,7 @@ class Pedido(models.Model):
         choices=STATUS_CHOICES,
         )
     resumo_do_pedido = models.CharField(
+        max_length=1000000,
         default='',
         )
     date = models.DateField(default=current_date_sao_paulo)
