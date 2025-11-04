@@ -27,6 +27,8 @@ env.read_env(env_file)
 # Feature flags
 USE_STRIPE = env.bool("USE_STRIPE", default=False)
 REQUIRE_EMAIL_CONFIRMATION = env.bool("REQUIRE_EMAIL_CONFIRMATION", default=False)
+USE_DJANGO_Q = env.bool("USE_DJANGO_Q", default=False)
+USE_NOTIFICATIONS = env.bool("USE_NOTIFICATIONS", default=False)
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
@@ -55,9 +57,12 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     MAIN_APP_NAME,
-    "django_q",
-    "notifications",
 ]
+
+if USE_DJANGO_Q:
+    INSTALLED_APPS.append("django_q")
+if USE_NOTIFICATIONS:
+    INSTALLED_APPS.append("notifications")
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",

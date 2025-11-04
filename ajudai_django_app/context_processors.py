@@ -18,7 +18,10 @@ def notifications_list(request):
 
     if request.user.is_authenticated:
         unread_notifications = get_unread_notifications_user(request.user)
-        unread_notifications_dict = json.dumps(list(unread_notifications.values()), cls=DateTimeEncoder)
+        if hasattr(unread_notifications, 'values'):
+            unread_notifications_dict = json.dumps(list(unread_notifications.values()), cls=DateTimeEncoder)
+        else:
+            unread_notifications_dict = json.dumps([], cls=DateTimeEncoder)
         unread_notifications_count = get_unread_notifications_user_count(request.user)
         read_notifications_count = get_read_notifications_user_count(request.user)
 

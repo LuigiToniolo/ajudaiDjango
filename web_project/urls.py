@@ -16,15 +16,19 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import include, path, re_path
+from django.conf import settings
 from constants import MAIN_APP_NAME
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
-
-import notifications.urls
 
 urlpatterns = [
     path("", include(MAIN_APP_NAME+".urls")),
     path('admin/', admin.site.urls),
     #re_path('^inbox/notifications/', include(notifications.urls, namespace='notifications')),
 ]
+
+if getattr(settings, "USE_NOTIFICATIONS", False):
+    urlpatterns.append(
+        re_path('^inbox/notifications/', include('notifications.urls', namespace='notifications'))
+    )
 
 urlpatterns += staticfiles_urlpatterns()

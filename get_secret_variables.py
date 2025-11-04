@@ -19,4 +19,5 @@ def get_secret_var(var_name):
             env.read_env(env_file)
             break
 
-    return env(var_name)
+    # Allow missing secrets in demo/dev runs: return None (or OS env) instead of raising
+    return env(var_name, default=os.environ.get(var_name))

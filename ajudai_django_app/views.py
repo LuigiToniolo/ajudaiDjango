@@ -24,7 +24,11 @@ from django.contrib.auth import get_user_model
 from django.views.decorators.csrf import csrf_exempt
 import json
 from django.shortcuts import get_object_or_404
-from django_q.tasks import async_task
+try:
+    from django_q.tasks import async_task
+except Exception:
+    def async_task(func, *args, **kwargs):
+        return func(*args, **kwargs)
 from django.utils import timezone
 from django.db.models import Case, When, Value, IntegerField, Subquery, OuterRef
 from django.core.exceptions import ObjectDoesNotExist
@@ -34,7 +38,6 @@ from django.http import JsonResponse
 import requests
 
 # Notifications
-from notifications.models import Notification
 from .notifications import get_unread_notifications_user
 from .context_processors import notifications_list
 
@@ -1686,8 +1689,11 @@ def notifications(request):
     )
 
 def mark_notification_as_read(request, notification_id):
-    Notification.objects.filter(id=notification_id).mark_all_as_read(recipient=request.user)
+    try:
+        from notifications.models import Notification
+        Notification.objects.filter(id=notification_id).mark_all_as_read(recipient=request.user)
+    except Exception:
+        pass
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         return HttpResponse(200)
-    
     return redirect(reverse('notifications'))
