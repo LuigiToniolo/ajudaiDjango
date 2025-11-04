@@ -24,11 +24,7 @@ from django.contrib.auth import get_user_model
 from django.views.decorators.csrf import csrf_exempt
 import json
 from django.shortcuts import get_object_or_404
-try:
-    from django_q.tasks import async_task
-except Exception:
-    def async_task(func, *args, **kwargs):
-        return func(*args, **kwargs)
+from .background import submit
 from django.utils import timezone
 from django.db.models import Case, When, Value, IntegerField, Subquery, OuterRef
 from django.core.exceptions import ObjectDoesNotExist
@@ -1195,7 +1191,7 @@ def whatsapp_message_webhook(request):
 
     if request.method == 'POST':
         data = json.loads(request.body)
-        async_task(process_message, data)
+        submit(process_message, data)
         return HttpResponse('Message received and will be processed', status=200)
 
 

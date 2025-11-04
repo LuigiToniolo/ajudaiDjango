@@ -26,7 +26,6 @@ env.read_env(env_file)
 # Feature flags
 USE_STRIPE = env.bool("USE_STRIPE", default=False)
 REQUIRE_EMAIL_CONFIRMATION = env.bool("REQUIRE_EMAIL_CONFIRMATION", default=False)
-USE_DJANGO_Q = env.bool("USE_DJANGO_Q", default=False)
 USE_NOTIFICATIONS = env.bool("USE_NOTIFICATIONS", default=False)
 
 # Quick-start development settings - unsuitable for production
@@ -58,8 +57,6 @@ INSTALLED_APPS = [
     MAIN_APP_NAME,
 ]
 
-if USE_DJANGO_Q:
-    INSTALLED_APPS.append("django_q")
 if USE_NOTIFICATIONS:
     INSTALLED_APPS.append("notifications")
 
@@ -182,15 +179,3 @@ if IS_DEVELOPMENT_ENV:
     SECURE_SSL_REDIRECT = False
 
 # END HTTPS CONFIG
-
-
-# DJANGO - Q config
-Q_CLUSTER = {
-    "name": "DjangORM",
-    #"workers": 4,
-    "timeout": 90,
-    "retry": 120,
-    "queue_limit": 50,
-    "bulk": 7,
-    "orm": "default",  # Use Django's ORM + database as the broker
-}
