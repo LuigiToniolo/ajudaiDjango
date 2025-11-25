@@ -18,4 +18,9 @@ def send_response(page_id, auth_token, to_number, message_text):
     }
     response = requests.post(url, headers=headers, data=json.dumps(payload))
 
+    try:
+        print(f'[WHATSAPP][HTTP] POST {url} to={to_number} status={response.status_code} body={response.text[:500]}')
+    except Exception:
+        pass
+
     return response

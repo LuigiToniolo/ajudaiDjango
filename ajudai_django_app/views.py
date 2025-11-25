@@ -32,6 +32,7 @@ from datetime import datetime, timedelta
 from django.db.models.functions import ExtractYear, ExtractMonth
 from django.http import JsonResponse
 import requests
+import traceback
 
 # Notifications
 from .notifications import get_unread_notifications_user
@@ -1183,6 +1184,11 @@ def whatsapp_message_webhook(request):
         token = request.GET['hub.verify_token']
         challenge = request.GET['hub.challenge']
 
+        try:
+            print(f'[WHATSAPP][VERIFY] mode={mode} token_present={bool(token)} challenge_len={len(challenge) if challenge else 0}')
+        except Exception:
+            pass
+
         if mode == 'subscribe' and token == VERIFY_TOKEN:
             return HttpResponse(challenge, status=200)
         else:
@@ -1190,7 +1196,25 @@ def whatsapp_message_webhook(request):
         # Get the incoming message
 
     if request.method == 'POST':
-        data = json.loads(request.body)
+        try:
+            data = json.loads(request.body)
+        except Exception:
+            print('[WHATSAPP][POST] Failed to parse JSON body')
+            print(traceback.format_exc())
+            return HttpResponse('Invalid JSON', status=400)
+
+        try:
+            summary = {
+                'object': data.get('object'),
+                'entries': len(data.get('entry', [])) if isinstance(data.get('entry'), list) else 0,
+            }
+            payload_preview = json.dumps(data)[:1000]
+            print(f'[WHATSAPP][POST] Received payload summary={summary} preview={payload_preview}')
+        except Exception:
+            print('[WHATSAPP][POST] Could not print payload summary')
+            print(traceback.format_exc())
+
+        print('[WHATSAPP][POST] Queuing processing...')
         submit(process_message, data)
         return HttpResponse('Message received and will be processed', status=200)
 
@@ -1198,6 +1222,7 @@ def whatsapp_message_webhook(request):
     return HttpResponse('Received invalid request', status=200)
 
 def process_message(data):
+    print('[WHATSAPP][PROCESS] Started processing payload')
     if 'object' in data and 'entry' in data:
             if data['object'] == 'whatsapp_business_account':
                 try:
@@ -1209,6 +1234,11 @@ def process_message(data):
                             company_number = company_number_with_DDI[2:]
                             chatbot= get_object_or_404(ChatBot, whatsapp_number=company_number)
                             user=chatbot.user
+
+                            try:
+                                print(f'[WHATSAPP][PROCESS] Incoming from={numero_cliente} to(DDI)={company_number_with_DDI} chatbot_id={chatbot.id} user_id={user.id}')
+                            except Exception:
+                                pass
 
                             if not user.usuario_adimplente_ou_tolerancia_de_uso:
                                 raise Exception(f'Usuário inadimplente:{user}')
@@ -1235,11 +1265,17 @@ def process_message(data):
                                 else:
                                     raise Exception(f'Usuário{user} não pode criar mensagens')
                                 
+                            try:
+                                print(f'[WHATSAPP][PROCESS] conversation_id={conversation.id} new={new_conversation}')
+                            except Exception:
+                                pass
+
                             new_context = []
                             order_message = False
 
                             try:
                                 if entry['changes'][0]['value']['messages'][0]['type'] == "order":
+                                    print('[WHATSAPP][PROCESS] Detected order message')
                                     sections_and_products = chatbot.sections_and_products
                                     sections_and_products = sections_and_products.replace("\r", "").replace("\n", "").replace("\t", "")
                                     sections_and_products = sections_and_products.strip()
@@ -1261,6 +1297,11 @@ def process_message(data):
                                         if catalog_id != chatbot.catalog_id:
                                             print('XXXXXXXXXXXXXX O ID DE CATÁLOGO NÃO É O MESMO CADASTRADO NO CHATBOT')
                                             return
+
+                                        try:
+                                            print(f'[WHATSAPP][PROCESS] order catalog_id={catalog_id} items_count={len(products_ordered)}')
+                                        except Exception:
+                                            pass
 
                                         itens_pedidos_para_contexto = 'Itens do Pedido (considerar estes e desconsiderar os anteriores): '
                                         itens_pedidos_para_mensagem_cliente = chatbot.resposta_aparencia_antes_lista_produtos
@@ -1292,9 +1333,14 @@ def process_message(data):
                                         conversation.time = timezone.now().time()
                                         conversation.save()
 
-                                        send_response(chatbot.facebook_page_id, chatbot.whats_app_api_auth_token, numero_cliente, awnser_to_user)
+                                        resp = send_response(chatbot.facebook_page_id, chatbot.whats_app_api_auth_token, numero_cliente, awnser_to_user)
+                                        try:
+                                            print(f'[WHATSAPP][SEND][ORDER] to={numero_cliente} status={getattr(resp, "status_code", None)} body={getattr(resp, "text", "")[:500]}')
+                                        except Exception:
+                                            pass
                                     except Exception as e:
                                         print(f"NÃO FOI POSSÍVEL PROCESSAR A MENSAGEM DE COMPRA: {e}")
+                                        print(traceback.format_exc())
                                     return
                                 else:
                                     order_message = False
@@ -1313,6 +1359,11 @@ def process_message(data):
                                 
                                 if mensagem_em_formato_de_texto:
 
+                                    try:
+                                        print(f'[WHATSAPP][PROCESS] Incoming text msg len={len(incoming_message)} preview={incoming_message[:200]}')
+                                    except Exception:
+                                        pass
+
                                     aditional_instructions = chatbot.aditional_intructions
                                     #antes de verificar se tem uma conversa aberta em andamento, faz o fechamento daquelas que estão inativas ou esgotaram o tempo
                                     Conversa.close_conversa_if_needed(user)
@@ -1322,13 +1373,18 @@ def process_message(data):
                                             initial_message_before_link = chatbot.initial_message_text
                                             catalog_link = f'https://wa.me/c/{company_number_with_DDI}'
                                             first_message = initial_message_before_link + ": " +  catalog_link
-                                            send_response(chatbot.facebook_page_id, chatbot.whats_app_api_auth_token, numero_cliente, first_message)
+                                            resp = send_response(chatbot.facebook_page_id, chatbot.whats_app_api_auth_token, numero_cliente, first_message)
+                                            try:
+                                                print(f'[WHATSAPP][SEND][CATALOG] to={numero_cliente} status={getattr(resp, "status_code", None)} body={getattr(resp, "text", "")[:500]}')
+                                            except Exception:
+                                                pass
                                             #TODO lidar como o contexto e os outros elementos de conversation. deve ser setado para que o bot entenda que o menu foi enviado
                                             pass
                                         #TODO AQUI, FAZER UM IF PARA LIDAR COM MENSAGENS QUE CHEGAM COMO RESPOSTA A MESAGEM INTERATIVA DE CARDÁPIO
                                         else:
                                             role = ''
                                             try:
+                                                print(f'[WHATSAPP][AI] Calling generate_gpt_response conversation_id={conversation.id} model={GPT3_MODEL_NAME}')
                                                 gpt_response, new_context, tokens_used_on_this_request = generate_gpt_response(
                                                     incoming_message, 
                                                     conversation.context, 
@@ -1340,7 +1396,13 @@ def process_message(data):
                                                     user,
                                                     conversation
                                                 )
+                                                try:
+                                                    print(f'[WHATSAPP][AI] Response len={len(gpt_response)} tokens_used={tokens_used_on_this_request}')
+                                                except Exception:
+                                                    pass
                                             except Exception as e:
+                                                print('[WHATSAPP][AI] Error calling generate_gpt_response')
+                                                print(traceback.format_exc())
                                                 raise Exception('Erro ao chamar função de resposta IA') from e
 
                                             """" finalização de conversa por chamada de função
@@ -1350,7 +1412,11 @@ def process_message(data):
                                                 informar_loja_fechamento_pedido(resumo, company_number)
                                             """
                                             #chama função que responde o cliente da loja via integência artificial
-                                            send_response(chatbot.facebook_page_id, chatbot.whats_app_api_auth_token, numero_cliente, gpt_response)
+                                            resp = send_response(chatbot.facebook_page_id, chatbot.whats_app_api_auth_token, numero_cliente, gpt_response)
+                                            try:
+                                                print(f'[WHATSAPP][SEND][AI] to={numero_cliente} status={getattr(resp, "status_code", None)} body={getattr(resp, "text", "")[:500]}')
+                                            except Exception:
+                                                pass
 
                                             conversation.substitute_conversa_context(new_context)
                                             tokens_used_before = conversation.total_tokens_used
@@ -1361,6 +1427,7 @@ def process_message(data):
                                             conversation.time = timezone.now().astimezone(sao_paulo_tz).time()
                                             conversation.save()
 
+                                            print('[WHATSAPP][PROCESS] Completed processing of text message with AI response')
                                             return
 
                                     #case no response was created by ai, just saves the message in the context
@@ -1375,13 +1442,18 @@ def process_message(data):
                                     conversation.date = timezone.now().astimezone(sao_paulo_tz).date()
                                     conversation.time = timezone.now().astimezone(sao_paulo_tz).time()
                                     conversation.save()
+                                    print('[WHATSAPP][PROCESS] Saved message to context without AI response')
                                     return
 
                         else:
+                            print('[WHATSAPP][PROCESS] No message in change payload')
                             return
                 except Exception as e:
+                    print('[WHATSAPP][PROCESS] General processing error')
+                    print(traceback.format_exc())
                     raise Exception('Erro geral no processo') from e
             else:
+                print('[WHATSAPP][PROCESS] Ignoring non-whatsapp_business_account object')
                 return
 
     return
