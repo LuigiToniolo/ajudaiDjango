@@ -2,6 +2,7 @@ import json
 from datetime import datetime
 
 from .notifications import get_unread_notifications_user, get_unread_notifications_user_count, get_read_notifications_user_count
+from django.conf import settings
 
 class DateTimeEncoder(json.JSONEncoder):
     def default(self, o):
@@ -29,5 +30,6 @@ def notifications_list(request):
             'unread_notifications': unread_notifications, 
             'unread_notifications_dict': unread_notifications_dict, 
             'unread_notifications_count': unread_notifications_count, 
-            'read_notifications_count': read_notifications_count,    
+            'read_notifications_count': read_notifications_count,
+            'payments_enabled': getattr(settings, 'USE_STRIPE', False),
         }

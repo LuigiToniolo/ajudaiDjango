@@ -305,8 +305,8 @@ def meu_plano_view(request):
         return redirect('aviso_user_admin')
 
     faturas_pagas = PaymentsForUseMadde.objects.filter(user=user).order_by('-date', '-time')
-    adesao = Adesao_Purchase.objects.get(user=user, status=ADESAO_PURCHASE_STATUS_PROCESSED)
-    preco_adesao = 'R$' + str(adesao.product.price_shown)
+    adesao = Adesao_Purchase.objects.filter(user=user, status=ADESAO_PURCHASE_STATUS_PROCESSED).first()
+    preco_adesao = 'R$' + str(adesao.product.price_shown) if adesao else 'R$0,00'
     plano_atual, preco_atual, conversas_a_pagar_atual = user.current_user_plan_price_and_conversas_a_pagar(STANDART_PERIOD)
 
 

@@ -116,7 +116,11 @@
                                     <li>Suporte grátis</li>
                                     <li>Gestor de pedidos</li>
                             </ul>
+                                {% if payments_enabled %}
                                 <a href="{% url 'checkout_pagamento_adesao' %}" class="select-plan">Assine já</a>
+                                {% else %}
+                                <span class="select-plan">Assine já</span>
+                                {% endif %}
                             </div>
                              -->
 
@@ -168,9 +172,13 @@
                             </div>
                             <div class="botao-assinatura">
                               <img style="width: 300px; height: auto;" src="{% static 'image/pagamento_ajudai_ilustration.svg' %}" alt="pagamento ajudai">
+                              {% if payments_enabled %}
                               <a href="{% url 'checkout_pagamento_adesao' %}">
                                   <button class="assinatura-btn">Assine já</button>
                               </a>
+                              {% else %}
+                              <button class="assinatura-btn" disabled title="Indisponível no modo demonstração">Assine já</button>
+                              {% endif %}
                               <p style="margin: 0; padding: 0; text-align: center; font-size: 12px">*A taxa de implementação será cobrado apenas <strong>uma vez</strong> e deverá ser paga no primeiro mês de uso</p>
                             </div>
                           </div>
