@@ -284,7 +284,9 @@ def generate_gpt_response(prompt, context, role, aditional_instructions, model_n
                 tokens_used = completions.usage.total_tokens
 
                 response_message = completions.choices[0].message
-                if response_message.get("function_call"):
+                # In the new OpenAI SDK, message is an object. Access attributes instead of dict .get
+                function_call = getattr(response_message, "function_call", None)
+                if function_call:
                     available_functions = {
                         "criar_pedido_e_retornar_resumo": criar_pedido_e_retornar_resumo,
                         "obter_resposta_do_faq": obter_resposta_faq,
@@ -293,9 +295,9 @@ def generate_gpt_response(prompt, context, role, aditional_instructions, model_n
                     if chatbot.chatbot_has_products_catalog == False:
                         available_functions["obeter_precos_itens_cardapio"] =  obeter_precos_itens_cardapio
                         
-                    function_name = response_message["function_call"]["name"]
+                    function_name = function_call.name
                     fuction_to_call = available_functions[function_name]
-                    function_args = json.loads(response_message["function_call"]["arguments"])
+                    function_args = json.loads(function_call.arguments)
                     if function_name == 'obeter_precos_itens_cardapio' and chatbot.chatbot_has_products_catalog == False:
                         function_response = fuction_to_call(
                             itens_do_cardapio=str(function_args.get("itens_do_cardapio")),
