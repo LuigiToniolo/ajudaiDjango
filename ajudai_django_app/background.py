@@ -2,9 +2,9 @@ from concurrent.futures import ThreadPoolExecutor
 import atexit
 
 
-# Small fixed-size executor suitable for low-traffic background work in WSGI.
-# Keep the pool size conservative to avoid exhausting threads per process.
-_executor = ThreadPoolExecutor(max_workers=2)
+# Single worker to serialize all background DB operations - prevents SQLite lock contention.
+# SQLite doesn't handle concurrent writes well, so processing messages one at a time is safer.
+_executor = ThreadPoolExecutor(max_workers=1)
 
 
 def submit(fn, *args, **kwargs):
