@@ -34,12 +34,31 @@ from django.http import JsonResponse
 import requests
 import traceback
 from django.db.utils import OperationalError
+import time as time_module
 
 # Notifications
 from .notifications import get_unread_notifications_user
 from .context_processors import notifications_list
 
 sao_paulo_tz = pytz.timezone('America/Sao_Paulo')
+
+# Retry helper for database operations under SQLite lock contention
+def db_retry(func, max_retries=5, initial_delay=0.5):
+    """Execute func with retries on OperationalError (database locked)."""
+    delay = initial_delay
+    last_exception = None
+    for attempt in range(max_retries):
+        try:
+            return func()
+        except OperationalError as e:
+            last_exception = e
+            if attempt < max_retries - 1:
+                print(f'[DB_RETRY] Attempt {attempt+1} failed, retrying in {delay}s: {e}')
+                time_module.sleep(delay)
+                delay *= 2  # exponential backoff
+            else:
+                print(f'[DB_RETRY] All {max_retries} attempts failed: {e}')
+    raise last_exception
 def current_date_sao_paulo():
     return datetime.now().astimezone(sao_paulo_tz).date()
 def current_time_sao_paulo():
@@ -1241,9 +1260,12 @@ def process_message(data):
                             #AQUI, COMO NO BANCO DE DADOS, O WHATSAPP EMPRESARIAL DO CLIENTE É REGISTRADO SEM O DDI (55 PARA BRASIL), ELE É PARA LOCALIZAÇÃO DO CLIENTE NO BANCO DE DADOS
                             company_number = company_number_with_DDI[2:]
                             try:
-                                chatbot = get_object_or_404(ChatBot, whatsapp_number=company_number)
+                                chatbot = db_retry(lambda: ChatBot.objects.get(whatsapp_number=company_number))
+                            except ChatBot.DoesNotExist:
+                                print(f'[WHATSAPP][PROCESS] Chatbot not found for number: {company_number}')
+                                return
                             except OperationalError as e:
-                                print(f'[WHATSAPP][PROCESS] DB locked fetching chatbot: {e}')
+                                print(f'[WHATSAPP][PROCESS] DB locked fetching chatbot after retries: {e}')
                                 return
                             user=chatbot.user
 
@@ -1260,25 +1282,29 @@ def process_message(data):
                             # Get or create a conversation for the phone number
                             new_conversation = False
                             try:
-                                conversation = Conversa.objects.get(
+                                conversation = db_retry(lambda: Conversa.objects.get(
                                     company_client_number=numero_cliente,
                                     chatbot=chatbot,
                                     status_da_conversa=STATUS_CONVERSA_EM_ANDAMENTO
-                                )
-                            except OperationalError as e:
-                                print(f'[WHATSAPP][PROCESS] DB locked fetching conversation: {e}')
-                                return
-                            except Exception:
+                                ))
+                            except Conversa.DoesNotExist:
                                 if user.can_create_new_messages(STANDART_PERIOD):
-                                    conversation = Conversa.objects.create(
-                                        company_client_number=numero_cliente,
-                                        chatbot=chatbot,
-                                        creation_date=timezone.now().astimezone(sao_paulo_tz).date(),
-                                        creation_time=timezone.now().astimezone(sao_paulo_tz).time(),
-                                    )
-                                    new_conversation = True
+                                    try:
+                                        conversation = db_retry(lambda: Conversa.objects.create(
+                                            company_client_number=numero_cliente,
+                                            chatbot=chatbot,
+                                            creation_date=timezone.now().astimezone(sao_paulo_tz).date(),
+                                            creation_time=timezone.now().astimezone(sao_paulo_tz).time(),
+                                        ))
+                                        new_conversation = True
+                                    except OperationalError as e:
+                                        print(f'[WHATSAPP][PROCESS] DB locked creating conversation after retries: {e}')
+                                        return
                                 else:
                                     raise Exception(f'Usuário{user} não pode criar mensagens')
+                            except OperationalError as e:
+                                print(f'[WHATSAPP][PROCESS] DB locked fetching conversation after retries: {e}')
+                                return
                                 
                             try:
                                 print(f'[WHATSAPP][PROCESS] conversation_id={conversation.id} new={new_conversation}')
@@ -1338,15 +1364,18 @@ def process_message(data):
                                         awnser_to_user = itens_pedidos_para_mensagem_cliente + '\n\n' + chatbot.resposta_pedido_catálogo
                                         new_context.append({"role": "user", "content": pedido_em_string_para_add_ao_contexto})
                                         new_context.append({"role": "assistant", "content": awnser_to_context})
-                                        tokens_used_on_this_request = 0
-                                        conversation.substitute_conversa_context(new_context)
-                                        tokens_used_before = conversation.total_tokens_used
-                                        conversation.total_tokens_used = tokens_used_before + tokens_used_on_this_request
-                                        conversation.last_message_shown = False
-                                        conversation.need_refresh_view = True
-                                        conversation.date = timezone.now().date()
-                                        conversation.time = timezone.now().time()
-                                        conversation.save()
+                                        def save_order():
+                                            conversation.substitute_conversa_context(new_context)
+                                            conversation.total_tokens_used = conversation.total_tokens_used
+                                            conversation.last_message_shown = False
+                                            conversation.need_refresh_view = True
+                                            conversation.date = timezone.now().date()
+                                            conversation.time = timezone.now().time()
+                                            conversation.save()
+                                        try:
+                                            db_retry(save_order)
+                                        except OperationalError as e:
+                                            print(f'[WHATSAPP][PROCESS] DB locked saving order after retries: {e}')
 
                                         resp = send_response(chatbot.facebook_page_id, chatbot.whats_app_api_auth_token, numero_cliente, awnser_to_user)
                                         try:
@@ -1433,14 +1462,18 @@ def process_message(data):
                                             except Exception:
                                                 pass
 
-                                            conversation.substitute_conversa_context(new_context)
-                                            tokens_used_before = conversation.total_tokens_used
-                                            conversation.total_tokens_used = tokens_used_before + tokens_used_on_this_request
-                                            conversation.last_message_shown = False
-                                            conversation.need_refresh_view = True
-                                            conversation.date = timezone.now().astimezone(sao_paulo_tz).date()
-                                            conversation.time = timezone.now().astimezone(sao_paulo_tz).time()
-                                            conversation.save()
+                                            def save_ai_response():
+                                                conversation.substitute_conversa_context(new_context)
+                                                conversation.total_tokens_used = conversation.total_tokens_used + tokens_used_on_this_request
+                                                conversation.last_message_shown = False
+                                                conversation.need_refresh_view = True
+                                                conversation.date = timezone.now().astimezone(sao_paulo_tz).date()
+                                                conversation.time = timezone.now().astimezone(sao_paulo_tz).time()
+                                                conversation.save()
+                                            try:
+                                                db_retry(save_ai_response)
+                                            except OperationalError as e:
+                                                print(f'[WHATSAPP][PROCESS] DB locked saving AI response after retries: {e}')
 
                                             print('[WHATSAPP][PROCESS] Completed processing of text message with AI response')
                                             return
@@ -1448,15 +1481,18 @@ def process_message(data):
                                     #case no response was created by ai, just saves the message in the context
                                     new_context = conversation.context
                                     new_context.append({"role": "user", "content": incoming_message})
-                                    tokens_used_on_this_request = 0
-                                    conversation.substitute_conversa_context(new_context)
-                                    tokens_used_before = conversation.total_tokens_used
-                                    conversation.total_tokens_used = tokens_used_before + tokens_used_on_this_request
-                                    conversation.last_message_shown = False
-                                    conversation.need_refresh_view = True
-                                    conversation.date = timezone.now().astimezone(sao_paulo_tz).date()
-                                    conversation.time = timezone.now().astimezone(sao_paulo_tz).time()
-                                    conversation.save()
+                                    def save_user_msg():
+                                        conversation.substitute_conversa_context(new_context)
+                                        conversation.total_tokens_used = conversation.total_tokens_used
+                                        conversation.last_message_shown = False
+                                        conversation.need_refresh_view = True
+                                        conversation.date = timezone.now().astimezone(sao_paulo_tz).date()
+                                        conversation.time = timezone.now().astimezone(sao_paulo_tz).time()
+                                        conversation.save()
+                                    try:
+                                        db_retry(save_user_msg)
+                                    except OperationalError as e:
+                                        print(f'[WHATSAPP][PROCESS] DB locked saving user msg after retries: {e}')
                                     print('[WHATSAPP][PROCESS] Saved message to context without AI response')
                                     return
 
