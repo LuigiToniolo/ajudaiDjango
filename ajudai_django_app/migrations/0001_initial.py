@@ -77,9 +77,10 @@ class Migration(migrations.Migration):
                 ('chatbot_has_products_catalog', models.BooleanField(default=False)),
                 ('catalog_id', models.CharField(default='', max_length=255)),
                 ('sections_and_products', models.JSONField(default=dict)),
-                ('resposta_aparencia_antes_lista_produtos', models.CharField(default='Itens do Pedido (considerar estes e desconsiderar os anteriores): ', max_length=10000)),
-                ('resposta_pedido_catálogo', models.CharField(default='Itens pedidos registrados com sucesso. Agora, para concluirmos o seu pedido, pedimos para informar se você quer retirar o seu pedido no balcão ou que ele seja entregue para você', max_length=10000)),
-                ('initial_message_text', models.CharField(default='Olá, seja bem-vindo! Veja nosso cardápio e selecione os itens que você deseja os adicionando no carrinho:', max_length=10000)),
+                # Long texts: use TextField so MySQL row size limits are not exceeded
+                ('resposta_aparencia_antes_lista_produtos', models.TextField(default='Itens do Pedido (considerar estes e desconsiderar os anteriores): ')),
+                ('resposta_pedido_catálogo', models.TextField(default='Itens pedidos registrados com sucesso. Agora, para concluirmos o seu pedido, pedimos para informar se você quer retirar o seu pedido no balcão ou que ele seja entregue para você')),
+                ('initial_message_text', models.TextField(default='Olá, seja bem-vindo! Veja nosso cardápio e selecione os itens que você deseja os adicionando no carrinho:')),
                 ('user', models.ForeignKey(default=1, on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
             ],
         ),
@@ -147,7 +148,8 @@ class Migration(migrations.Migration):
                 ('cpf_do_cliente', models.CharField(default='', max_length=60)),
                 ('data_de_agendamento', models.CharField(default='', max_length=60)),
                 ('email_do_cliente', models.CharField(default='', max_length=60, null=True)),
-                ('itens_pedido', models.CharField(default='', max_length=12000)),
+                # Large list of items: store as TextField for MySQL compatibility
+                ('itens_pedido', models.TextField(default='')),
                 ('endereco_entrega', models.CharField(default='', max_length=200)),
                 ('taxa_de_entrega', models.CharField(default='', max_length=60)),
                 ('valor_total', models.CharField(default='', max_length=60)),

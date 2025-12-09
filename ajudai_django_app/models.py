@@ -508,9 +508,10 @@ class ChatBot(models.Model):
     catalog_id = models.CharField(max_length=255, default='')
     sections_and_products = models.JSONField(default=dict)
 
-    resposta_aparencia_antes_lista_produtos =  models.CharField(max_length=10000, default='Itens do Pedido (considerar estes e desconsiderar os anteriores): ')
-    resposta_pedido_catálogo = models.CharField(max_length=10000, default='Itens pedidos registrados com sucesso. Agora, para concluirmos o seu pedido, pedimos para informar se você quer retirar o seu pedido no balcão ou que ele seja entregue para você')
-    initial_message_text = models.CharField(max_length=10000, default='Olá, seja bem-vindo! Veja nosso cardápio e selecione os itens que você deseja os adicionando no carrinho:')
+    # These texts can be long; use TextField so MySQL row size limit isn't exceeded.
+    resposta_aparencia_antes_lista_produtos = models.TextField(default='Itens do Pedido (considerar estes e desconsiderar os anteriores): ')
+    resposta_pedido_catálogo = models.TextField(default='Itens pedidos registrados com sucesso. Agora, para concluirmos o seu pedido, pedimos para informar se você quer retirar o seu pedido no balcão ou que ele seja entregue para você')
+    initial_message_text = models.TextField(default='Olá, seja bem-vindo! Veja nosso cardápio e selecione os itens que você deseja os adicionando no carrinho:')
 
 
     def __str__(self):
@@ -758,10 +759,8 @@ class Pedido(models.Model):
         default='',
         null=True,
         )
-    itens_pedido = models.CharField(
-        max_length=12000,
-        default=''
-        )
+    # List of items can also be large; use TextField for safety on MySQL
+    itens_pedido = models.TextField(default='')
     endereco_entrega=models.CharField(
         max_length=200,
         default='',
