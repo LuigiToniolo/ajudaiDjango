@@ -65,8 +65,9 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(primary_key=True, serialize=False)),
                 ('nome_do_chatbot', models.CharField(default='sem nome', max_length=40)),
-                ('aditional_intructions', models.CharField(default='', max_length=121600)),
-                ('cardapio', models.CharField(default='', max_length=121600)),
+                # Use TextField for large free-text fields to avoid MySQL VARCHAR limits
+                ('aditional_intructions', models.TextField(default='')),
+                ('cardapio', models.TextField(default='')),
                 ('descricao_funcao_cardapio', models.CharField(default='Obtém uma informação específica, ou um conjunto de informações específicas contidas no cardápio, como nome do produto, tamanho, ingredientes e preço', max_length=1000)),
                 ('whatsapp_number', models.CharField(default='99999999999', max_length=20, validators=[django.core.validators.RegexValidator(message='Favor digitar seu telefone da seguinte forma: seu DDD seguido do seu número, por exemplo: 11987654321', regex='^\\d{10,11}$')])),
                 ('whats_app_api_auth_token', models.CharField(max_length=300)),
@@ -138,7 +139,8 @@ class Migration(migrations.Migration):
                 ('criado_manualmente', models.BooleanField(default=False)),
                 ('nome_pedido_manual', models.CharField(default='', max_length=120)),
                 ('status_do_pedido', models.CharField(choices=[('pedido_realizado_manual', 'Pedido realizado'), ('pedido_em_processo', 'Pedido em processo'), ('pendente_de_entrega', 'Pendente de Entrega'), ('entregue', 'Pedido Entregue'), ('cancelado', 'Pedido Cancelado')], default='pedido_realizado_manual', max_length=120)),
-                ('resumo_do_pedido', models.CharField(default='', max_length=1000000)),
+                # Very long summary: use TextField for MySQL compatibility
+                ('resumo_do_pedido', models.TextField(default='')),
                 ('date', models.DateField(default=ajudai_django_app.models.current_date_sao_paulo)),
                 ('time', models.TimeField(default=ajudai_django_app.models.current_time_sao_paulo)),
                 ('nome_do_cliente', models.CharField(default='', max_length=60)),

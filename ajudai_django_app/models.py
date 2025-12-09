@@ -489,8 +489,9 @@ class ChatBot(models.Model):
     id = models.AutoField(primary_key=True)
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, default=1)
     nome_do_chatbot = models.CharField(max_length=40, default='sem nome')
-    aditional_intructions = models.CharField(max_length=MAX_CHAR_INSTRUCTIONS_CHATBOT_FORM, default='')
-    cardapio = models.CharField(max_length=MAX_CHAR_INSTRUCTIONS_CHATBOT_FORM, default='')
+    # Large free-text fields: use TextField so they work on MySQL as well as SQLite
+    aditional_intructions = models.TextField(default='')
+    cardapio = models.TextField(default='')
     descricao_funcao_cardapio = models.CharField(max_length=1000, default='Obtém uma informação específica, ou um conjunto de informações específicas contidas no cardápio, como nome do produto, tamanho, ingredientes e preço')
     whatsapp_number=models.CharField(
         max_length=20,
@@ -736,10 +737,8 @@ class Pedido(models.Model):
         default=STATUS_PEDIDO_REALIZADO,
         choices=STATUS_CHOICES,
         )
-    resumo_do_pedido = models.CharField(
-        max_length=1000000,
-        default='',
-        )
+    # Potentially very long summary extracted from conversations; use TextField for compatibility with MySQL
+    resumo_do_pedido = models.TextField(default='')
     date = models.DateField(default=current_date_sao_paulo)
     time = models.TimeField(default=current_time_sao_paulo)
     nome_do_cliente = models.CharField(
