@@ -33,6 +33,7 @@ from django.db.models.functions import ExtractYear, ExtractMonth
 from django.http import JsonResponse
 import requests
 import traceback
+from django.db.utils import OperationalError
 
 # Notifications
 from .notifications import get_unread_notifications_user
@@ -316,14 +317,21 @@ def meu_plano_view(request):
     is_Plus_Plan = False
     is_Basic_Plan = False
 
-    if plano_atual.name == PRODUCT_NAME_COORPORATE:
-        is_Cooporate_Plan = True
-    elif plano_atual.name == PRODUCT_NAME_PREMIUM:
-        is_Premium_Plan = True
-    elif plano_atual.name == PRODUCT_NAME_PLUS:
-        is_Plus_Plan = True
+    if plano_atual:
+        if plano_atual.name == PRODUCT_NAME_COORPORATE:
+            is_Cooporate_Plan = True
+        elif plano_atual.name == PRODUCT_NAME_PREMIUM:
+            is_Premium_Plan = True
+        elif plano_atual.name == PRODUCT_NAME_PLUS:
+            is_Plus_Plan = True
+        else:
+            is_Basic_Plan = True
     else:
+        # Fallback when no plan is found to avoid AttributeError
         is_Basic_Plan = True
+        nome_do_plano = 'Demo'
+        preco_atual = preco_atual or 0
+        conversas_a_pagar_atual = conversas_a_pagar_atual or 0
 
     context = {
         'user' : user,
@@ -1034,7 +1042,7 @@ def database_error(request):
     try:
         user = CustomUser.getUser(request)
     except:
-        pass
+        user = None
 
     return render(
         request,
@@ -1045,7 +1053,7 @@ def database_error(request):
             'SUPPORT_EMAIL' : SUPPORT_EMAIL,
             'user' : user,
             'isHome' : False,
-            'userIsPremium' : user.userIsPremium(),
+            'userIsPremium' : user.userIsPremium() if user else False,
         }
     )
 
@@ -1232,7 +1240,11 @@ def process_message(data):
                             company_number_with_DDI =  entry['changes'][0]['value']['metadata']['display_phone_number']
                             #AQUI, COMO NO BANCO DE DADOS, O WHATSAPP EMPRESARIAL DO CLIENTE É REGISTRADO SEM O DDI (55 PARA BRASIL), ELE É PARA LOCALIZAÇÃO DO CLIENTE NO BANCO DE DADOS
                             company_number = company_number_with_DDI[2:]
-                            chatbot= get_object_or_404(ChatBot, whatsapp_number=company_number)
+                            try:
+                                chatbot = get_object_or_404(ChatBot, whatsapp_number=company_number)
+                            except OperationalError as e:
+                                print(f'[WHATSAPP][PROCESS] DB locked fetching chatbot: {e}')
+                                return
                             user=chatbot.user
 
                             try:
@@ -1253,7 +1265,10 @@ def process_message(data):
                                     chatbot=chatbot,
                                     status_da_conversa=STATUS_CONVERSA_EM_ANDAMENTO
                                 )
-                            except:
+                            except OperationalError as e:
+                                print(f'[WHATSAPP][PROCESS] DB locked fetching conversation: {e}')
+                                return
+                            except Exception:
                                 if user.can_create_new_messages(STANDART_PERIOD):
                                     conversation = Conversa.objects.create(
                                         company_client_number=numero_cliente,
