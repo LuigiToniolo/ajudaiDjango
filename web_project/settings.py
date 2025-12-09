@@ -111,8 +111,8 @@ if USE_MYSQL:
             },
         }
     }
-    # For MySQL it's OK to keep connections open a bit
-    CONN_MAX_AGE = 60
+    # On PythonAnywhere free tier, keep connections short‑lived to avoid stale connections
+    CONN_MAX_AGE = 0
 else:
     DATABASES = {
         "default": {

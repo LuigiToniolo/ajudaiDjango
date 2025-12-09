@@ -34,6 +34,7 @@ from django.http import JsonResponse
 import requests
 import traceback
 from django.db.utils import OperationalError
+from django.db import close_old_connections
 import time as time_module
 
 # Notifications
@@ -42,13 +43,15 @@ from .context_processors import notifications_list
 
 sao_paulo_tz = pytz.timezone('America/Sao_Paulo')
 
-# Retry helper for database operations under SQLite lock contention
+# Retry helper for database operations under DB connection issues / lock contention
 def db_retry(func, max_retries=5, initial_delay=0.5):
-    """Execute func with retries on OperationalError (database locked)."""
+    """Execute func with retries on OperationalError, refreshing the DB connection each time."""
     delay = initial_delay
     last_exception = None
     for attempt in range(max_retries):
         try:
+            # Ensure this thread has a fresh, valid DB connection
+            close_old_connections()
             return func()
         except OperationalError as e:
             last_exception = e
@@ -1250,6 +1253,8 @@ def whatsapp_message_webhook(request):
 
 def process_message(data):
     print('[WHATSAPP][PROCESS] Started processing payload')
+    # Make sure background thread has its own valid DB connection
+    close_old_connections()
     if 'object' in data and 'entry' in data:
             if data['object'] == 'whatsapp_business_account':
                 try:
@@ -1265,7 +1270,8 @@ def process_message(data):
                                 print(f'[WHATSAPP][PROCESS] Chatbot not found for number: {company_number}')
                                 return
                             except OperationalError as e:
-                                print(f'[WHATSAPP][PROCESS] DB locked fetching chatbot after retries: {e}')
+                                # Lost connection or other DB issue even after retries
+                                print(f'[WHATSAPP][PROCESS] DB error fetching chatbot after retries: {e}')
                                 return
                             user=chatbot.user
 
@@ -1298,12 +1304,12 @@ def process_message(data):
                                         ))
                                         new_conversation = True
                                     except OperationalError as e:
-                                        print(f'[WHATSAPP][PROCESS] DB locked creating conversation after retries: {e}')
+                                        print(f'[WHATSAPP][PROCESS] DB error creating conversation after retries: {e}')
                                         return
                                 else:
                                     raise Exception(f'Usuário{user} não pode criar mensagens')
                             except OperationalError as e:
-                                print(f'[WHATSAPP][PROCESS] DB locked fetching conversation after retries: {e}')
+                                print(f'[WHATSAPP][PROCESS] DB error fetching conversation after retries: {e}')
                                 return
                                 
                             try:
